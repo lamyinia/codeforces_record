@@ -1,0 +1,56 @@
+#include <bits/stdc++.h>
+using namespace std;
+using ll = long long;
+const int N = 505;
+int f[N][N], last[N][N];
+
+void solve(){
+    int n, m;
+    cin >> n;
+    vector <int> a(n+1);
+    for (int i = 1; i <= n; ++ i) cin >> a[i];
+    cin >> m;
+    vector <int> b(m+1);
+    for (int i = 1; i <= m; ++ i) cin >> b[i];
+    b[0] = -1;
+
+    for (int i = 1; i <= n; ++ i){
+        for (int j = 1; j <= m; ++ j){
+            f[i][j] = f[i-1][j], last[i][j] = last[i-1][j];
+            if (a[i] == b[j]){
+                for (int k = 0; k < j; ++ k)
+                    if (a[i] > b[k]){
+                        if (f[i-1][k]+1 > f[i][j])
+                            f[i][j] = f[i-1][k]+1, last[i][j] = k;
+                    }
+            }
+        }
+    }
+
+    int res = 0, id = 0;
+    for (int i = 1; i <= m; ++ i)
+        if (f[n][i] > res) res = f[n][i], id = i;
+    deque <int> ans;
+    if (id) ans.push_front(b[id]);
+
+    while (last[n][id] > 0){
+        id = last[n][id];
+        ans.push_front(b[id]);
+    }
+    cout << res << "\n";
+    if (ans.size()){
+        for (auto &x : ans) cout << x << " ";
+        cout << "\n";
+    }
+}
+
+int main(){
+#ifdef ONLINE_JUDGE
+    ios::sync_with_stdio(0), cin.tie(0), cout.tie(0);
+#else
+    freopen("in.txt", "rt", stdin), freopen("out.txt", "wt", stdout);
+#endif
+    int _ = 1;
+    while (_--) solve();
+    return 0;
+}

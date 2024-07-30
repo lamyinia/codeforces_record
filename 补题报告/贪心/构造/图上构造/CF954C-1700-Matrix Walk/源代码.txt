@@ -1,0 +1,91 @@
+/*
+有一个n行m列的矩阵，第i行j列格子的编号为m*(i-1) + j。
+现在给n个格子的编号，问能否构造一个n和m使得这n个格子
+的构成一个连续的路径，如果可以，输出任意的n和m
+
+*/
+
+#include <bits/stdc++.h>
+using namespace std;
+const int INF = 1e9;
+void solve(){
+	int n;
+	cin >> n;
+	vector <int> p(n+1);
+	int x = INF, y = 1;
+	
+	for (int i = 1; i <= n; ++ i){
+		cin >> p[i];
+		if (p[i] == p[i-1]) return cout << "NO\n", void();
+		if (i != 1 && abs(p[i]-p[i-1]) != 1)
+			y = abs(p[i]-p[i-1]);  //若差值不等1，更新列
+	}
+	
+
+	for (int i = 2; i <= n; ++ i){
+		if (abs(p[i]-p[i-1]) != 1 && abs(p[i]-p[i-1]) != y)  //相差不为1或不为y，走不到
+			return cout << "NO\n", void();
+		else if (abs(p[i]-p[i-1])==1 && y != 1 && (p[i]-1)/y!=(p[i-1]-1)/y)  //相差为1，y大于1，但是换行了，走不到
+			return cout << "NO\n", void();
+		//规范取整方向
+	}
+	cout << "YES\n" << x << " " << y << "\n";
+	return;
+}
+
+
+
+
+//优化
+
+#include <bits/stdc++.h>
+using namespace std;
+const int INF = 1e9;
+void solve(){
+	int n;
+	cin >> n;
+	vector <int> p(n+1);
+	for (int i = 1; i <= n; ++ i) cin >> p[i];
+	int y = 1;
+	for (int i = 2; i <= n; ++ i) y = max(y, abs(p[i]-p[i-1]));
+	for (int i = 2; i <= n; ++ i)
+		if (abs(p[i]-p[i-1]) + min(p[i], p[i-1])%y == 1*(y != 1) || (abs(p[i]-p[i-1])-1)*(abs(p[i]-p[i-1])-y))
+			return cout << "NO\n", void();
+	cout << "YES\n";
+	cout << INF << " " << y << "\n";
+}
+
+int main(){
+	ios::sync_with_stdio(0), cin.tie(0), cout.tie(0);
+	solve();
+	return 0;
+}
+
+/*羊码
+def main():
+    n = II()
+    nums = LII()
+
+    tmp = -1
+    for i in range(n - 1):
+        v = abs(nums[i+1] - nums[i])
+        if v == 0:
+            print('NO')
+            exit()
+        if v > 1:
+            tmp = v
+
+    if tmp == -1: tmp = 10 ** 9
+
+    for i in range(n - 1):
+        x1, y1 = divmod(nums[i] - 1, tmp)
+        x2, y2 = divmod(nums[i+1] - 1, tmp)
+        if abs(x1 - x2) + abs(y1 - y2) > 1:
+            print('NO')
+            exit()
+
+    print('YES')
+    print(10 ** 9, tmp)
+*/
+
+2024.5.15

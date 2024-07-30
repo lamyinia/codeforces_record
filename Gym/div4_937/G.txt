@@ -1,0 +1,33 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+void solve(){
+    int a, b, c;
+    cin >> a >> b >> c;
+    if (a+1 != c) return cout << -1 << "\n", void();
+    int next = 0;
+    int last = 1;
+    int res = 0;
+    for (int i = 1; i <= a+b; ++ i){
+        if (!next){
+            ++ res;
+            next = last, last = 0;
+        }
+        -- next, ++ last;
+        if (i <= a) ++ last;
+    }
+    cout << res << "\n";
+    return;
+}
+
+int main(){
+#ifdef ONLINE_JUDGE
+    ios::sync_with_stdio(0), cin.tie(0), cout.tie(0);
+#else
+    freopen("in.txt", "rt", stdin), freopen("out.txt", "wt", stdout);
+#endif
+    int T;
+    cin >> T;
+    while (T--) solve();
+    return 0;
+}

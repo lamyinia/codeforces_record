@@ -1,0 +1,41 @@
+#include <bits/stdc++.h>
+using namespace std;
+int chart[100], tot;
+
+bool check(int x){
+    while (x){
+        if (x%10 > 1) return false;
+        x /= 10;
+    }
+    return true;
+}
+void solve(){
+    int x;
+    cin >> x;
+    if (check(x)){
+        cout << "YES\n";
+        return;
+    }
+    for (int i = 2; i <= 31; ++ i)
+        if (x >= chart[i])
+            while (x >= chart[i] && x%chart[i] == 0){
+                x /= chart[i];
+            }
+    if (x==1) cout << "YES\n";
+    else cout << "NO\n";
+    return;
+}
+
+int main(){
+    ios::sync_with_stdio(0), cin.tie(0), cout.tie(0);
+    for (int i = 1; i <= 31; ++ i){
+        int x = 0;
+        for (int j = 4; j >= 0; -- j)
+            if (i>>j & 1) x += pow(10, j);
+        chart[++ tot] = x;
+    }
+    int T;
+    cin >> T;
+    while (T--) solve();
+    return 0;
+}

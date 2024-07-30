@@ -1,0 +1,58 @@
+/*
+有n个小球，每个小球有它自己的颜色。
+要求你选m个盒子，每个盒子必须装相同颜色的小球，且盒子装的小球数量之差不能超过1。
+求最小的m个盒子来装这n个小球。
+*/
+
+#include <bits/stdc++.h>
+using ll = long long;
+using namespace std;
+using Pli = pair<ll, int>;
+const int N = 2000050, p = 998244353;
+int cnt[N], b[N], n;
+ 
+void solve(){
+    cin >> n;
+    for (int i = 1; i <= n; ++ i) cnt[i] = 0;
+    for (int i = 1; i <= n; ++ i){
+        int x;
+        cin >> x;
+        ++ cnt[x];
+    }
+    
+    int val = 2e9;
+    int tot = 0;
+    for (int i = 1; i <= n; ++ i)
+        if (cnt[i]) b[++ tot] = cnt[i], val = min(val, cnt[i]);
+    // 盒子的容量不得大于小球出现的最小频次+1，不然会装不下
+    int res;
+    for (int i = val+1; i >= 1; -- i){
+	// 枚举每一个盒子的容量，容量越大，盒子的数量越少，如果某个容量合法即为答案
+        res = 0;
+        bool brake = 0;
+        for (int j = 1; j <= tot; ++ j){
+            int t = (b[j]-1)/i + 1;
+            res += t;
+            if ((i-1)*t > b[j]){
+                brake = 1;
+   		break;
+            }
+        }
+        if (!brake) break;
+    }
+    cout << res << "\n";
+}   
+ 
+int main(){
+#ifdef ONLINE_JUDGE
+    ios::sync_with_stdio(0), cin.tie(0), cout.tie(0);
+#else
+    freopen("in.txt", "rt", stdin), freopen("out.txt", "wt", stdout);
+#endif
+    int _ = 1;
+    cin >> _;
+    while (_--) solve();
+    return 0;
+}
+
+#2024.5.2

@@ -1,0 +1,36 @@
+#include  <bits/stdc++.h>
+using namespace std;
+using ll = long long;
+const ll INF = 9e18, mod = 998244353, N = 20050;
+ll f[N][200], last[150];
+
+void solve(){
+    int n, k, p;
+    cin >> n >> k >> p;
+    vector <ll> a(n+1), Pre(n+1);
+    //组合dp，f[i][j] 第i个位置分成第j段的最大值
+    for (int i = 1; i <= n; ++ i) cin >> a[i], Pre[i] = a[i] + Pre[i-1];
+
+    for (int i = 1; i <= n; ++ i) f[i][0] = -INF;
+    for (int j = 1; j <= k; ++ j){
+        for (int i = 0; i < p; ++ i) last[i] = -INF;
+        if (j == 1) last[0] = 0;
+        for (int i = 1; i <= n; ++ i){
+            for (int t = 0; t < p; ++ t){
+		// 用前面的余数来进行转移
+                f[i][j] = max(f[i][j], last[t] + (Pre[i]%p - t + p)%p);
+            }
+            last[Pre[i]%p] = max(last[Pre[i]%p], f[i][j-1]);
+        }
+    }
+
+    cout << f[n][k] << "\n";
+}
+
+int main(){
+    ios::sync_with_stdio(0), cin.tie(0), cout.tie(0);
+    int _ = 1;
+    while (_--)
+        solve();
+    return 0;
+}

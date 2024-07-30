@@ -1,0 +1,33 @@
+#include <bits/stdc++.h>
+#define l first
+#define r second
+using namespace std;
+using Pii = pair<int, int>;
+const int N = 3e5+11;
+Pii seg[N], Pre[N], Suf[N];
+int n;
+ 
+void solve(){
+    cin >> n;
+    for (int i = 1; i <= n; ++ i) cin >> seg[i].l >> seg[i].r;
+    Pre[0].r = Suf[n+1].r = 2e9;
+    for (int i = 1; i <= n; ++ i)
+        Pre[i].l = max(Pre[i-1].l, seg[i].l), Pre[i].r = min(Pre[i-1].r, seg[i].r);
+    for (int i = n; i >= 1; -- i)
+        Suf[i].l = max(Suf[i+1].l, seg[i].l), Suf[i].r = min(Suf[i+1].r, seg[i].r);
+    int res = 0;
+    for (int i = 1; i <= n; ++ i)
+        res = max(res, min(Pre[i-1].r, Suf[i+1].r) - max(Pre[i-1].l, Suf[i+1].l));
+    cout << res << "\n";
+}
+ 
+int main(){
+#ifdef ONLINE_JUDGE
+    ios::sync_with_stdio(0), cin.tie(0), cout.tie(0);
+#else
+    freopen("in.txt", "rt", stdin), freopen("out.txt", "wt", stdout);
+#endif
+    int _ = 1;
+    while (_--) solve();
+    return 0;
+}

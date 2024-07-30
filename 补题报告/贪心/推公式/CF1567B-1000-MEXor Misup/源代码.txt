@@ -1,0 +1,32 @@
+#include <bits/stdc++.h>
+using namespace std;
+using ll = long long;
+using Pii = pair<int,int>;
+const int N = 300050, INF = 2e9;
+ll f[N];
+
+void init(){
+    for (int i = 1; i < N; ++ i) f[i] = i^f[i-1];
+}
+void solve(){
+    int a, b;
+    cin >> a >> b;
+
+    if (f[a-1] == b) cout << a << "\n";
+    else if ((f[a-1]^b) == a) cout << a+2 << "\n";
+    else cout << a+1 << "\n";
+
+}
+
+int main(){
+#ifdef ONLINE_JUDGE
+    ios::sync_with_stdio(0), cin.tie(0), cout.tie(0);
+#else
+    freopen("in.txt", "rt", stdin), freopen("out.txt", "wt", stdout);
+#endif
+    int _ = 1;
+    cin >> _;
+    init();
+    while (_--) solve();
+    return 0;
+}

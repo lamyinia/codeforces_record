@@ -1,0 +1,63 @@
+#include <bits/stdc++.h>
+using namespace std;
+using Pii = pair<int,int>;
+using ll = long long;
+const int N = 2050, mod = 1e9 + 7, inf = 1e9;
+
+
+void solve(){
+    string s;
+    cin >> s;
+    int rest = s.size(), n = s.size();
+    ll pos;
+    cin >> pos;
+
+    s = " " + s;
+    ll tot = 0;
+    
+    int p = 0;
+    while (tot < pos && p < n){
+        tot += rest;
+        ++ p, -- rest;
+    }
+     
+    int cnt = p-1;
+    vector <int> dele(n+1), stk;
+    if (cnt > 0){
+        for (int i = 1; i <= n; ++ i){
+            auto it = &stk.back();
+            while (!stk.empty() && s[i] < s[*it]){
+                dele[*it] = true;
+                stk.pop_back(), -- it, -- cnt;
+                if (!cnt) break;
+            }
+            if (!cnt) break;
+            stk.push_back(i);
+        }
+        if (cnt > 0){
+            while (cnt--){
+                dele[stk.back()] = true;
+                stk.pop_back();
+            }
+        }
+    }
+    string t;
+    for (int i = 1; i <= n; ++ i)
+        if (!dele[i]) t += s[i];
+
+    cout << t[n-p-(tot-pos)];
+}
+
+
+int main(){
+#ifdef ONLINE_JUDGE
+    ios::sync_with_stdio(false), cin.tie(nullptr), cout.tie(nullptr);
+#else
+    freopen("in.txt", "rt", stdin), freopen("out.txt", "wt", stdout);
+#endif
+    int _ = 1;
+    cin >> _;
+    while (_--)
+        solve();
+    return 0;
+}

@@ -1,0 +1,39 @@
+#include<bits/stdc++.h>
+using namespace std;
+const int N=5e5+5;
+int st[N],top,dep[N];  //dep[i]表示i下面有多少个点
+void work(vector<int> &vec,int *f){
+    if(vec.size()){
+        f[1]=1;
+        st[top=1]=vec[0],dep[1]=0;
+        for(int i=1;i<vec.size();i++){
+            f[i+1]=f[i];
+            if(vec[i]>st[top])st[++top]=vec[i],f[i+1]=max(f[i+1],top),dep[top]=0;
+            else {
+                int s=0;
+                while(st[top]>vec[i]&&top)s=max(s,top+1+dep[top]),top--;
+                f[i+1]=max(f[i+1],s);
+                st[++top]=vec[i],dep[top]=s-top;
+            }
+        }
+    }
+    for(int i=0;i<=vec.size();i++)f[i]++;
+}
+int n,a[N],f[N],g[N],ans1=1e9;
+int main(){
+    scanf("%d",&n);
+    for(int i=1;i<=n;i++)scanf("%d",&a[i]);
+    for(int i=n+1;i<=2*n;i++)a[i]=a[i-n];
+    int k=0;
+    for(int i=1;i<=n;i++)if(a[i]==1){
+        vector<int> vec;
+        for(int j=i+1;j<i+n;j++)vec.push_back(a[j]);
+        work(vec,f);
+        reverse(vec.begin(),vec.end());
+        work(vec,g);
+        k=i-1;
+    }
+    for(int i=0;i<n;i++)ans1=min(ans1,max(g[i],f[n-1-i]));
+    printf("%d ",ans1);
+    for(int i=0;i<n;i++)if(max(g[i],f[n-1-i])==ans1)return printf("%d\n",(k-i+n)%n),0;
+}

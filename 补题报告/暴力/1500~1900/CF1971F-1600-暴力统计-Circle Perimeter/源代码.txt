@@ -1,0 +1,33 @@
+#include <bits/stdc++.h>
+using namespace std;
+using ll = long long;
+const int N = 5050, mod = 998244353;
+int fact[N], comb[N][N];
+
+void solve(){
+    ll d;
+    cin >> d;
+    int res = 0;
+    for (ll i = 0; i <= d; ++ i){
+        int l = ceil(sqrt(d*d-i*i));
+        int r = ceil(sqrt(d*d+2*d+1-i*i))-1;
+        if (!i) res += 2*(r-l+1);
+        else {
+            if (!l) res += 2 + 4*r;
+            else res += 4*(r-l+1);
+        }
+    }
+    cout << res << "\n";
+}  
+
+int main(){
+#ifdef ONLINE_JUDGE
+    ios::sync_with_stdio(0), cin.tie(0), cout.tie(0);
+#else
+    freopen("in.txt", "rt", stdin), freopen("out.txt", "wt", stdout);
+#endif
+    int _ = 1;
+    cin >> _;
+    while (_--) solve();
+    return 0;
+}

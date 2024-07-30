@@ -1,0 +1,50 @@
+#include <bits/stdc++.h>
+using namespace std;
+using Pii = pair<int,int>;
+using ll = unsigned long long;
+const int N = 100050, mod = 998244353, inf = 1e9;
+
+void solve(){
+    int n, m;
+    cin >> n >> m;
+    vector<vector<array<int,2>>> g(n+1);
+
+    while (m--){
+        int a, b, ra, rb;
+        cin >> a >> b;
+        ra = g[a].size(), rb = g[b].size();
+        g[a].push_back({b, rb});
+        g[b].push_back({a, ra});
+    }
+
+    vector <int> low(n+1), dfn(n+1), sz(n+1, 1);
+    int snap = 0;
+    ll ans = 0;
+    function<void(int,int)> tarjan = [&](int x, int rv){
+        low[x] = dfn[x] = ++ snap;
+        for (int i = 0; i < g[x].size(); ++ i){
+            auto [y, mark] = g[x][i];
+            if (!dfn[y]){
+                tarjan(y, mark);
+                low[x] = min(low[x], low[y]);
+                sz[x] += sz[y];
+                if (dfn[x] < low[y]){
+                    ll size = 1ll*sz[y]*(n-sz[y]);
+                    ans = max(ans, size);
+                }
+            } else if (i != rv) low[x] = min(low[x], dfn[y]);
+        }
+    };
+
+    tarjan(1, -1);
+    cout << (1ll*n*(n-1)/2 - ans) << "\n";
+}
+
+int main(){
+    ios::sync_with_stdio(false), cin.tie(nullptr), cout.tie(nullptr);
+    int _ = 1;
+    cin >> _;
+    while (_--)
+        solve();
+    return 0;
+}

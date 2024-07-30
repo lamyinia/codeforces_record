@@ -1,0 +1,22 @@
+#include <bits/stdc++.h>
+using namespace std;
+const int N = 2e5 + 9;
+
+int main(){
+    ios::sync_with_stdio(0), cin.tie(0), cout.tie(0);
+    int T;
+    cin >> T;
+    while (T--){
+        int n, pre, x;
+        cin >> n;
+        int res = 0;
+        for (int i = 1; i <= n; ++ i){
+            cin >> x;
+            if (i > 1) res += x - pre - 1; //统计空隙，空隙不能超过两个
+            pre = x;
+        }
+        if (res > 2) cout << "NO\n";
+        else cout << "YES\n";
+    }
+    return 0;
+}

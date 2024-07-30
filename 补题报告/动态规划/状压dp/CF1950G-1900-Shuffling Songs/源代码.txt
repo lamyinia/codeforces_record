@@ -1,0 +1,50 @@
+#include <bits/stdc++.h>
+using namespace std;
+const int N = 16;
+int f[N][1<<N], n;
+bool match[N][N];
+string str[N][2];
+
+bool check(int a, int b){
+    if (str[a][0] == str[b][0] || str[a][1] == str[b][1]) return true;
+    return false;
+}
+int height(int x){
+    int res = 0;
+    for (int i = 0; i < 16; ++ i)
+        if (!(x>>i&1)) return i;
+    return 16;
+}
+void solve(){
+    memset(match, 0, sizeof match), memset(f, 0, sizeof f);
+    cin >> n;
+    for (int i = 0; i < n; ++ i) cin >> str[i][0] >> str[i][1];
+    for (int i = 0; i < n; ++ i)
+        for (int j = 0; j < n; ++ j)
+            if (check(i, j)) match[i][j] = true;
+    for (int i = 0; i < n; ++ i) f[i][1<<i] = true;
+    int ans = 0;
+    for (int a = 0; a < 1<<n; ++ a)
+        for (int i = 0; i < n; ++ i)
+            if (f[i][a]){
+                ans = max(ans, __builtin_popcount(a));
+                int hei = height(a);  //找出第一个为0的位
+                for (int j = hei; j < n; ++ j)
+                    if (!(a>>j&1) && match[i][j])
+                        f[j][a|1<<j] = 1;
+            }
+  
+    cout << n - ans << "\n";  //总数-存在最大值 = 删除的最小值
+}
+
+int main(){
+#ifdef ONLINE_JUDGE
+    ios::sync_with_stdio(0), cin.tie(0), cout.tie(0);
+#else
+    freopen("in.txt", "rt", stdin), freopen("out.txt", "wt", stdout);
+#endif
+    int T = 1;
+    cin >> T;
+    while (T--) solve();
+    return 0;
+}

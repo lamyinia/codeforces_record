@@ -1,0 +1,45 @@
+#include <bits/stdc++.h>
+using namespace std;
+const int N = 50050, mod = 998244353;
+int g[N][25];
+int n, m;
+
+int powers(int a, int b, int p){
+    int res = 1;
+    while (b){
+        if (b&1) res = 1ll*res*a%p;
+        a = 1ll*a*a%p;
+        b >>= 1;
+    }
+    return res;
+}
+void solve(){
+    cin >> n >> m;
+    for (int i = 1; i <= n; ++ i)
+        for (int j = 1; j <= m; ++ j){
+            int x;
+            cin >> x;
+            ++ g[j][x];
+        }
+    
+    int deno = 1;
+    for (int i = 1; i <= n; ++ i)
+        deno = 1ll*deno*i%mod;
+    deno = powers(deno, mod-2, mod);
+    
+    int res = 0;
+    for (int i = 1; i <= m; ++ i){
+        int cnt = 0, sum = 1;
+        for (int j = n; j >= 1; -- j)
+            cnt += g[i][j+1], sum = 1ll*sum*cnt%mod, -- cnt; // 考虑第i个点在第j秒不被点亮的概率，第i个点不被选的排列组合
+        res = (res + 1ll*sum*deno%mod)%mod;
+    }
+    cout << (m-res + mod)%mod << "\n";
+}
+
+int main(){
+    ios::sync_with_stdio(0), cin.tie(0), cout.tie(0);
+    solve();
+    return 0;
+}
+#2024.4.26

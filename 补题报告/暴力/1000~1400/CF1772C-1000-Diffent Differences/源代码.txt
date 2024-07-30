@@ -1,0 +1,23 @@
+#include  <bits/stdc++.h>
+using namespace std;
+using ll = long long;
+const int INF = 1e18, mod = 998244353, N = 20;
+
+void solve(){
+    int k, n;
+    cin >> k >> n;
+    vector <int> ans(k+1);
+    for (int i = 1, last = 1; i <= k; last += i, ++ i){
+        ans[i] = min(last, n-k+i);
+    }
+    for (int i = 1; i <= k; ++ i) cout << ans[i] << "\n "[i < k];
+}
+
+int main(){
+    ios::sync_with_stdio(0), cin.tie(0), cout.tie(0);
+    int _ = 1;
+    cin >> _;
+    while (_--)
+        solve();
+    return 0;
+}

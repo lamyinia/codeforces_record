@@ -1,0 +1,36 @@
+#include <bits/stdc++.h>
+using namespace std;
+using ll = long long;
+const int N = 1500, inf = 1e9;
+/*
+	构造一个最长的以a为子串且b为其子序列的字符串。
+	答案是两者的长度减去b对a的最长公共子序列
+*/
+void solve() {
+    std::string a, b;
+    std::cin >> a >> b;
+    
+    int ans = b.size();
+    for (int i = 0; i < b.size(); i++) {
+        int k = i;
+        for (int j = 0; j < a.size(); j++) {
+            if (k < b.size() && a[j] == b[k]) {
+                k++;
+            }
+        }
+        ans = std::min(ans, i + int(b.size()) - k);
+    }
+    std::cout << ans + a.size() << "\n";
+}
+ 
+int main(){
+#ifdef ONLINE_JUDGE
+    ios::sync_with_stdio(0), cin.tie(0), cout.tie(0);
+#else
+    freopen("in.txt", "rt", stdin), freopen("out.txt", "wt", stdout);
+#endif
+    int _ = 1;
+    cin >> _;
+    while (_--) solve();
+    return 0;
+}

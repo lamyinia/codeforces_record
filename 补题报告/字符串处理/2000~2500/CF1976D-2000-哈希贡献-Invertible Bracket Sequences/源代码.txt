@@ -1,0 +1,38 @@
+
+#include <bits/stdc++.h>
+using namespace std;
+using ll = long long;
+const int N = 5050, mod = 998244353;
+
+void solve(){
+    string s;
+    cin >> s;
+    int n = s.size();
+    s = " " + s;
+    vector <int> pre(n+1), cnt(n+1), f(n+1);
+    for (int i = 1; i <= n; ++ i)
+        if (s[i] == '(') pre[i] = pre[i-1] + 1;
+        else pre[i] = pre[i-1]-1;
+    
+    ll res = 0;
+    f[0] = 1;
+    for (int i = 1; i < n; ++ i){
+        cout << pre[i] << " ";
+        res += f[pre[i]];
+        ++ f[pre[i]];
+        if (pre[i] > 0) f[(pre[i]-1)/2] = 0;
+    }
+    cout << "\n";
+}
+
+int main(){
+#ifdef ONLINE_JUDGE
+    ios::sync_with_stdio(0), cin.tie(0), cout.tie(0);
+#else
+    freopen("in.txt", "rt", stdin), freopen("out.txt", "wt", stdout);
+#endif
+    int _ = 1;
+    cin >> _;
+    while (_--) solve();
+    return 0;
+}

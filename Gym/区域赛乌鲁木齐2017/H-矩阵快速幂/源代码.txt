@@ -1,0 +1,75 @@
+import java.util.*;
+import java.math.*;
+public class Main {
+	static long MOD;
+	static class lenka
+	{
+		long a[][]=new long[20][20];
+		lenka()
+		{
+			for(int i=0;i<18;i++)
+			{
+				for(int j=0;j<18;j++)a[i][j]=0;
+			}
+		}
+	}
+	static lenka cla(lenka a,lenka b)
+	{
+	    lenka c=new lenka();
+	    for(int i=0;i<18;i++)
+	    {
+	        for(int j=0;j<18;j++)
+	        {
+	            for(int k=0;k<18;k++)
+	            {
+	                c.a[i][j]+=a.a[i][k]*b.a[k][j]%MOD;
+	                c.a[i][j]%=MOD;
+	            }
+	        }
+	    }
+	    return c;
+	}
+	static long POW(BigInteger n)
+	{
+	    lenka a=new lenka();
+	    lenka res=new lenka();
+	    for(int i=0;i<18;i++)res.a[i][i]=1;
+	    for(int i=0;i<9;i++)
+	    {
+	    	a.a[i][0]=1;
+	    	a.a[i][9]=i+1;
+	    }
+	    for(int i=1;i<9;i++)
+	    {
+	    	a.a[i-1][i]=1;
+	    	a.a[i+8][i+9]=1;
+	   	}
+	    for(int i=9;i<18;i++)a.a[i][9]=10;
+	    while(n.compareTo(BigInteger.ZERO)>0)
+	    {
+	        if(n.mod(new BigInteger("2")).compareTo(BigInteger.ONE)==0)res=cla(a,res);
+	        a=cla(a,a);
+	        n=n.divide(new BigInteger("2"));
+	    }
+	    long d[]={128,64,32,16,8,4,2,1,1,23817625,2165227,196833,17891,1625,147,13,1,0};
+	    long ans=0;
+	    for(int i=0;i<18;i++)
+	    {
+	    	ans+=(d[i]%MOD)*res.a[i][17]%MOD;
+	    	ans%=MOD;
+	    }
+	    return ans;
+	}
+	public static void main(String args[])
+	{
+		Scanner cin=new Scanner(System.in);
+		int T=cin.nextInt();
+		while((T--)>0)
+		{
+			BigInteger a=cin.nextBigInteger();
+			int b=cin.nextInt();
+			MOD=cin.nextLong();
+			System.out.println(POW(a.pow(b)));
+		}
+	}
+}

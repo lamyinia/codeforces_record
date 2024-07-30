@@ -1,0 +1,27 @@
+#include <bits/stdc++.h>
+using namespace std;
+using ll = long long;
+const int N = 1050, mod = 998244353, inf = 1e9;
+
+void solve(){
+    ll n;
+    cin >> n;
+    ll res = 0;
+    
+    while (n > 0){
+        if (n%79 == 0){
+            ++ res;
+            break;
+        }
+        n -= 77;
+    }
+
+    res += n/77/79;
+    cout << res << "\n";
+}
+
+int main(){
+    int _ = 1;
+    while (_--) solve();
+    return 0;
+}

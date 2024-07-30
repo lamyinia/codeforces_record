@@ -1,0 +1,41 @@
+#include <bits/stdc++.h>
+using namespace std;
+const int N = 200050, P = 131;
+using ull = unsigned long long;
+ull base[200050], hashs[N];
+int dic[N], tot, n;
+char str[200050];
+
+void divide(){
+    for (int i = 1; i <= n/i; ++ i)
+        if (n%i == 0)
+            if (n/i == i) dic[++ tot] = i;
+            else dic[++ tot] = i, dic[++ tot] = n/i;
+}
+bool check(int x){
+    return true;
+}
+void solve(){
+    cin >> n >> str+1;
+    tot = 0;
+    divide();
+    sort(dic+1, dic+1+tot);
+    hashs[0] = 1;
+    for (int i = 1; i <= n; ++ i) hashs[i] = hashs[i-1] * P;
+    int res = n;
+    for (int i = 1; i <= tot; ++ i)
+        if (check(dic[i])) res = min(res, n/i);
+    
+    cout << res << "\n";
+    return;
+}
+
+int main(){
+    ios::sync_with_stdio(0), cin.tie(0), cout.tie(0);
+    int T;
+    base[0] = 1;
+    for (int i = 0; i < N-1; ++ i) base[i] = P * base[i-1];
+    cin >> T;
+    while (T--) solve();
+    return 0;
+}

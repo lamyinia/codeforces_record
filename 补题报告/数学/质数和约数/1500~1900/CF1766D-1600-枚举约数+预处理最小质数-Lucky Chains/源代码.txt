@@ -1,0 +1,56 @@
+#include <bits/stdc++.h>
+using namespace std;
+using ll = long long;
+const int N = 1e7 + 9, inf = 2e9;
+int minp[N];
+bitset <N> vis;
+vector <int> primes;
+//欧拉筛法
+void euler(int n)
+{
+	vis[0] = vis[1] = true;
+	minp[1] = 1;
+	
+	for(int i = 2; i <= n; ++ i)
+	{
+		if(!vis[i])primes.push_back(i), minp[i] = i;
+		for(int j = 0;j < primes.size() && primes[j] <= n/i; ++ j)
+		{
+			vis[i * primes[j]] = true;
+			minp[i * primes[j]] = primes[j];
+			if(i % primes[j] == 0)break;
+		}
+	}
+}
+
+void solve()
+{
+	ll x, y;
+    cin >> x >> y;
+	if (y - x == 1)cout << -1 << "\n";
+	else
+	{
+		ll ans = inf;
+		y -= x;//此时y = y - x
+                //之所以是质因子，是因为x+k越小越好，质因子是最小的因子
+		while(y > 1)//枚举y的所有质因子，找出k使y能够整除x+k
+		{
+			ll p = minp[y];
+			ans = min(ans, ((-x) % p + p) % p);
+			while(y % p == 0)y /= p;
+		}
+		cout << ans << "\n";
+	}
+}
+int main(){
+#ifdef ONLINE_JUDGE
+    ios::sync_with_stdio(0), cin.tie(0), cout.tie(0);
+#else
+    freopen("in.txt", "rt", stdin), freopen("out.txt", "wt", stdout);
+#endif
+	euler(1e7);
+	int _;
+    cin >> _;
+	while (_ --) solve();
+    return 0;
+}

@@ -1,0 +1,58 @@
+#include <bits/stdc++.h>
+using namespace std;
+using Pii = pair<int,int>;
+using ll = unsigned long long;
+const int N = 30, mod = 1070777777, inf = 1e9;
+
+/*
+    给定一个长度为 n 的数字串。你需要在n−1 个空中选择 n−2 个空插入运算符 +或*, 求表达式的最小值。
+    f[i] 表示前i个数字构成的表达式的最小值，枚举哪个空不放运算符
+*/
+ll f[N], mul[N][N], nums[N];
+int n;
+ll calc(){
+    for (int i = 0; i <= 20; ++ i)
+            f[i] = 9e18;
+
+    f[0] = 0;
+    for (int i = 1; i < n; ++ i){
+        ll res = 1;
+        for (int j = i; j < n; ++ j){
+            res *= nums[j];
+            mul[i][j] = res;
+        }
+    }
+
+    for (int i = 1; i < n; ++ i){
+        for (int j = 1; j <= i; ++ j){
+            f[i] = min(f[i], f[j-1] + mul[j][i]);
+        }
+    }
+    return f[n-1];
+}
+void solve(){
+    string s;
+    cin >> n >> s;
+    s = " " + s;
+
+    ll res = 9e18;
+    for (int i = 1; i < n; ++ i){
+        int tot = 0;
+        for (int j = 1; j <= n; ++ j){
+            if (i == j) nums[++ tot] = (s[i]-'0')*10 + (s[i+1]-'0'), ++ j;
+            else nums[++ tot] = s[j]-'0';
+        }
+        res = min(res, calc());
+    }
+
+    cout << res << "\n";
+}
+
+int main(){
+    ios::sync_with_stdio(false), cin.tie(nullptr), cout.tie(nullptr);
+    int _ = 1;
+    cin >> _;
+    while (_--)
+        solve();
+    return 0;
+}

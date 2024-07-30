@@ -1,0 +1,42 @@
+#include <bits/stdc++.h>
+using namespace std;
+using Pii = pair<int,int>;
+using ll = long long;
+const int N = 1505, mod = 1e9 + 7, inf = 1e9;
+/*
+    单调队列优化dp：
+        f[i] 表示前i个数字是否构成合法组合
+        f[i] |= f[j-1] {|j <= i-k+1, nums[i]-nums[j] <= d|}
+*/
+void solve(){
+    int n, k, d;
+    cin >> n >> k >> d;
+
+    vector <int> nums(n+1), f(n+1);
+    for (int i = 1; i <= n; ++ i) cin >> nums[i];
+    sort(nums.begin()+1, nums.end());
+    f[0] = true;
+    deque <int> Q;
+    f[0] = true;
+
+    for (int i = 1; i <= n; ++ i){
+        while (!Q.empty() && nums[i]-nums[Q.front()] > d) Q.pop_front();
+        if (k==1 || !Q.empty() && i-Q.front()+1 >= k) f[i] = true;
+        if (f[i-1]) Q.push_back(i);
+    }
+
+    if (f[n]) cout << "YES\n";
+    else cout << "NO\n";
+}
+
+int main(){
+#ifdef ONLINE_JUDGE
+    ios::sync_with_stdio(false), cin.tie(nullptr), cout.tie(nullptr);
+#else
+    freopen("in.txt", "rt", stdin), freopen("out.txt", "wt", stdout);
+#endif
+    int _ = 1;
+    while (_--)
+        solve();
+    return 0;
+}

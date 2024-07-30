@@ -1,0 +1,59 @@
+#include <bits/stdc++.h>
+using namespace std;
+using ll = long long;
+const int INF = 1e9, mod = 998244353, N = 100060;
+struct dot {
+    ll x, y;
+};
+typedef dot Vector;
+Vector operator - (dot a, dot b){
+    return {a.x-b.x, a.y-b.y};
+}
+ll cross(Vector a, Vector b){
+    return a.x*b.y - a.y*b.x;
+}
+ll distance(dot a, dot b){
+    return (a.x-b.x)*(a.x-b.x)+(a.y-b.y)*(a.y-b.y);
+}
+bool onseg(dot a, dot b, dot c){
+    return !cross(b-a, c-a);
+}
+
+void solve(){
+    int n;
+    cin >> n;
+    vector <dot> dots;
+    vector <vector<ll>> f(n+1, vector<ll>(n+1, 0));
+    for (int i = 1, x, y; i <= n; ++ i)
+        cin >> x >> y, dots.push_back({x, y});
+
+    for (int i = 0; i < n; ++ i){
+        int j = (i+1)%n;
+        f[i][j] = distance(dots[i], dots[j]);
+    }
+    for (int len = 3; len <= n; ++ len)
+        for (int l = 0; l < n; ++ l){
+            int r = (l+len-1)%n;
+            f[l][r] = max({f[l][r], f[(l+1)%n][r], f[l][(r-1+n)%n], distance(dots[l], dots[r])});
+        }
+    ll res = 9e18;
+    for (int l = 0; l < n; ++ l){
+        int lst = (l-1+n)%n, nxt = (l+1)%n;
+        for (int r = 0; r < n; ++ r){
+            if (r == lst || r == nxt || r == l) continue;
+            if (onseg(dots[r], dots[nxt], dots[l])) continue;
+            if (onseg(dots[l], dots[lst], dots[r])) continue;
+            res = min(res, f[l][r]+f[r][l]);
+        }
+    }
+    cout << res << "\n";
+}
+
+int main(){
+	ios::sync_with_stdio(0), cin.tie(0), cout.tie(0);
+    int _;
+    cin >> _;
+    while (_--)
+	    solve();
+	return 0;
+}

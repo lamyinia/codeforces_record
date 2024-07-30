@@ -1,0 +1,55 @@
+#include <bits/stdc++.h>
+using namespace std;
+int n,m,k,tri[100],cnt;
+bool a[1005][1005];
+pair<int,int>ans[1000005];
+void Erase(int x,int y,int d)
+{
+    for(int i=1;i<=n;++i)
+        for(int j=1;j<=m;++j)
+            if(abs(i-x)+abs(j-y)<d)a[i][j]=0;
+}
+void solve()
+{
+    bool fl=0;
+    scanf("%d%d%d",&n,&m,&k);
+    if(n<m)fl=1,swap(n,m);
+    for(int i=1;i<=n;++i)for(int j=1;j<=m;++j)a[i][j]=0;
+    puts("YES");
+    cnt=0;
+    while((cnt+1)*(cnt+2)/2<=2*m)++cnt,tri[cnt]=cnt*(cnt+1)/2;
+    if(k<=(n-2)*m)
+    {
+        int r= 0;
+        if (m) k/m;
+        for(int i=1;i<=r;++i)for(int j=1;j<=m;++j)a[i][j]=1;
+        for(int j=1;j<=k-r*m;++j)a[r+3][j]=1;
+    }
+    else
+    {
+        for(int i=1;i<=n;++i)for(int j=1;j<=m;++j)a[i][j]=1;
+        bool fd=0;
+        for(int i=0;i<=cnt&&!fd;++i)
+            for(int j=0;j<=cnt&&!fd;++j)
+                for(int p=0;p<=cnt&&!fd;++p)
+                    if(tri[i]+tri[j]+tri[p]==n*m-k&&i+j<=m&&i+p<=n)
+                    {
+                        Erase(1,1,i);
+                        Erase(1,m,j);
+                        Erase(n,1,p);
+                        fd=1;
+                        break;
+                    }
+    }
+    for(int i=1;i<=n;++i)
+        for(int j=1;j<=m;++j)
+            if(a[i][j])
+            {
+                if(fl)printf("%d %d\n",j,i);
+                else printf("%d %d\n",i,j);
+            }
+}
+int main(){
+    int _;scanf("%d",&_);
+    while(_--)solve();
+}

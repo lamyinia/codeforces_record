@@ -1,0 +1,52 @@
+/*
+给你一个长度为n的序列a，定义f(a)为序列a中下标i等于值a[i]的数量。
+要求删除序列a的若干个元素最大化 f(a)，输出f(a)。
+*/
+
+#include <bits/stdc++.h>
+using namespace std;
+using ll = long long;
+const int N = 200050, p = 998244353, INF = 2e9;
+
+bool cmp(array<int,2> a, array<int,2> b){
+    return a[0] == b[0] ? a[1] < b[1] : a[0] < b[0];  //优先按照第一维排序
+}
+void solve(){
+    int n;
+    cin >> n;
+    vector <array<int,2>> a;
+    for (int i = 1; i <= n; ++ i){
+        array <int,2> tmp;
+        cin >> tmp[1];  //第二维是x[i]
+        if (i-tmp[1] >= 0){
+            tmp[0] = i-tmp[1];  //第一维是i-x[i]
+            a.push_back(tmp);
+        }
+    }
+    sort(a.begin(), a.end(), cmp);  
+	//第一维非严格升序，表示向前移动的下标数量前面的大于后面的
+    vector <int> stk(N);
+    int top = -1;
+    
+    for (int i = 0; i < a.size(); ++ i){
+        if (~top && a[i][1] <= stk[top]){  //第二维严格升序
+            int pos = lower_bound(stk.begin(), stk.begin()+1+top, a[i][1])-stk.begin();
+            stk[pos] = a[i][1];
+        }
+        else stk[++ top] = a[i][1];
+    }
+    cout << top+1 << "\n";
+}
+ 
+int main(){
+#ifdef ONLINE_JUDGE
+    ios::sync_with_stdio(0), cin.tie(0), cout.tie(0);
+#else
+    freopen("in.txt", "rt", stdin), freopen("out.txt", "wt", stdout);
+#endif
+    int _ = 1;
+    while (_--) solve();
+    return 0;
+}
+
+#2024.5.4

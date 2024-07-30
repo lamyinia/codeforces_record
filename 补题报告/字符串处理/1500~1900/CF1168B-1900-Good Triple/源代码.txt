@@ -1,0 +1,38 @@
+#include <bits/stdc++.h>
+using namespace std;
+using ll = long long;
+const int N = 5050, mod = 998244353;
+
+void solve(){
+    string s;
+    cin >> s;
+    int n = s.size();
+    s = " " + s;
+    ll res = 0;
+    int p = n+1;
+    for (int l = n; l; -- l){
+        for (int half = 1; l+2*half <= n; ++ half)
+            if (s[l] == s[l+half] && s[l+half] == s[l+2*half]){
+                p = min(p, l+2*half);
+                break;
+            }
+        res += n-p+1;
+    }
+    cout << res << "\n";
+}  
+
+int main(){
+#ifdef ONLINE_JUDGE
+    ios::sync_with_stdio(0), cin.tie(0), cout.tie(0);
+#else
+    freopen("in.txt", "rt", stdin), freopen("out.txt", "wt", stdout);
+#endif
+    int _ = 1;
+    while (_--) solve();
+    return 0;
+}
+/*
+所有长度大于 9 的字符串都是合法的.
+如果有两个满足要求的 x 和 k 那么 k 小的那个能产生的区间一定更多。所以我们从后往前枚举左端点，再枚举 𝑘，如果满足要求，记录最小的右端点。因为此时我们最小右端点，所以对于当前的左端点来说所能贡献的区间就是从右端点开始到最后一个字符的字符个数。
+*/
+#2024.5.28
