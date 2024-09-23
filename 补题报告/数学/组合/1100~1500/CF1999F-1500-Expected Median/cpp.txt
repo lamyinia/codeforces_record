@@ -1,0 +1,49 @@
+#include <bits/stdc++.h>
+using namespace std;
+using ll = long long;
+const int mod = 1e9+7;
+int pows(ll a, int b){
+    ll res = 1;
+    while (b){
+        if (b&1) res = res*a%mod;
+        a = a*a%mod;
+        b >>= 1;
+    }
+    return res;
+};
+
+void solve(){
+    int n, k;
+    cin >> n >> k;
+    vector <int> nums(n);
+    for (auto &x : nums) cin >> x;
+    int sum = 0;
+    for (int i = 0; i < n; ++ i) sum += nums[i];
+
+    vector <int> fact(n+1,1);
+    for (int i = 1; i <= n; ++ i) fact[i] = 1ll*fact[i-1]*i%mod;
+
+    auto C = [&](int n, int m)->int{
+        if (n < m) return 0;
+        return 1ll*fact[n]*pows(fact[m], mod-2)%mod * pows(fact[n-m], mod-2)%mod;
+    };
+
+    int res = 0;
+    const int v = (k+1)/2;
+    for (int i = v; i <= min(k, sum); ++ i)
+        (res += 1ll*C(sum, i)*C(n-sum, k-i)%mod) %= mod;
+    cout << res << "\n";
+}
+
+int main(){
+#ifdef ONLINE_JUDGE
+    ios::sync_with_stdio(0), cin.tie(0), cout.tie(0);
+#else
+    freopen("in.txt", "rt", stdin), freopen("out.txt", "wt", stdout);
+#endif
+    int _ = 1;
+    cin >> _;
+    while (_ --)
+        solve();
+    return 0;
+}

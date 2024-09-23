@@ -1,0 +1,39 @@
+#include <bits/stdc++.h>
+using namespace std;
+using Pii = pair<int,int>;
+using ll = long long;
+const int N = 2e5, mod = 998244353, inf = 1e9;
+int nums[200050], Pre[200050];
+
+void solve(){
+    auto ops = [&](int l, int r)->int{
+        cout << "? " << l << " " << r << "\n" << flush;
+        int x;
+        cin >> x;
+        return x;
+    };
+
+    int l = 1, r = 999;
+    while (l < r){
+        int ml = l + (r-l)/3, mr = r - (r-l)/3;
+        int sum = ops(ml, mr);
+        if (sum == ml * mr) l = mr+1;
+        else if (sum == ml * (mr+1)) l = ml+1, r = mr;
+        else r = ml;
+    }
+
+    cout << "! " << l << "\n" << flush;
+}
+
+int main(){
+#ifdef ONLINE_JUDGE
+    ios::sync_with_stdio(false), cin.tie(nullptr), cout.tie(nullptr);
+#else
+    freopen("in.txt", "rt", stdin), freopen("out.txt", "wt", stdout);
+#endif
+    int _ = 1;
+    cin >> _;
+    while (_--)
+        solve();
+    return 0;
+}

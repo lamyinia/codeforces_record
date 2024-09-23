@@ -1,0 +1,58 @@
+// LUOGU_RID: 166957696
+#include <bits/stdc++.h>
+using namespace std;
+using Pii = pair<int,int>;
+using ll = long long;
+const int N = 500, mod = 1e9 + 7, inf = 1e9;
+/*
+    关键在于保证连击数不浪费
+    把必杀技留给大的怪兽
+*/
+void solve(){
+    int n;
+    cin >> n;
+    vector <int> nums(n+1);
+    for (int i = 1; i <= n; ++ i) cin >> nums[i];
+    sort(nums.begin()+1, nums.end());
+    ll res = 0;
+    {
+        int i = 1, j = n, sum = 0;
+        while (i < j){
+            if (sum+nums[i] < nums[j]){
+                sum += nums[i], res += nums[i];
+                ++ i;
+            } else {
+                int det = nums[j]-sum;
+                nums[i] -= det, nums[j] = 0;
+                // 只需再攻击det次，就可以将最大的怪物群斩杀
+                res += det + 1;
+                -- j;
+                sum = 0;
+            }
+        }
+        if (nums[i]){
+            /*
+                转化为大于某一个数字，只需大于等于这个数字下取整+1
+                转化为大于等于某一个数字，只需大于等于这个数字上取整
+                sum + x > nums_i - x
+            */
+            int x = (nums[i]-sum+1) / 2;
+            nums[i] -= x, res += x;
+            if (nums[i]) ++ res;
+        }
+    }
+    cout << res << "\n";
+}
+
+int main(){
+#ifdef ONLINE_JUDGE
+    ios::sync_with_stdio(false), cin.tie(nullptr), cout.tie(nullptr);
+#else
+    freopen("in.txt", "rt", stdin), freopen("out.txt", "wt", stdout);
+#endif
+    int _ = 1;
+    cin >> _;
+    while (_--)
+        solve();
+    return 0;
+}

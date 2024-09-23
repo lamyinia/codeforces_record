@@ -18,7 +18,7 @@ bool dfs(int u, ll dis, ll val){
     for (auto &it : g[u]){
         ll ed = it.ed, len = it.len;
         if (val < dis+len) continue;
-        if (dt[ed]+w[ed] > dis+len)  //贪心时加回点权
+        if (dt[ed]+w[ed] > dis+len)  //贪心时撤销点权
            if (dfs(ed, dis+len, val)) return true;
     }
     return false;

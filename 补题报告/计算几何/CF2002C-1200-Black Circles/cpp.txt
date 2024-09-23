@@ -1,0 +1,40 @@
+#include <bits/stdc++.h>
+using namespace std;
+using Pii = pair<int,int>;
+using ll = long long;
+const int N = 3e5+11, mod = 1e9+7, inf = 1e9;
+
+void solve(){
+    int n;
+    cin >> n;
+
+    auto Dis = [&](ll a, ll b)->ll{
+        return a*a + b*b;
+    };
+
+    vector <ll> xs(n), ys(n);
+    ll sx, sy, tx, ty;
+
+    for (int i = 0; i < n; ++ i) cin >> xs[i] >> ys[i];
+    cin >> sx >> sy >> tx >> ty;
+
+    bool jg = 1;
+    ll dis = Dis(tx-sx, ty-sy);
+    for (int i = 0; i < n; ++ i){
+        if (Dis(tx-xs[i], ty-ys[i]) <= dis){
+            jg = 0;
+            break;
+        }
+    }
+
+    cout << (jg ? "YES\n" : "NO\n");
+}
+
+int main(){
+    ios::sync_with_stdio(false), cin.tie(nullptr), cout.tie(nullptr);
+    int _ = 1;
+    cin >> _;
+    while (_--)
+        solve();
+    return 0;
+}

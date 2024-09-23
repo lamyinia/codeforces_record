@@ -1,0 +1,60 @@
+#include <bits/stdc++.h>
+using namespace std;
+using Pii = pair<int,int>;
+using ll = long long;
+const int N = 3e5+11, mod = 1e9+7, inf = 1e9;
+/*
+    f[i][j] 表示结点i在第j轮被选择时，以结点i为根的子树的贡献之和
+    Pre[i][j] 表示结点i在前j轮被选择 里 最小贡献的那一轮选择
+    Suf[i][j] 表示结点i在后j轮被选择 里 最小贡献的那一轮选择
+*/
+
+
+void solve(){
+    int n;
+    cin >> n;
+    int fMax = log(n)+10;
+    vector <vector<int>> g(n+1);
+    vector <vector<ll>> f(n+1, vector<ll>(fMax+2,0)), Pre(n+1, vector<ll>(fMax+2,0)), Suf(n+1, vector<ll>(fMax+2,0));
+    vector <ll> W(n+1);
+    for (int i = 1; i <= n; ++ i) cin >> W[i];
+    for (int i = 0, u,v; i < n-1; ++ i){
+        cin >> u >> v;
+        g[u].push_back(v), g[v].push_back(u);
+    }
+
+    function<void(int,int)> dfs = [&](int x, int fa){
+        for (int i = 1; i <= fMax; ++ i)
+            f[x][i] = W[x]*i;
+        for (auto &y : g[x]){
+            if (y == fa) continue;
+            dfs(y, x);
+            for (int i = 1; i <= fMax; ++ i){
+                f[x][i] += min(Pre[y][i-1], Suf[y][i+1]);
+            }
+        }
+        Pre[x][0] = Suf[x][fMax+1] = 9e18;
+        for (int i = 1; i <= fMax; ++ i)
+            Pre[x][i] = min(Pre[x][i-1], f[x][i]);
+        for (int i = fMax; i >= 1; -- i)
+            Suf[x][i] = min(Suf[x][i+1], f[x][i]);
+    };
+
+    dfs(1, -1);
+    ll res = 9e18;
+    for (int i = 1; i <= fMax; ++ i) res = min(res, f[1][i]);
+    cout << res << "\n";
+}
+
+int main(){
+#ifdef ONLINE_JUDGE
+    ios::sync_with_stdio(false), cin.tie(nullptr), cout.tie(nullptr);
+#else
+    freopen("in.txt", "rt", stdin), freopen("out.txt", "wt", stdout);
+#endif
+    int _ = 1;
+    cin >> _;
+    while (_--)
+        solve();
+    return 0;
+}

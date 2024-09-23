@@ -1,0 +1,71 @@
+// Problem: F. Bulbo
+// Contest: Codeforces - Bubble Cup 8 - Finals [Online Mirror]
+// URL: https://codeforces.com/problemset/problem/575/F
+// Memory Limit: 256 MB
+// Time Limit: 1000 ms
+// 
+// Powered by CP Editor (https://cpeditor.org)
+
+#include <bits/stdc++.h>
+#define pb emplace_back
+#define fst first
+#define scd second
+#define mkp make_pair
+#define mems(a, x) memset((a), (x), sizeof(a))
+
+using namespace std;
+typedef long long ll;
+typedef double db;
+typedef unsigned long long ull;
+typedef long double ldb;
+typedef pair<ll, ll> pii;
+
+const int maxn = 10050;
+
+ll n, m, a[maxn], b[maxn], lsh[maxn], tot, f[2][maxn], g[maxn], h[maxn];
+
+void solve() {
+	scanf("%lld%lld", &n, &m);
+	lsh[++tot] = m;
+	for (int i = 1; i <= n; ++i) {
+		scanf("%lld%lld", &a[i], &b[i]);
+		lsh[++tot] = a[i];
+		lsh[++tot] = b[i];
+	}
+	sort(lsh + 1, lsh + tot + 1);
+	tot = unique(lsh + 1, lsh + tot + 1) - lsh - 1;
+	m = lower_bound(lsh + 1, lsh + tot + 1, m) - lsh;
+	for (int i = 1; i <= n; ++i) {
+		a[i] = lower_bound(lsh + 1, lsh + tot + 1, a[i]) - lsh;
+		b[i] = lower_bound(lsh + 1, lsh + tot + 1, b[i]) - lsh;
+	}
+	mems(f, 0x3f);
+	f[0][m] = 0;
+	for (int i = 1, o = 1; i <= n; ++i, o ^= 1) {
+		mems(f[o], 0x3f);
+		g[0] = h[tot + 1] = 1e18;
+		for (int j = 1; j <= tot; ++j) {
+			g[j] = min(g[j - 1], f[o ^ 1][j] - lsh[j]);
+		}
+		for (int j = tot; j; --j) {
+			h[j] = min(h[j + 1], f[o ^ 1][j] + lsh[j]);
+		}
+		for (int j = 1; j <= tot; ++j) {
+			f[o][j] = min(g[j] + lsh[j], h[j] - lsh[j]) + (j < a[i] ? lsh[a[i]] - lsh[j] : (j > b[i] ? lsh[j] - lsh[b[i]] : 0));
+		}
+	}
+	ll ans = 1e18;
+	for (int i = 1; i <= tot; ++i) {
+		ans = min(ans, f[n & 1][i]);
+	}
+	printf("%lld\n", ans);
+}
+
+int main() {
+	int T = 1;
+	// scanf("%d", &T);
+	while (T--) {
+		solve();
+	}
+	return 0;
+}

@@ -1,0 +1,55 @@
+import sys
+
+def main():
+    n = int(input())
+    a, b = input(), input()
+    a, b = list(a), list(b)
+    f0, f1 = 0, 0
+
+    for i in range(n):
+        if a[i] == b[i]: f0 = 1
+        else: f1 = 1
+
+    if f0 and f1:
+        print("NO")
+        return
+
+    ans = []
+    if f1:
+        for i in range(n):
+            a[i] = '0' if a[i] == '1' else '1'
+        ans.append((1, n))
+
+    Pos = []
+    for i in range(n):
+        if a[i] == '1':
+            Pos.append(i)
+
+    while len(Pos) > 1:
+        x = Pos.pop()+1
+        ans.append((x, x))
+        x = Pos.pop()+1
+        ans.append((x, x))
+
+    if len(Pos) > 0:
+        x = Pos.pop()+1
+        if x > 1:
+            ans.append((x-1, x-1))
+            ans.append((x-1, x))
+        else:
+            ans.append((x+1, x+1))
+            ans.append((x, x+1))
+
+    print("Yes")
+    print(len(ans))
+    for x, y in ans:
+        print(x, y)
+
+
+if __name__ == '__main__':
+    input = lambda: sys.stdin.readline().strip()
+    _ = 1
+    _ = int(input())
+    while _ != 0:
+        _ -= 1
+        main()

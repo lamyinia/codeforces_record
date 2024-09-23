@@ -1,0 +1,32 @@
+import sys
+
+def main():
+    n, k = map(int, input().split())
+    nums = list(map(int, input().split()))
+
+    if nums[0] == nums[n-1]:
+        print("YES" if nums.count(nums[0]) >= k else "NO")
+        return
+    i, j = 0, n-1
+    flg = 1
+    a, b, c = nums[0], nums[n-1], k-1
+    while c and i+1 < n-1:
+        i += 1
+        if nums[i] == a:
+            c -= 1
+    if c: flg = 0
+    c = k-1
+    while c and j-1 > 0:
+        j -= 1
+        if nums[j] == b:
+            c -= 1
+    if c: flg = 0
+    print("YES" if i < j and flg else "NO")
+
+if __name__ == '__main__':
+    input = lambda: sys.stdin.readline().strip()
+    _ = 1
+    _ = int(input())
+    while _ != 0:
+        _ -= 1
+        main()

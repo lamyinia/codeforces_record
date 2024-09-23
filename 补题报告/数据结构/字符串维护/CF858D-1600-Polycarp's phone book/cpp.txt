@@ -1,0 +1,47 @@
+#include <bits/stdc++.h>
+using namespace std;
+const double eps = 1e-8, inf = 1e9, Pi = acos(-1.0);
+
+void solve(){
+    int n;
+    cin >> n;
+    vector <string> s(n);
+    map <string, int> mps;
+    for (auto &it : s){
+        cin >> it;
+        assert(it.size() == 9);
+        set <string> st;
+        for (int i = 0; i < 9; ++ i){
+            for (int j = 1; j <= 9-i; ++ j){
+                st.insert(it.substr(i, j));
+            }
+        }
+        for (auto &chs : st){
+            ++ mps[chs];
+        }
+    }
+
+    for (auto &it : s){
+        bool jg = 1;
+        for (int len = 1; len <= 9 && jg; ++ len){
+            for (int i = 0; i+len-1 < 9 && jg; ++ i){
+                if (mps[it.substr(i, len)] == 1){
+                    cout << it.substr(i, len) << "\n";
+                    jg = 0;
+                }
+            }
+        }
+        assert(jg == 0);
+    }
+}
+
+int main(){
+#ifdef ONLINE_JUDGE
+    ios::sync_with_stdio(0), cin.tie(0), cout.tie(0);
+#else
+    freopen("in.txt", "rt", stdin), freopen("out.txt", "wt", stdout);
+#endif
+    int _ = 1;
+    while (_--) solve();
+    return 0;
+}

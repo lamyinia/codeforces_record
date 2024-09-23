@@ -1,0 +1,97 @@
+#include <bits/stdc++.h>
+using namespace std;
+struct Node {
+    long long dis, u, f;
+    bool operator < (const Node &t) const{
+        return dis > t.dis;
+    }
+};
+struct edges {
+    int to, len;
+};
+
+void solve(){
+    int n, m, h;
+    cin >> n >> m >> h;
+
+    vector <vector<edges>> g(n+1);
+    vector <array<long long, 2>> F1(n+1), F2(n+1);
+    for (int i = 1; i <= n; ++ i) F1[i][0] = F1[i][1] = F2[i][0] = F2[i][1] = 1e18;
+    vector <int> horse(n+1);
+
+    for (int i = 0, x; i < h; ++ i){
+        cin >> x;
+        horse[x] = 1;
+    }
+    for (int i = 0, a,b,c; i < m; ++ i){
+        cin >> a >> b >> c;
+        g[a].push_back({b, c}), g[b].push_back({a, c});
+    }
+
+    priority_queue <Node> pq;
+    pq.push({0, 1, 0}), F1[1][0] = 0;
+    if (horse[1]) pq.push({0, 1, 1}), F1[1][1] = 0;
+    while (!pq.empty()){
+        auto t = pq.top();
+        pq.pop();
+        int u = t.u;
+        if (!t.f && t.dis > F1[u][0] || t.f && t.dis > F1[u][1]) continue;
+        for (auto &it : g[u]){
+            long long dis = t.dis + (t.f ? it.len/2 : it.len);
+            long long w = (t.f ? it.len/2 : it.len);
+            if (t.f){
+                if (F1[it.to][1] > dis){
+                    F1[it.to][1] = dis;
+                    pq.push({dis, it.to, 1});
+                }
+            } else if (F1[it.to][0] > dis){
+                F1[it.to][0] = dis;
+                pq.push({F1[u][0]+w, it.to, horse[it.to]});
+            }
+        }
+    }
+    while (!pq.empty()) pq.pop();
+    pq.push({0, n, 0}), F2[n][0] = 0;
+    if (horse[n]) pq.push({0, n, 1}), F2[n][1] = 0;
+    while (!pq.empty()){
+        auto t = pq.top();
+        pq.pop();
+        int u = t.u;
+        if (!t.f && t.dis > F2[u][0] || t.f && t.dis > F2[u][1]) continue;
+        for (auto &it : g[u]){
+            long long dis = t.dis + (t.f ? it.len/2 : it.len);
+            long long w = (t.f ? it.len/2 : it.len);
+            if (t.f){
+                if (F2[it.to][1] > dis){
+                    F2[it.to][1] = dis;
+                    pq.push({dis, it.to, 1});
+                }
+            } else if (F2[it.to][0] > dis){
+                F2[it.to][0] = dis;
+                pq.push({F2[u][0]+w, it.to, horse[it.to]});
+            }
+        }
+    }
+    long long res = 1e18;
+    for (int i = 1; i <= n; ++ i){
+        for (int j = 0; j < 2; ++ j){
+            for (int k = 0; k < 2; ++ k){
+                res = min(res, max(F1[i][j], F2[i][k]));
+            }
+        }
+    }
+
+    cout << (res > 1e15 ? -1 : res) << "\n";
+}
+ 
+int main(){
+#ifdef ONLINE_JUDGE
+    ios::sync_with_stdio(0), cin.tie(0), cout.tie(0);
+#else
+    freopen("in.txt", "rt", stdin), freopen("out.txt", "wt", stdout);
+#endif
+    int _ = 1;
+    cin >> _;
+    while (_--) solve();
+    return 0;
+}

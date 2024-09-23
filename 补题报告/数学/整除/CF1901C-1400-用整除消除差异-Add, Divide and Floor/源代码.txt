@@ -1,0 +1,45 @@
+#include <bits/stdc++.h>
+using namespace std;
+using Pii = pair<int,int>;
+using ll = long long;
+const int N = 4e5+10, mod = 1e9 + 7, inf = 1e9;
+/*
+    让所有数字相等，要消除差异
+    只和最大值和最小值有关
+*/
+void solve(){
+    int n;
+    cin >> n;
+    vector <int> nums(n);
+    for (int i = 0; i < n; ++ i) cin >> nums[i];
+    auto it = minmax_element(nums.begin(), nums.end());
+    int mins = *it.first, maxv = *it.second;
+    vector <int> ans;
+    while (mins != maxv){
+        if (mins%2==1 && maxv%2==0){
+            ans.push_back(1);
+            mins = (mins+1)/2, maxv = (maxv+1)/2;
+            continue;
+        }
+        mins = mins/2, maxv = maxv/2;
+        ans.push_back(0);
+    }
+    cout << ans.size() << "\n";
+    if (ans.size() && ans.size() <= n){
+        for (auto &x : ans) cout << x << " ";
+        cout << "\n";
+    }
+}
+
+int main(){
+#ifdef ONLINE_JUDGE
+    ios::sync_with_stdio(false), cin.tie(nullptr), cout.tie(nullptr);
+#else
+    freopen("in.txt", "rt", stdin), freopen("out.txt", "wt", stdout);
+#endif
+    int _ = 1;
+    cin >> _;
+    while (_--)
+        solve();
+    return 0;
+}

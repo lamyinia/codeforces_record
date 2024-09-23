@@ -1,0 +1,27 @@
+import sys
+from math import inf
+
+def main():
+    n = int(input())
+    ans = [0 for _ in range(n)]
+    vis = [0 for _ in range(n)]
+    y = 1
+    while y*y < n-1:
+        y += 1
+
+    for i in range(n-1, -1, -1):
+        while y*y-i > n-1 or vis[y*y-i]:
+            y -= 1
+        ans[i] = y*y - i
+        vis[y*y-i] = 1
+
+    print(*ans)
+
+
+if __name__ == '__main__':
+    input = lambda: sys.stdin.readline().strip()
+    _ = 1
+    _ = int(input())
+    while _ != 0:
+        _ -= 1
+        main()

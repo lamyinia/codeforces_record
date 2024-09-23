@@ -1,0 +1,38 @@
+#include <bits/stdc++.h>
+using namespace std;
+using Pii = pair<int,int>;
+using ll = long long;
+const int N = 3e5+11, mod = 1e9+7, inf = 1e9;
+
+void solve(){
+    int n;
+    cin >> n;
+    vector <int> nums(n);
+    for (auto &x : nums) cin >> x;
+
+    int cur = nums[0];
+    vector <int> ans = {cur};
+    for (int i = 1; i < n; ++ i){
+        if (nums[i] && cur-nums[i] >= 0){
+            cout << -1 << "\n";
+            return;
+        }
+        cur += nums[i];
+        ans.push_back(cur);
+    }
+    for (auto &x : ans) cout << x << " ";
+    cout << "\n";
+}
+
+int main(){
+#ifdef ONLINE_JUDGE
+    ios::sync_with_stdio(false), cin.tie(nullptr), cout.tie(nullptr);
+#else
+    freopen("in.txt", "rt", stdin), freopen("out.txt", "wt", stdout);
+#endif
+    int _ = 1;
+    cin >> _;
+    while (_--)
+        solve();
+    return 0;
+}

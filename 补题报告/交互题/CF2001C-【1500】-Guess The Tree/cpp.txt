@@ -1,0 +1,53 @@
+#include <bits/stdc++.h>
+using namespace std;
+using Pii = pair<int,int>;
+using ll = long long;
+const int N = 3e5+11, mod = 1e9+7, inf = 1e9;
+
+void solve(){
+    int n;
+    cin >> n;
+    vector <vector<int>> gs(n+1), g(n+1);
+    auto query = [&](int x, int y)->int{
+        cout << "? " << x << " " << y << "\n" << flush;
+        int res;
+        cin >> res;
+        return res;
+    };
+
+    for (int i = 2; i <= n; ++ i){
+        int x = query(1, i);
+        if (x == 1) g[1].push_back(i);
+        else gs[x].push_back(i);
+    }
+
+    function<void(int)> dfs = [&](int x){
+        for (auto &y : gs[x]){
+            int p = query(x, y);
+            if (p == x) g[x].push_back(y);
+            else gs[p].push_back(y);
+        }
+        for (auto &y: g[x]){
+            dfs(y);
+        }
+    };
+
+    for (auto &x : g[1]) {
+        dfs(x);
+    }
+
+    cout << "! ";
+    for (int i = 1; i <= n; ++ i){
+        for (auto &x : g[i]) cout << i << " " << x << " ";
+    }
+    cout << "\n" << flush;
+}
+
+int main(){
+    ios::sync_with_stdio(false), cin.tie(nullptr), cout.tie(nullptr);
+    int _ = 1;
+    cin >> _;
+    while (_--)
+        solve();
+    return 0;
+}

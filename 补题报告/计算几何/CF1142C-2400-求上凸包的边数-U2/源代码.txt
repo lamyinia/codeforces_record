@@ -1,0 +1,55 @@
+#include <bits/stdc++.h>
+using namespace std;
+using ll = long long;
+const int INF = 1e9, mod = 998244353, N = 100060;
+struct dot{
+    ll x, y;
+};
+typedef dot Vector;
+dot operator - (dot a, dot b){
+    return {a.x-b.x, a.y-b.y};
+}
+ll cross(Vector a, Vector b){
+    return a.x*b.y - a.y*b.x;
+}
+bool operator == (dot a, dot b){
+    return a.x==b.x && a.y==b.y;
+}
+bool cmp (dot a, dot b){
+    return a.x == b.x ? a.y < b.y : a.x < b.x;
+}
+vector <dot> convex(vector <dot> &dots){
+    sort(dots.begin(), dots.end(), cmp);
+    int n = dots.size(), top = -1;
+    vector <dot> ans(n+1);
+    int j = 0;
+    while (j < n-1 && dots[j].x == dots[j+1].x) ++ j;
+    for (int i = j; i < n; ++ i){
+        while (top >= 1 && cross(ans[top]-ans[top-1], dots[i]-ans[top]) >= 0) -- top;
+        ans[++ top] = dots[i];
+    }
+    ans.erase(ans.begin()+top+1, ans.end());
+    return ans;
+}
+
+void solve(){
+    int n;
+    cin >> n;
+    vector <dot> dots;
+    for (int i = 0; i < n; ++ i){
+        ll x, y;
+        cin >> x >> y;
+        y -= x*x;
+        dots.push_back({x, y});
+    }
+    vector <dot> hull = convex(dots);
+    cout << hull.size()-1 << "\n";
+}
+
+int main(){
+	ios::sync_with_stdio(0), cin.tie(0), cout.tie(0);
+    int _ = 1;
+    while (_--)
+	    solve();
+	return 0;
+}

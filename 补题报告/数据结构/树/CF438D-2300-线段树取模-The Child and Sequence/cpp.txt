@@ -1,0 +1,89 @@
+#include <bits/stdc++.h>
+using namespace std;
+struct Nodes {
+    long long Val, Max;
+};
+struct Tree {
+    vector <Nodes> info;
+    int Pl, Pr;
+    Tree(){}
+    Tree(int n, vector<int> &nums):info(4*n){
+        Pl = 0, Pr = nums.size()-1;
+        build(1, Pl, Pr, nums);
+    }
+    void pull(int u){
+        int q = 2*u, p = 2*u+1;
+        info[u].Val = info[q].Val + info[p].Val;
+        info[u].Max = max(info[q].Max, info[p].Max);
+    }
+    void build(int u, int l, int r, vector <int> &nums){
+        if (l == r){
+            info[u].Val = info[u].Max =  nums[l];
+            return;
+        }
+        int mid = l+r-1 >> 1;
+        build(2*u, l, mid, nums), build(2*u+1, mid+1, r, nums);
+        pull(u);
+    }
+    void modify1(int u, int L, int R, int v, int pl, int pr){
+        if (info[u].Max < v) return;
+        if (pl == pr){
+            info[u].Val = info[u].Max = info[u].Val % v;
+            return;
+        }
+        int mid = pl+pr-1 >> 1;
+        if (mid >= L) modify1(2*u, L, R, v, pl, mid);
+        if (mid < R) modify1(2*u+1, L, R, v, mid+1, pr);
+        pull(u);
+    }
+    void modify2(int u, int pos, int v, int pl, int pr){
+        if (pl == pr){
+            info[u].Val = info[u].Max = v;
+            return;
+        }
+        int mid = pl+pr-1 >> 1;
+        if (pos <= mid) modify2(2*u, pos, v, pl, mid);
+        else modify2(2*u+1, pos, v, mid+1, pr);
+        pull(u);
+    }
+    long long askfor(int u, int L, int R, int pl, int pr){
+        if (pl >= L && pr <= R){
+            return info[u].Val;
+        }
+        int mid = pl+pr-1 >> 1;
+        long long ans = 0;
+        if (mid >= L) ans += askfor(2*u, L, R, pl, mid);
+        if (mid < R) ans += askfor(2*u+1, L, R, mid+1, pr);
+        return ans;
+    }
+};
+void solve(){
+    int n, m;
+    cin >> n >> m;
+    vector <int> nums(n);
+    for (auto &x : nums) cin >> x;
+
+    Tree Y(n, nums);
+    while (m--){
+        int opt;
+        cin >> opt;
+        if (opt == 1){
+            int l, r;
+            cin >> l >> r;
+            -- l, -- r;
+            cout << Y.askfor(1, l, r, Y.Pl, Y.Pr) << "\n";
+        }
+        if (opt == 2){
+            int l, r, x;
+            cin >> l >> r >> x;
+            -- l, -- r;
+            Y.modify1(1, l, r, x, Y.Pl, Y.Pr);
+        }
+        if (opt == 3){
+            int pos, v;
+            cin >> pos >> v;
+            -- pos;
+            Y.modify2(1, pos, v, Y.Pl, Y.Pr);
+        }
+    }
+}

@@ -1,0 +1,41 @@
+#include <bits/stdc++.h>
+using namespace std;
+using Pii = pair<int,int>;
+using ll = long long;
+const int N = 300, mod = 1e9 + 7, inf = 1e9;
+
+void solve(){
+    auto pop1 = [&](ll x)->int{
+        return __builtin_popcountll(x);
+    };
+    auto pop2 = [&](ll x)->ll{
+        return 1ll << (64 - __builtin_clzll(x) - 1);
+    };
+
+    ll n;
+    cin >> n;
+    if (pop1(n)%2 == 0) cout << "first";
+    else cout << "second";
+    cout << endl;
+
+    if (pop1(n)%2 == 0){
+        cout << pop2(n) << " " << (pop2(n)^n) << endl;
+    }
+    while (true){
+        ll p1, p2;
+        cin >> p1 >> p2;
+        if (!p1 && !p2) return;
+        if (pop1(p1)%2) cout << pop2(p2) << " " << (pop2(p2)^p2);
+        else cout << pop2(p1) << " " << (pop2(p1)^p1);
+        cout << endl;
+    }
+}
+
+int main(){
+    ios::sync_with_stdio(false), cin.tie(nullptr);
+    int _ = 1;
+    cin >> _;
+    while (_--)
+        solve();
+    return 0;
+}

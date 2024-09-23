@@ -1,0 +1,31 @@
+import io, sys
+import math
+input = lambda: sys.stdin.readline().strip()
+outs = []
+
+n, m = map(int, input().split())
+w = list(map(int, input().split()))
+us = []
+vs = []
+path = [[] for _ in range(n)]
+vis = [0 for _ in range(n)]
+
+for i in range(m):
+    x, y = map(lambda x:int(x)-1, input().split())
+    us.append(y), vs.append(x)
+    path[x].append(i)
+    path[y].append(i)
+
+ps = [i for i in range(n)]
+ps.sort(key = lambda x: -w[x])
+# print(ps)
+
+res = 0
+for u in ps:
+    for i in path[u]:
+        v = us[i]^vs[i]^u
+        if vis[v]: continue
+        res += w[v]
+    vis[u] = 1
+outs.append(res)
+print('\n'.join(map(str, outs)))

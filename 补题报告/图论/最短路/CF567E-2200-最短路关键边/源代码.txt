@@ -79,6 +79,12 @@ void solve(){
     for (auto &contain: edge){
         int u = contain.a, v = contain.b, wei = contain.c;
         if (!check(u, v, wei)){
+            /* 
+		计算出和最短路之间的差 diff，差要大于0，由于最后要补1，所以差要大于2
+		新长度最多为原有最短路长度减去1
+		wei - (diff-1)
+		diff-1 <= 0 or wei-(diff-1) <= 0 不满足条件
+	   */
             ll diff = dist[T][0] - (dist[u][0] + dist[v][1]);
             if (diff <= 1 || wei-diff < 0) cout << "NO\n";
             else cout << "CAN " << (wei-diff+1) << "\n";

@@ -1,0 +1,34 @@
+#include <bits/stdc++.h>
+using namespace std;
+using ll = long long;
+const int mod = 1e9+7;
+
+void solve(){
+    int n, a, b;
+    cin >> n >> a >> b;
+    int d = __gcd(a, b);
+
+    vector <int> nums(n);
+    for (auto &x : nums) cin >> x, x %= d;
+    sort(nums.begin(), nums.end());
+    int res = nums[n-1] - nums[0];
+
+    for (int i = 1; i < n; ++ i){
+        res = min(res, nums[i-1]+d - nums[i]);
+    }
+
+    cout << res << "\n";
+}
+
+int main(){
+#ifdef ONLINE_JUDGE
+    ios::sync_with_stdio(0), cin.tie(0), cout.tie(0);
+#else
+    freopen("in.txt", "rt", stdin), freopen("out.txt", "wt", stdout);
+#endif
+    int _ = 1;
+    cin >> _;
+    while (_ --)
+        solve();
+    return 0;
+}

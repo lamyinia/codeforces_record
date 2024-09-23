@@ -26,7 +26,6 @@ void solve(){
         } else {
             b[nums[i]][1] = pos, b[i][1] = i;
             swap(nums[pos], nums[i]);
-
             if (n - pos >= gap){
                 ans.push_back({pos, n}), ans.push_back({i, n}), ans.push_back({pos, n});  //1:以第n个为跳板
             } else {

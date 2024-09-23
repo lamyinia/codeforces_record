@@ -5,6 +5,7 @@ const int N = 1050, mod = 1e9 + 7, inf = 1e9;
 /*
 f[i][j] 以i作开头j结尾的方案数量
 f[i][j] = sigma {f[k][i-1] | k <= j-1, digit(s[k~i-1]) < digit(s[i~j])}
+前缀和优化， 最长公共前缀优化
 */
 void solve(){
     int n;
@@ -20,21 +21,22 @@ void solve(){
         }
     }
     auto check = [&](int x, int y) -> bool{
-        if (lcp[x][y] >= y - x)
+        if (lcp[x][y] >= y - x)  // 如果大于 数字串的 总长度
             return false;
         return ((int)s[x+lcp[x][y]] < (int)s[y+lcp[x][y]]);
     };
-    // 枚举右端点和左端点
+   
     for (int i = 1; i <= n; ++i)
         f[1][i] = 1;
-
+   // 枚举右端点和左端点
+   // Sum[j][i] 表示 右端点是 i，左端点是 j 的前缀的方案和
     for (int j = 1; j <= n; ++ j){
         for (int i = 1; i <= j; ++ i){
             if (s[i] == '0')
                 continue;
-            int l = max(0, i - (j - i + 1)); // l~i-1
+            int l = max(0, i - (j - i + 1)); // l~i-1,	l = max(0, 2*i-j-1)
             f[i][j] = (f[i][j] + Sum[i-1][i-1] - Sum[l][i-1] + mod) % mod;
-            if (check(l, i))
+            if (check(l, i))  //比较str(l,i-1) 和 str(i,j) 的大小
                 f[i][j] = (f[i][j] + f[l][i - 1]) % mod;
         }
         for (int i = 1; i <= j; ++ i)

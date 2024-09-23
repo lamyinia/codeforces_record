@@ -1,0 +1,48 @@
+#include <bits/stdc++.h>
+using namespace std;
+using Pii = pair<int,int>;
+using ll = long long;
+const int N = 3e5+3, mod = 1e9 + 7, inf = 1e9;
+/*
+    对于从左到右 和 从右到左的距离，它们的代价是连续的，可以用前缀和优化
+*/
+void solve(){
+    int n;
+    cin >> n;
+    vector <int> nums(n+1), fpre(n+1), fsuf(n+1), f(n+1);
+    for (int i = 1; i <= n; ++ i) cin >> nums[i];
+    f[1] = 1, f[n] = -1;
+    fpre[1] = 0, fpre[2] = 1, fsuf[n] = 0, fsuf[n-1] = 1;
+    for (int i = 2; i <= n-1; ++ i){
+        int d1 = abs(nums[i]-nums[i-1]), d2 = abs(nums[i]-nums[i+1]);
+        f[i] = d1 < d2 ? -1 : 1;
+        fpre[i+1] = fpre[i] + (f[i]==1 ? 1 : d2);
+    }
+    for (int i = n-1; i >= 2; -- i){
+        int d = abs(nums[i]-nums[i-1]);
+        fsuf[i-1] = fsuf[i] + (f[i]==-1? 1 : d);
+    }
+
+    int m;
+    cin >> m;
+    while (m--){
+        int x, y;
+        cin >> x >> y;
+        if (x < y) cout << fpre[y]-fpre[x] << "\n";
+        else cout << fsuf[y]-fsuf[x] << "\n";
+    }
+}
+
+int main(){
+#ifdef ONLINE_JUDGE
+    ios::sync_with_stdio(false), cin.tie(nullptr), cout.tie(nullptr);
+#else
+    freopen("in.txt", "rt", stdin), freopen("out.txt", "wt", stdout);
+#endif
+    cout << fixed << setprecision(12);
+    int _ = 1;
+    cin >> _;
+    while (_--)
+        solve();
+    return 0;
+}

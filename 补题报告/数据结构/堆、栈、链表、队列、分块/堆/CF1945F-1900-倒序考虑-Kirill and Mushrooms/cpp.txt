@@ -1,0 +1,38 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+void solve(){
+    int n;
+    cin >> n;
+    vector <int> w(n), ps(n);
+    priority_queue <int, vector<int>, greater<int>> pq;
+    for (auto &x : w) cin >> x;
+    for (auto &x : ps) cin >> x, -- x;
+
+    // 考虑倒序操作， 从后往前能删掉最小的尽量删掉 最小的
+    long long res = 0, ans = -1;
+    for (long long i = n; i >= 1; -- i){
+        pq.push(w[ps[i-1]]);
+        while (pq.size() > i){
+            pq.pop();
+        }
+        long long cur = min(i, 1ll*pq.size())*pq.top();
+        if (cur >= res){
+            res = cur, ans = i;
+        }
+    }
+
+    cout << res << " " << ans << "\n";
+}
+ 
+int main(){
+#ifdef ONLINE_JUDGE
+    ios::sync_with_stdio(0), cin.tie(0), cout.tie(0);
+#else
+    freopen("in.txt", "rt", stdin), freopen("out.txt", "wt", stdout);
+#endif
+    int _ = 1;
+    cin >> _;
+    while (_--) solve();
+    return 0;
+}
