@@ -1,0 +1,92 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+void solve(){
+    int n, m;
+    cin >> n >> m;
+    vector <vector<int>> f(2*n+1, vector<int>(20));
+    vector <int> p(2*n+1);
+    iota(p.begin(), p.end(), 0);
+    function<int(int)> find = [&](int x)->int{
+        return p[x] = p[x]==x ? x : find(p[x]);
+    };
+    auto merge = [&](int x, int y)->void{
+        x = find(x), y = find(y);
+        if (x == y) return;
+        p[y] = x;
+    };
+    string s[2];
+    cin >> s[0] >> s[1];
+    s[0] = "X" + s[0], s[1] = "X" + s[1];
+    for (int i = 1; i <= n; ++ i){
+        if (s[0][i] == 'X') continue;
+        if (s[0][i-1] != 'X') merge(i, i-1);
+        if (s[1][i] != 'X') merge(i, i+n);
+    }
+    for (int i = 1; i <= n; ++ i){
+        if (s[1][i] == 'X') continue;
+        if (s[1][i-1] != 'X') merge(i+n, i+n-1);
+    }       
+
+    for (int i = 1; i <= n; ++ i){
+        f[i][0] = -1;
+        if (s[0][i] == 'X') continue;   
+        if (i < n && s[0][i+1] != 'X') f[i][0] = i+1;
+        else if (s[1][i] != 'X') f[i][0] = i+n;   
+    }
+    for (int i = 1; i <= n; ++ i){
+        f[i+n][0] = -1;
+        if (s[1][i] == 'X') continue;
+        if (i < n && s[1][i+1] != 'X') f[i+n][0] = i+n+1;
+        else if (s[0][i] != 'X') f[i+n][0] = i;   
+    }
+
+    for (int j = 1; j <= 19; ++ j){
+        for (int i = 1; i <= 2*n; ++ i){
+            if (f[i][j-1] != -1) f[i][j] = f[f[i][j-1]][j-1];
+            else f[i][j] = -1;
+        }
+    }
+    auto id = [&](int i)->int{
+        return (i-1)%n;
+    };
+    while (m--){
+        int u, v;
+        cin >> u >> v;
+        if (find(u) != find(v)){
+            cout << -1 << "\n";
+            continue;
+        }
+        if (id(u) > id(v)) swap(u, v);
+        if (u == v){
+            cout << 0 << "\n";
+        } else if (id(u) == id(v)){
+            cout << 1 << "\n";
+        } else {
+            int ans = 0;
+            for (int j = 19; j >= 0; -- j){
+                int to = f[u][j];
+                if (to == -1) continue;
+                if (id(to) < id(v)){
+                    ans += 1<<j;
+                    u = to;
+                }
+            }
+            u = f[u][0], ++ ans;
+            if (u != v) ++ ans;
+            cout << ans << "\n";
+        }
+    }
+}
+ 
+ 
+int main(){
+#ifdef ONLINE_JUDGE
+    ios::sync_with_stdio(0), cin.tie(0), cout.tie(0);
+#else
+    freopen("in.txt", "rt", stdin), freopen("out.txt", "wt", stdout);
+#endif
+    int _ = 1;
+    while (_--) solve();
+    return 0;
+}

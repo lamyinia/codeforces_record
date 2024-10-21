@@ -1,0 +1,68 @@
+#include <bits/stdc++.h>
+using namespace std;
+using Pii = pair<int,int>;
+using ll = long long;
+const int N = 2e5, mod = 1e9+7, inf = 1e9;
+
+void solve(){
+    int n, k, c;
+    cin >> n >> k >> c;
+
+    vector <vector<int>> g(n);
+    vector <int> d(n), dist(n), son1(n), son2(n), d1(n), d2(n), up(n);
+    for (int i = 0; i < n-1; ++ i){
+        int a, b;
+        cin >> a >> b;
+        -- a, -- b;
+        g[a].push_back(b), g[b].push_back(a);
+    }
+
+    function<void(int,int)> dfson = [&](int x, int fa){
+        for (auto &y: g[x]){
+            if (y == fa) continue;
+            dist[y] = dist[x] + 1;
+            dfson(y, x);
+            if (d1[y]+1 > d1[x]){
+                d2[x] = d1[x], son2[x] = son1[x];
+                d1[x] = d1[y]+1, son1[x] = y;
+            } else if (d1[y]+1 > d2[x]){
+                d2[x] = d1[y]+1, son2[x] = y;
+            }
+        }
+    };  
+
+    function<void(int,int)> dfsroot = [&](int x, int fa){
+        for (auto &y : g[x]){
+            if (y == fa) continue;
+            if (y == son1[x]) up[y] = max(d2[x], up[x]) + 1;
+            else up[y] = max(d1[x], up[x]) + 1;
+            dfsroot(y, x);
+        }
+    };
+    
+    dfson(0, -1);
+    dfsroot(0, -1);
+
+    for (int i = 0; i < n; ++ i){
+        d[i] = max(d1[i], up[i]);
+    }
+    ll res = 0;
+    for (int i = 0; i < n; ++ i){
+        ll ans = 1ll*d[i]*k - 1ll*dist[i]*c;
+        res = max(res, ans);
+    }
+    cout << res << "\n";
+}
+
+int main(){
+#ifdef ONLINE_JUDGE
+    ios::sync_with_stdio(false), cin.tie(nullptr), cout.tie(nullptr);
+#else
+    freopen("in.txt", "rt", stdin), freopen("out.txt", "wt", stdout);
+#endif
+    int _ = 1;
+    cin >> _;
+    while (_--)
+        solve();
+    return 0;
+}

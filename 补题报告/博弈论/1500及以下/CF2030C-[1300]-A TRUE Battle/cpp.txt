@@ -1,0 +1,31 @@
+#include <bits/stdc++.h>
+using namespace std;
+using ll = long long;
+
+void solve(){
+    int n;
+    cin >> n;
+    string s;
+    cin >> s;
+    bool jg = 0;
+    if (s[0] == '1' || s[n-1] == '1') jg = 1;
+    for (int i = 0, c = 0; i < n; ++ i){
+        if (s[i] == '0') c = 0;
+        else c += 1;
+        if (c == 2) jg = 1;
+    }
+
+    cout << (jg ? "YES\n" : "NO\n");
+}
+
+int main(){
+#ifdef ONLINE_JUDGE
+    ios::sync_with_stdio(0), cin.tie(0), cout.tie(0);
+#else
+    freopen("in.txt", "rt", stdin), freopen("out.txt", "wt", stdout);
+#endif
+    int _ = 1;
+    cin >> _;
+    while (_--) solve();
+    return 0;
+}

@@ -1,0 +1,92 @@
+#include <bits/stdc++.h>
+using namespace std;
+using ll = long long;
+const int mod = 998244353;
+struct Node {
+    Node *l, *r;
+    long long Feq, Sum;
+    void pull();
+    Node* insert(int lt, int rt, int pos);		// 由于要定义自环指针Null，所以要先定义，然后外面实现
+    Node(Node*l=nullptr,Node*r=nullptr,long long a=0,long long b=0):l(l),r(r),Feq(a),Sum(b){
+        pull();
+    }
+};
+Node *Null = new Node();
+void Node::pull(){
+    if (l == Null && r == Null) return;
+    if (l->Feq < r->Feq){
+        Feq = r->Feq;
+        Sum = r->Sum;
+    } else if (l->Feq > r->Feq){
+        Feq = l->Feq;
+        Sum = l->Sum;
+    } else {
+        Feq = l->Feq;
+        Sum = l->Sum + r->Sum;
+    }
+}
+Node *merge(Node *x, Node *y, int lt, int rt){
+    if (x == Null || y == Null) return x == Null ? y : x;
+    if (lt == rt){
+        return new Node(Null, Null, x->Feq+y->Feq, lt);
+    } else {
+        int mid = lt + rt >> 1;
+        auto cur = new Node(merge(x->l,y->l,lt,mid), merge(x->r,y->r,mid+1,rt));
+        delete x, y;
+        return cur;
+    }
+}
+Node* Node::insert(int lt, int rt, int pos){
+    if (pos >= lt && pos <= rt){
+        if (lt == rt) return new Node(Null, Null, Feq+1, lt);
+        int mid = lt+rt >> 1;
+        return new Node(l->insert(lt,mid,pos),r->insert(mid+1,rt,pos));
+    }
+    return this;
+}
+
+void solve(){
+    int n;
+    cin >> n;
+    vector <Node*> root(n);
+    for (int i = 0; i < n; ++ i) root[i] = Null;
+    vector <vector<int>> g(n);
+    vector <int> cs(n);
+    vector <long long> ans(n);
+
+    for (auto &x : cs) cin >> x;
+    for (int i = 0, x,y; i < n-1; ++ i){
+        cin >> x >> y;
+        x -= 1, y -= 1;
+        g[x].push_back(y);
+        g[y].push_back(x);
+    }
+
+    function<void(int,int)> dfs = [&](int x,int fa){
+        root[x] = root[x]->insert(1, n, cs[x]);
+        for (auto &y : g[x]){
+            if (y == fa) continue;
+            dfs(y, x);
+            root[x] = merge(root[x], root[y], 1, n);
+        }
+        ans[x] = root[x]->Sum;
+    };
+    dfs(0, -1);
+    for (int i = 0; i < n; ++ i){
+        if (i) cout << " ";
+        cout << ans[i];
+    }
+    cout << "\n";
+}
+ 
+int main(){
+#ifdef ONLINE_JUDGE
+    ios::sync_with_stdio(0), cin.tie(0), cout.tie(0);
+#else
+    freopen("in.txt", "rt", stdin), freopen("out.txt", "wt", stdout);
+#endif
+    int _ = 1;
+    Null->l = Null, Null->r = Null;
+    while (_--) solve();
+    return 0;
+}

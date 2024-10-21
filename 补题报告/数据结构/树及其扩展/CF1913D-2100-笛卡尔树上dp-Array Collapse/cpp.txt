@@ -1,0 +1,61 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+void solve(){
+    const int mod = 998244353;
+
+    int n;
+    cin >> n;
+    vector <int> A(n), ls(n, -1), rs(n, -1);
+    for (auto &x : A) cin >> x;
+    vector <long long> f(n);
+
+    auto build = [&](){
+        vector <int> stk(n, -1);
+        int top = -1;
+        for (int i = 0; i < n; ++ i){
+            while (top != -1 && A[stk[top]] > A[i]) top -= 1;
+            if (top == -1) ls[i] = stk[top+1];
+            else ls[i] = rs[stk[top]], rs[stk[top]] = i;
+            stk[++ top] = i;
+        }
+        return stk[0];
+    };
+    int rt = build();
+
+    auto dfs = [&](auto &&self, int u, int st){
+        if (u == -1) return;
+        self(self, ls[u], st|1);
+        self(self, rs[u], st|2);
+        long long L = 1, R = 1;
+        if (ls[u] != -1) L = f[ls[u]];
+        if (rs[u] != -1) R = f[rs[u]];
+        f[u] += L*R % mod;
+        if (st & 1) f[u] += L, f[u] %= mod;
+        if (st & 2) f[u] += R, f[u] %= mod;
+        if (st ==3){
+            f[u] -= 1;
+            if (f[u] < 0) f[u] += mod;
+        }
+    };
+    dfs(dfs, ls[rt], 1);
+    dfs(dfs, rs[rt], 2);
+    long long L = 1, R = 1;
+    if (ls[rt] != -1) L = f[ls[rt]];
+    if (rs[rt] != -1) R = f[rs[rt]];
+    long long ans = L*R % mod;
+
+    cout << ans << "\n";
+}
+
+int main(){
+#ifdef ONLINE_JUDGE
+    ios::sync_with_stdio(0), cin.tie(0), cout.tie(0);
+#else
+    freopen("in.txt", "rt", stdin), freopen("out.txt", "wt", stdout);
+#endif
+    int _ = 1;
+    cin >> _;
+    while (_--) solve();
+    return 0;
+}

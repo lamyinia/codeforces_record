@@ -1,0 +1,46 @@
+#include <bits/stdc++.h>
+using namespace std;
+/*
+    CF2019C
+    你 有 n 种卡片，第 i 种卡片你有 a_i 个
+    同时你 有 k 个金币，可以购买新卡，每个新卡 1 个金币
+    要求将你所有的卡片 分成 y 组，组内卡片互不相同，且每组卡片数目 都为 x
+    求 最大 的 x?
+*/
+void solve(){
+    long long n, k;
+    cin >> n >> k;
+    vector <long long> A(n);
+    long long Max = 0, all = 0;
+    for (auto &x : A){
+        cin >> x;
+        all += x;
+        Max = max(Max, x);
+    }
+
+    auto chk = [&](int x){
+        return (all < Max*x && all+k >= Max*x) || (all >= Max*x && (x-all%x)%x <= k);
+    };
+
+    int res = 1;
+    for (int i = n; i >= 1; -- i){
+        if (chk(i)){
+            res = i;
+            break;
+        }
+    }
+
+    cout << res << "\n";
+}
+
+int main(){
+#ifdef ONLINE_JUDGE
+    ios::sync_with_stdio(0), cin.tie(0), cout.tie(0);
+#else
+    freopen("in.txt", "rt", stdin), freopen("out.txt", "wt", stdout);
+#endif
+    int _ = 1;
+    cin >> _;
+    while (_--) solve();
+    return 0;
+}

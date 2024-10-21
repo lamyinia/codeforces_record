@@ -3,6 +3,10 @@ using namespace std;
 using ll = long long;
 const int N = 2005000, inf = 0x3f3f3f3f, P = 998244353;
 
+/*
+	每个数字对结果数组的贡献 是一个 一次函数，我们可以用差分来维护这些分段的 一次函数
+	在算贡献的时候 我们可以只算一半，因为原数是正数的 部分和 等于 原数是 负数 的 部分和
+*/
 ll f[N];
 void solve(){
     int n;
@@ -11,7 +15,6 @@ void solve(){
     for (int i = 1; i <= n; ++ i) cin >> a[i];
 
     for (int i = 1; i <= n; ++ i){
-        // int id = (a[i]-i+n)%n;
         int l = n+a[i]-i, r = 2*n-i;
         ++ dif1[l], -- dif1[r+1];
         dif2[l] -= l, dif2[r+1] += l;
@@ -21,7 +24,7 @@ void solve(){
 
     for (int i = 0; i < 2*n; ++ i)
         f[i%n] += 1ll*dif1[i]*i + dif2[i];
-    // for (int i = 0; i < n; ++ i) cout << f[i] << "\n";
+
     ll res = 0, cost = 2e18;
     for (int i = 0; i < n; ++ i)
         if (cost > f[i])

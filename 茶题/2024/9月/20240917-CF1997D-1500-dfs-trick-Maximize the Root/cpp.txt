@@ -1,0 +1,51 @@
+#include <bits/stdc++.h>
+using ll = long long;
+using namespace std;
+
+void solve(){
+    int n;
+    cin >> n;
+    vector <vector<int>> g(n);
+    vector <int> A(n);
+    for (auto &x : A) cin >> x;
+    for (int i = 1, x; i <= n-1; ++ i){
+        cin >> x;
+        x -= 1;
+        g[x].push_back(i);
+    }
+
+    const int inf = 1e9+1;
+    auto dfs = [&](auto &&self, int u)->int{  //dfs保证最小值尽可能大
+        if (g[u].size()){
+            int x = inf;
+            for (auto &v : g[u]){
+                x = min(x, self(self, v));
+            }
+            if (A[u] > x) return x;
+            else return (x+A[u])/2;
+        } else {
+            return A[u];
+        }
+    };
+
+
+    int x = inf;
+    for (auto &u : g[0]){
+        int y = dfs(dfs, u);
+        x = min(x, y);
+    }
+
+    cout << A[0]+x << "\n";
+}
+
+int main(){
+#ifdef ONLINE_JUDGE
+    ios::sync_with_stdio(0), cin.tie(0), cout.tie(0);
+#else
+    freopen("in.txt", "rt", stdin), freopen("out.txt", "wt", stdout);
+#endif
+    int _ = 1;
+    cin >> _;
+    while (_--) solve();
+    return 0;
+}

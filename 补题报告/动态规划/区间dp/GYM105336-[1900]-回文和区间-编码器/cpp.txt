@@ -1,0 +1,49 @@
+#include <bits/stdc++.h>
+using namespace std;
+const int N = 105;
+int f[N][N][N];
+ 
+void solve(){
+    const int mod = 998244353;
+ 
+    string s, t;
+    cin >> s >> t;
+    int n = s.size(), m = t.size();
+    s = " " + s;
+    t = " " + t;
+    for (int i = 1; i <= n; ++ i){
+        for (int len = 1; len <= m; ++ len){
+            for (int l = 1, r; l+len-1 <= m; ++ l){
+                r = l+len-1;
+                f[i][l][r] = 2ll * f[i-1][l][r] % mod;
+                for (int k = l; k < r; ++ k){
+                    int ts = 1ll * f[i-1][l][k] * f[i-1][k+1][r] % mod;
+                    f[i][l][r] += ts;
+                    f[i][l][r] %= mod;
+                }
+                for (int k = l; k <= r; ++ k){
+                    if (t[k] == s[i]){
+                        int L = (k-1 >= l ? f[i-1][l][k-1] : 1);
+                        int R = (k+1 <= r ? f[i-1][k+1][r] : 1);
+                        int ts = 1ll * L * R % mod;
+                        f[i][l][r] += ts;
+                        f[i][l][r] %= mod;
+                    }
+                }
+            }
+        }
+    }
+ 
+    cout << f[n][1][m] << "\n";
+}
+ 
+int main(){
+#ifdef ONLINE_JUDGE
+    ios::sync_with_stdio(0), cin.tie(0), cout.tie(0);
+#else
+    freopen("in.txt", "rt", stdin), freopen("out.txt", "wt", stdout);
+#endif
+    int _ = 1;
+    while (_--) solve();
+    return 0;
+}

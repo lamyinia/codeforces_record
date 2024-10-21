@@ -1,0 +1,40 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+void solve(){
+    string s;
+    cin >> s;
+    int n = s.size();
+    s = " " + s;
+    vector <int> ne(n+1);
+    ne[0] = -1;
+    for (int i = 1; i <= n; ++ i){
+        int j = ne[i-1];
+        while (j != -1 && s[j+1] != s[i]) j = ne[j];
+        ne[i] = j+1;
+    }
+    int ans = ne[n];
+    bool jg = 0;
+    for (int i = 2; i < n; ++ i){
+        if (ne[i] == ans){
+            jg = 1;
+        }
+    }
+    if (ans > 0 && jg){
+        cout << s.substr(1, ans) << "\n";
+    } else {
+        ans = ne[ne[n]];
+        cout << (ans <= 0 ? "Just a legend" : s.substr(1,ans)) << "\n";
+    }
+}
+
+int main(){
+#ifdef ONLINE_JUDGE
+    ios::sync_with_stdio(0), cin.tie(0), cout.tie(0);
+#else
+    freopen("in.txt", "rt", stdin), freopen("out.txt", "wt", stdout);
+#endif
+    int _ = 1;
+    while (_--) solve();
+    return 0;
+}

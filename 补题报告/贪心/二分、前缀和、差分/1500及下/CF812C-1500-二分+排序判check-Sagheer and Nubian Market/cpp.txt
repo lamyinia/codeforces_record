@@ -1,0 +1,56 @@
+输入 n(1≤n≤1e5) s(1≤s≤1e9) 和长为 n 的数组 a(1≤a[i]≤1e5)。
+
+有 n 个物品，每个物品至多买一个。假设你买了其中的 k 个，那么对于这 k 个物品，每个物品 a[i] 的花费为 a[i]+i*k 元。
+下标从 1 开始。
+
+你有 s 元钱，最多可以买多少个物品？钱不需要恰好花完。
+假设你最多买了 k 个，输出 k 以及购买 k 个物品的最小花费。
+
+#include <bits/stdc++.h>
+using namespace std;
+const int N = 1e5+1;
+
+void solve(){
+    long long n, m;
+    cin >> n >> m;
+    vector <int> A(n), ps(n);
+    for (auto &x : A) cin >> x;
+
+    long long ans = 0;
+    auto check = [&](long long mid)->bool{
+        iota(ps.begin(), ps.end(), 0);
+        sort(ps.begin(), ps.end(), [&](int x, int y){
+            return A[x] + (x+1)*mid < A[y] + (y+1)*mid;
+        });
+        int ct = 0;
+        ans = 0;
+        for (auto &x : ps){
+            if (ans + A[x] + (x+1)*mid <= m){
+                ct += 1;
+                ans += A[x] + (x+1)*mid;
+            }
+            if (ct==mid) break;
+        }
+        return ct == mid;
+    };
+
+    long long l = 0, r = n;
+    while (l < r){
+        long long mid = (l+r+1) >> 1;
+        if (check(mid)) l = mid;
+        else r = mid-1;
+    }
+    if (!check(l)) ans = 0;
+    cout << l << " " << ans << "\n";
+}
+ 
+int main(){
+#ifdef ONLINE_JUDGE
+    ios::sync_with_stdio(0), cin.tie(0), cout.tie(0);
+#else
+    freopen("in.txt", "rt", stdin), freopen("out.txt", "wt", stdout);
+#endif
+    int _ = 1;
+    while (_--) solve();
+    return 0;
+}

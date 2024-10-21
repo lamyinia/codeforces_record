@@ -1,0 +1,80 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+void solve(){
+    int n;
+    cin >> n;
+    vector <array<long long, 3>> nums(n+1), S(n+1);
+
+    for (int j = 0; j < 3; ++ j){
+        for (int i = 1; i <= n; ++ i){
+            cin >> nums[i][j];
+            S[i][j] = S[i-1][j] + nums[i][j];
+        }
+    }
+    
+    long long tar = (S[n][0]+2) / 3;
+    auto find1 = [&](int p)->int{
+        int l = 1, r = n;
+        while (l < r){
+            int mid = l+r >> 1;
+            if (S[mid][p] >= tar) r = mid;
+            else l = mid+1;
+        }
+        return l;
+    };
+    auto find2 = [&](int lst, int p)->int{
+        int l = lst+1, r = n;
+        while (l < r){
+            int mid = l+r >> 1;
+            if (S[mid][p]-S[lst][p] >= tar) r = mid;
+            else l = mid+1;
+        }
+        return l;
+    };
+
+    bool jg = 0;
+    vector <array<int,2>> ans(3), tmps(3);
+    tmps = {{1,2}, {0,2}, {0,1}};
+    auto call = [&](int p)->void{
+        if (jg) return;
+        int p1 = find1(p);
+        if (p1 >= n-1) return;
+        int i = tmps[p][0], j = tmps[p][1];
+
+        int p2 = find2(p1, i);
+        if (p2 < n && S[n][j]-S[p2][j] >= tar){
+            jg = 1;
+            ans[p] = {1, p1};
+            ans[i] = {p1+1, p2};
+            ans[j] = {p2+1, n};
+        }
+        p2 = find2(p1, j);
+        if (p2 < n && S[n][i]-S[p2][i] >= tar){
+            jg = 1;
+            ans[p] = {1, p1};
+            ans[j] = {p1+1, p2};
+            ans[i] = {p2+1, n};
+        }
+    };
+
+    call(0), call(1), call(2);
+    if (!jg) cout << -1 << "\n";
+    else {
+        for (auto &it : ans) cout << it[0] << " " << it[1] << " ";
+        cout << "\n";
+    }
+}
+ 
+ 
+int main(){
+#ifdef ONLINE_JUDGE
+    ios::sync_with_stdio(0), cin.tie(0), cout.tie(0);
+#else
+    freopen("in.txt", "rt", stdin), freopen("out.txt", "wt", stdout);
+#endif
+    int _ = 1;
+    cin >> _;
+    while (_--) solve();
+    return 0;
+}

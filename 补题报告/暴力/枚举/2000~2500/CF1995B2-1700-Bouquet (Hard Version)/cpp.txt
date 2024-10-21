@@ -1,0 +1,49 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+void solve(){
+    long long n, m;
+    cin >> n >> m;
+    map <int, int> mps;
+    typedef map<int,int>::iterator mit;
+    vector <int> nums(n);
+    for (auto &x : nums) cin >> x;
+
+    for (int i = 0, c; i < n; ++ i){
+        cin >> c;
+        mps[nums[i]] = c;
+    }
+
+    // mit i = mps.begin();
+    long long res = 0;
+    for (mit i = mps.begin(); i != mps.end(); ++ i){
+        mit j = next(i);
+        long long a1 = i->first, c1 = i->second;
+        long long a2, c2;
+        if (j != mps.end()) a2 = j->first, c2 = j->second;
+        // 先尽可能多 的 买 a1， 再去替换 a2
+        if (j != mps.end() && a2-a1 == 1){
+            long long k1 = min(c1, m/a1), cost = k1*a1, rare = m-cost;
+            long long k2 = min(c2, rare/a2);
+            cost += k2*a2, rare -= k2*a2, c2 -= k2;
+            res = max(res, cost + min(rare, min(k1, c2)));
+        } else {
+            long long cost = min(c1, m/a1)*a1;
+            res = max(res, cost);
+        }
+    }
+
+    cout << res << "\n";
+}
+ 
+int main(){
+#ifdef ONLINE_JUDGE
+    ios::sync_with_stdio(0), cin.tie(0), cout.tie(0);
+#else
+    freopen("in.txt", "rt", stdin), freopen("out.txt", "wt", stdout);
+#endif
+    int _ = 1;
+    cin >> _;
+    while (_--) solve();
+    return 0;
+}

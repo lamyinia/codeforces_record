@@ -36,6 +36,7 @@ void solve(){
         pq.pop();
         int u = t.u;
         if (!t.f && t.dis > F1[u][0] || t.f && t.dis > F1[u][1]) continue;
+
         for (auto &it : g[u]){
             long long dis = t.dis + (t.f ? it.len/2 : it.len);
             long long w = (t.f ? it.len/2 : it.len);
@@ -51,6 +52,7 @@ void solve(){
         }
     }
     while (!pq.empty()) pq.pop();
+
     pq.push({0, n, 0}), F2[n][0] = 0;
     if (horse[n]) pq.push({0, n, 1}), F2[n][1] = 0;
     while (!pq.empty()){
@@ -72,6 +74,7 @@ void solve(){
             }
         }
     }
+
     long long res = 1e18;
     for (int i = 1; i <= n; ++ i){
         for (int j = 0; j < 2; ++ j){

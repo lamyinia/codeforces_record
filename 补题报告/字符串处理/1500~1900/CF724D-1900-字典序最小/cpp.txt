@@ -1,3 +1,7 @@
+/*
+给定长度为n(1 <= n <= 100,000) 的字符串s，现在要求选取一些字符使得每个长度为m 的字符串区间均有一个被选中的字符，且选中的这些字符重排列后得到的字符串字典序最小
+
+*/
 #include <bits/stdc++.h>
 using namespace std;
 using Pii = pair<int,int>;

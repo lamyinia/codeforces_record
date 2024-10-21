@@ -1,0 +1,31 @@
+import bisect
+import sys
+import typing
+import math
+from functools import cmp_to_key
+from collections import Counter, deque
+from heapq import heapify, heappop, heappush
+
+input = lambda: sys.stdin.readline().strip()
+
+def main():
+    n = int(input())
+    g = [[int(x) for x in input().split()] for _ in range(n)]
+    ans = 0
+    for i in range(n):
+        ans += g[i][i]
+    ans %= 2
+    q = int(input())
+    outs = []
+    while q:
+        q -= 1
+        if input()[0] == '3': outs.append(ans)
+        else: ans ^= 1
+
+    print(''.join(map(str, outs)))
+
+if __name__ == '__main__':
+    _ = 1
+    while _:
+        _ -= 1
+        main()
