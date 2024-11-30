@@ -1,0 +1,113 @@
+#include <bits/stdc++.h>
+using namespace std;
+const long double Pi = acos(-1.0);
+template <class T> void fmax(T &a, T b){
+    if (b > a) a = b;
+}
+template <class T> void fmin(T &a, T b){
+    if (b < a) a = b;
+}
+
+void solve(){
+    int n, L_, R_;
+    cin >> n >> L_ >> R_;
+    int L = n-1-R_, R = n-1-L_;
+
+    vector<vector<int>> g(n);
+    for (int i = 0,u,v; i < n-1; ++ i){
+        cin >> u >> v;
+        u -= 1, v -= 1;
+        g[u].push_back(v);
+        g[v].push_back(u);
+    }
+    vector <int> vis(n);
+
+    auto mass = [&](auto &&self, int u, int presor)->int{
+        if (vis[u]) return 0;
+        int res = 1;
+        for (auto &v : g[u]){
+            if (v == presor) continue;
+            res += self(self, v, u);
+        }
+        return res;
+    };
+    auto gravity = [&](auto &&self, int u, int presor, int tot, int &ans)->int{
+        if (vis[u]) return 0;
+        int cur = 1, Max = 0;
+        for (auto &v : g[u]){
+            if (v == presor) continue;
+            int t = self(self, v, u, tot, ans);
+            fmax(Max, t);
+            cur += t;
+        }
+        fmax(Max, tot-cur);
+        if (Max <= tot/2) ans = u;
+        return cur;
+    };
+    auto extend = [&](auto &&self, int u, int presor, int dis, vector<int>&ds)->void{
+        if (vis[u]) return;
+        ds.push_back(dis);
+        for (auto &v : g[u]){
+            if (v == presor) continue;
+            self(self, v, u, dis+1, ds);
+        }
+    };
+    auto call = [&](vector<int> &ds)->long long{
+        sort(ds.begin(), ds.end());
+        int n = ds.size();
+        long long res = 0;
+        for (int i = 0; i < n-1; ++ i){
+            int low = lower_bound(ds.begin()+i+1, ds.end(), L-ds[i]) - ds.begin();
+            int hig = upper_bound(ds.begin()+i+1, ds.end(), R-ds[i]) - ds.begin() - 1;
+            if (ds[i]+ds[low] >= L && ds[hig]+ds[i] <= R){
+                res += hig-low+1;
+            }
+        }
+        return res;
+    };
+
+
+    auto divide = [&](auto &&self, int u)->long long{
+        if (vis[u]) return 0;
+        int tot = mass(mass, u, -1);
+        int sums = gravity(gravity, u, -1, tot, u);
+        vis[u] = 1;
+        long long res = 0;
+        vector <int> All;
+        for (auto &v : g[u]){
+            if (vis[v]) continue;
+            vector <int> ds;
+            extend(extend, v, u, 1, ds);
+            int ans = call(ds);
+            res -= call(ds);
+            for (auto &x : ds){
+                if (x >= L && x <= R) res += 1;
+                All.push_back(x);
+            }
+        }
+        
+        res += call(All);
+        for (auto &v : g[u]){
+            res += self(self, v);
+        }
+        return res;
+    };
+
+    long long res = divide(divide, 0);
+    for (int i = 0; i < n; ++ i){
+        assert(vis[i]);
+    }
+    cout << res << "\n";
+}
+
+int main(){
+#ifdef ONLINE_JUDGE
+    ios::sync_with_stdio(0), cin.tie(0), cout.tie(0);
+#else
+    freopen("in.txt", "rt", stdin), freopen("out.txt", "wt", stdout);
+#endif
+    int _ = 1;
+    cin >> _;
+    while (_--) solve();
+    return 0;
+}

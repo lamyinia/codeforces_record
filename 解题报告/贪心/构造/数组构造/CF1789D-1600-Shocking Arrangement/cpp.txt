@@ -1,0 +1,69 @@
+#include <bits/stdc++.h>
+using namespace std;
+void fmax(int &x, int y){
+    if (y > x) x = y;
+}
+void fmin(int &x, int y){
+    if (y < x) x = y;
+}
+
+void solve(){
+    int n;
+    cin >> n;
+    bool jg = 0;
+    vector <int> A(n), L, R;
+    for (auto &x : A){
+        cin >> x;
+        if (x) jg = 1;
+        if (x <= 0) L.push_back(x);
+        else R.push_back(x);
+    }
+
+    if (!jg){
+        cout << "No\n";
+        return;
+    }
+
+    vector <int> ans;
+
+    sort(L.begin(), L.end(), greater<int>());
+    sort(R.begin(), R.end());
+    // int up = *max_element(A.begin(), A.end()) - *min_element(A.begin(), A.end());
+    int up = R.back() - L.back();
+
+    long long cur = 0;
+    while (L.size() || R.size()){
+
+        while (L.size() && cur >= 0){
+            cur += L.back();
+            ans.push_back(L.back());
+            L.pop_back();
+        }
+        while (R.size() && cur < 0){
+            cur += R.back();
+            ans.push_back(R.back());
+            R.pop_back();
+        }
+
+    }
+
+    int len = ans.size();
+    cout << "Yes\n";
+    for (int i = 0; i < len; ++ i){
+        if (i) cout << " ";
+        cout << ans[i];
+    }
+    cout << "\n";
+}
+
+int main(){
+#ifdef ONLINE_JUDGE
+    ios::sync_with_stdio(0), cin.tie(0), cout.tie(0);
+#else
+    freopen("in.txt", "rt", stdin), freopen("out.txt", "wt", stdout);
+#endif
+    int _ = 1;
+    cin >> _;
+    while (_--) solve();
+    return 0;
+}

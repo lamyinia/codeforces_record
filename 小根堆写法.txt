@@ -1,0 +1,5 @@
+    using ary4 = array<int,4>;
+    auto cmps = [&](ary4 &u, ary4 &v)->bool{
+        return u[2] != v[2] ? u[2] > v[2] : u[3] > v[3];
+    };
+    priority_queue <ary4, vector<ary4>, decltype(cmps)> pq(cmps);

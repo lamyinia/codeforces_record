@@ -1,0 +1,104 @@
+#include <bits/stdc++.h>
+using namespace std;
+using ld = long double;
+const long double Pi = acos(-1.0);
+template <class T> void fmax(T &a, T b){
+    if (b > a) a = b;
+}
+template <class T> void fmin(T &a, T b){
+    if (b < a) a = b;
+}
+struct Edge {
+    int to, cap, rev;
+};
+vector <vector<Edge>> g;
+vector <int> cur, dep;
+int S, T;
+
+void init(int n){
+    g.clear(), cur.clear(), dep.clear();
+    g.resize(n+1), cur.resize(n+1), dep.resize(n+1);
+}
+bool bfs_dinic(){
+    fill(dep.begin(), dep.end(), -1);
+    queue <int> Q;
+    dep[S] = 0, Q.push(S);
+    while (!Q.empty()){
+        auto u = Q.front();
+        Q.pop();
+        for (auto &j : g[u]){
+            if (dep[j.to] == -1 && j.cap){
+                dep[j.to] = dep[u] + 1;
+                Q.push(j.to);
+            }
+        }
+    }
+    return dep[T] != -1;
+}
+int dfs_dinic(int u, int limi){
+    if (u == T) return limi;
+    for (int i = 0; i < g[u].size(); ++ i){
+        cur[u] = i;
+        auto &j = g[u][i];
+        if (dep[j.to] == dep[u]+1 && j.cap){
+            int cut = dfs_dinic(j.to, min(limi, j.cap));
+            if (cut){   
+                j.cap -= cut;
+                g[j.to][j.rev].cap += cut;
+                return cut;
+            } else dep[j.to] = -1;
+        }
+    }
+    return 0;
+}
+int dinic(){
+    int res = 0, flow;
+    while (bfs_dinic()){
+        fill(cur.begin(), cur.end(), 0);
+        while (flow = dfs_dinic(S, 1e9)){
+            res += flow;
+        }
+    }
+    return res;
+}
+void add_edge(int a, int b, int c){
+    int ra = g[a].size(), rb = g[b].size();
+    g[a].push_back({b, c, rb});
+    g[b].push_back({a, 0, ra});
+}
+
+void solve(){
+    const int inf = 1e9;
+    int n;
+    cin >> n;
+    init(n+60+5);
+    vector <long long> A(n);
+    for (auto &x : A) cin >> x;
+
+    S = 0, T = n+60+1;
+    for (int i = 0; i < n; ++ i){
+        add_edge(S, i+1, 1);
+        for (int j = 0; j < 60; ++ j){
+            if ((A[i]>>j) & 1){
+                add_edge(i+1, n+j+1, inf);
+            }
+        }
+    }
+    for (int j = 0; j < 60; ++ j){
+        add_edge(n+j+1, T, 1);
+    }
+    
+    cout << n - dinic() << "\n";
+}
+
+int main(){
+#ifdef ONLINE_JUDGE
+    ios::sync_with_stdio(0), cin.tie(0), cout.tie(0);
+#else
+    freopen("in.txt", "rt", stdin), freopen("out.txt", "wt", stdout);
+#endif
+    int _ = 1;
+    cin >> _;
+    while (_--) solve();
+    return 0;
+}

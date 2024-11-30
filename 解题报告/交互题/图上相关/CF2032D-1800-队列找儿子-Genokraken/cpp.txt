@@ -1,0 +1,64 @@
+#include <bits/stdc++.h>
+using namespace std;
+const long double Pi = acos(-1.0);
+template <class T> void fmax(T &a, T b){
+    if (b > a) a = b;
+}
+template <class T> void fmin(T &a, T b){
+    if (b < a) a = b;
+}
+/*
+    对于满足条件的一颗树，我比你大，则我的父亲比你大
+    根节点是0，求 1~n 号结点的父亲分别是谁
+    1号结点一定有一个儿子
+*/
+void solve(){
+    auto ask = [&](int a, int b)->int{
+        cout << "? " << a << " " << b << "\n" << flush;
+        int ans;
+        cin >> ans;
+        return ans;
+    };
+
+    int n;
+    cin >> n;
+    vector <int> ans(n+1);
+    int idx = 1;
+    queue <int> Q;
+    while (ans[idx] == 0 && idx < n-1){
+        idx += 1;
+        Q.push(idx);
+        if (ask(1, idx) == 1){
+            ans[idx] = 0;
+        } else {
+            ans[idx] = 1;
+            break;
+        }
+    }
+
+    idx += 1;
+    while (!Q.empty() && idx < n){
+        auto u = Q.front();
+        Q.pop();
+        if (ask(idx, u) == 0){
+            ans[idx] = u;
+            Q.push(idx);
+            idx += 1;
+        }
+    }
+
+    assert(idx == n);
+    cout << "! ";
+    for (int i = 1; i < n; ++ i){
+        if (i) cout << " ";
+        cout << ans[i];
+    }
+    cout << "\n" << flush;
+}
+
+int main(){
+    int _ = 1;
+    cin >> _;
+    while (_--) solve();
+    return 0;
+}

@@ -1,0 +1,69 @@
+#include <bits/stdc++.h>
+using namespace std;
+template <class T> void fmax(T &a, const T &b){
+    if (b > a) a = b;
+}
+template <class T> void fmin(T &a, T b){
+    if (b < a) a = b;
+}
+
+void solve(){
+    const int N = 1000002, mod = 998244353;
+    int n;
+    cin >> n;
+    vector<vector<int>> gs;
+    vector <int> Last(N), f(n);
+    for (int i = 0; i < n; ++ i){
+        int x;
+        cin >> x;
+        vector <int> tmp;
+        for (long long j = 2; j*j <= x; ++ j){
+            if (x%j == 0){
+                while (x%j == 0) x /= j;
+                tmp.push_back(j);
+            }
+        }
+        if (x > 1) tmp.push_back(x);
+        gs.push_back(tmp);
+    }
+
+    assert(gs.size() == n);
+    f[0] = 1;
+    for (int i = 0; i < n; ++ i){
+        int len = gs[i].size();
+        for (int u = 0; u < 1<<len; ++ u){
+            int cur = 1, cnt = 0;
+            for (int j = 0; j < len; ++ j){
+                if ((u>>j)&1){
+                    cur *= gs[i][j];
+                    cnt += 1;
+                }
+            }
+            if (cnt%2) f[i] = (f[i] + Last[cur]) % mod;
+            else f[i] = (f[i] - Last[cur] + mod) % mod;
+        }
+
+        for (int u = 0; u < 1<<len; ++ u){
+            int cur = 1;
+            for (int j = 0; j < len; ++ j){
+                if ((u>>j)&1){
+                    cur *= gs[i][j];
+                }
+            }
+            if (cur > 1) Last[cur] += f[i], Last[cur] %= mod;
+        }
+    }
+
+    cout << f[n-1] << "\n";
+}
+
+int main(){
+#ifdef ONLINE_JUDGE
+    ios::sync_with_stdio(0), cin.tie(0), cout.tie(0);
+#else
+    freopen("in.txt", "rt", stdin), freopen("out.txt", "wt", stdout);
+#endif
+    int _ = 1;
+    while (_--) solve();
+    return 0;
+}

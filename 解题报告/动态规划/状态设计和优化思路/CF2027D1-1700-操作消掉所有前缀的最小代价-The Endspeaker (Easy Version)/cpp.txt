@@ -1,0 +1,55 @@
+#include <bits/stdc++.h>
+using namespace std;
+template <class T> void fmax(T &a, const T &b){
+    if (b > a) a = b;
+}
+template <class T> void fmin(T &a, T b){
+    if (b < a) a = b;
+}
+
+void solve(){
+    using ll = long long;
+    const ll inf = 1e18;
+
+    int n, m;
+    cin >> n >> m;
+    vector <int> A(n+1), B(m+1);
+    vector <ll> Pr(n+1);
+    vector<vector<ll>> f(m+1, vector<ll>(n+1, inf));
+
+    for (int i = 1; i <= n; ++ i){
+        cin >> A[i];
+        Pr[i] = Pr[i-1] + A[i];
+    }
+    for (int i = 1; i <= m; ++ i){
+        cin >> B[i];
+    }
+
+    f[0][0] = 0;
+    for (int i = 1; i <= m; ++ i){
+        f[i] = f[i-1];
+        const int cost = m-i, cur = B[i];
+        for (int j1=1, j2=0; j1 <= n; ++ j1){
+            while (j2+1 <= n && Pr[j2+1]-Pr[j1-1] <= cur){
+                j2 += 1;
+                fmin(f[i][j2], f[i][j1-1]+cost);
+            }
+            if (j2 < j1) j2 += 1;
+        }
+    }
+
+    if (f[m][n] >= inf) cout << -1 << "\n";
+    else cout << f[m][n] << "\n";
+}
+
+int main(){
+#ifdef ONLINE_JUDGE
+    ios::sync_with_stdio(0), cin.tie(0), cout.tie(0);
+#else
+    freopen("in.txt", "rt", stdin), freopen("out.txt", "wt", stdout);
+#endif
+    int _ = 1;
+    cin >> _;
+    while (_--) solve();
+    return 0;
+}

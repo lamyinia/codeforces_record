@@ -1,0 +1,54 @@
+#include <bits/stdc++.h>
+using namespace std;
+using ld = long double;
+const long double Pi = acos(-1.0);
+template <class T> void fmax(T &a, T b){
+    if (b > a) a = b;
+}
+template <class T> void fmin(T &a, T b){
+    if (b < a) a = b;
+}
+
+void solve(){
+    const int inf = 1e9;
+
+    int n, m, ta, tb, k;
+    cin >> n >> m >> ta >> tb >> k;
+    vector <int> A(n+1);
+    vector <int> B(m);
+    for (int i = 1; i <= n; ++ i) cin >> A[i];
+    for (auto &x : B) cin >> x;
+    if (k >= n || k >= m){
+        cout << -1 << "\n";
+        return;
+    }
+
+    int res = 0;
+    auto find = [&](int mid)->int{
+        return lower_bound(B.begin(), B.end(), mid) - B.begin();
+    };
+
+    for (int i = 1; i <= k+1; ++ i){
+        int x = A[i]+ta;
+        int rare = k-i+1;
+        int idx = find(x);
+        if (idx+rare >= m){  // 从刚好大于 x 的时刻 开始取消
+            res = inf;
+            break;
+        }
+        fmax(res, B[idx+rare] + tb);
+    }
+
+    cout << (res == inf ? -1 : res) << "\n";
+}
+
+int main(){
+#ifdef ONLINE_JUDGE
+    ios::sync_with_stdio(0), cin.tie(0), cout.tie(0);
+#else
+    freopen("in.txt", "rt", stdin), freopen("out.txt", "wt", stdout);
+#endif
+    int _ = 1;
+    while (_--) solve();
+    return 0;
+}

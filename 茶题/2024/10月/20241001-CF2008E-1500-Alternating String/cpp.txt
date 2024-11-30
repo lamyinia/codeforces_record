@@ -1,0 +1,57 @@
+#include <bits/stdc++.h>
+using namespace std;
+using ll = long long;
+const int limi = 1e9;
+
+void solve(){
+    int n;
+    cin >> n;
+    vector <vector<int>> f1(n+2, vector<int>(26)), sf1(n+2, vector<int>(26));
+    vector <vector<int>> f2(n+2, vector<int>(26)), sf2(n+2, vector<int>(26));
+    string s;
+    cin >> s;
+    s = " " + s;
+
+    for (int i = 1; i <= n; ++ i){
+        f1[i] = f1[i-1], f2[i] = f2[i-1];
+        if (i&1) f1[i][s[i]-'a'] += 1;
+        else f2[i][s[i]-'a'] += 1;
+    }
+    for (int i = n; i >= 1; -- i){
+        sf1[i] = sf1[i+1], sf2[i] = sf2[i+1];
+        if (i&1) sf1[i][s[i]-'a'] += 1;
+        else sf2[i][s[i]-'a'] += 1;
+    }
+
+    if (n%2 == 0){
+        int t1 = 0, t2 = 0;
+        for (int i = 0; i < 26; ++ i){
+            t1 = max(t1, f1[n][i]);
+            t2 = max(t2, f2[n][i]);
+        }
+        cout << n-t1-t2 << "\n";
+    } else {
+        int res = n;
+        for (int i = 1; i <= n; ++ i){
+            int t1 = 0, t2 = 0;
+            for (int j = 0; j < 26; ++ j){
+                t1 = max(t1, f1[i-1][j]+sf2[i+1][j]);
+                t2 = max(t2, f2[i-1][j]+sf1[i+1][j]);
+            }
+            res = min(res, n-t1-t2);
+        }
+        cout << res << "\n";
+    }
+}
+ 
+int main(){
+#ifdef ONLINE_JUDGE
+    ios::sync_with_stdio(0), cin.tie(0), cout.tie(0);
+#else
+    freopen("in.txt", "rt", stdin), freopen("out.txt", "wt", stdout);
+#endif
+    int _ = 1;
+    cin >> _;
+    while (_--) solve();
+    return 0;
+}

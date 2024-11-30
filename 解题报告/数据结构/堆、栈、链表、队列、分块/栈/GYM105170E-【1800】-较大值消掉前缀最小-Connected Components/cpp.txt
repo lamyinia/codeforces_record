@@ -1,0 +1,48 @@
+#include <bits/stdc++.h>
+using namespace std;
+template <class T> void fmax(T &a, const T &b){
+    if (b > a) a = b;
+}
+template <class T> void fmin(T &a, T b){
+    if (b < a) a = b;
+}
+
+void solve(){
+    using ary2 = array<int,2>;
+    int n;
+    cin >> n;
+    vector <ary2> A(n);
+    for (int i = 0; i < n; ++ i){
+        int a, b;
+        cin >> a >> b;
+        auto &it = A[i];
+        it[0] = a-i, it[1] = i-b;
+    }
+    sort(A.begin(), A.end(), [&](auto &u, auto &v){
+        return u[0] == v[0] ? u[1] < v[1] : u[0] < v[0];
+    });
+
+    vector <int> stk(n);
+    int top = -1;
+    for (int i = 0; i < n; ++ i){
+        if (top == -1 || A[i][1] < stk[top]) stk[++ top] = A[i][1];
+        else {
+            int lst = stk[top];
+            while (top != -1 && A[i][1] >= stk[top]) top -= 1;
+            stk[++ top] = lst;
+        }
+    }
+
+    cout << top+1 << "\n";
+}
+
+int main(){
+#ifdef ONLINE_JUDGE
+    ios::sync_with_stdio(0), cin.tie(0), cout.tie(0);
+#else
+    freopen("in.txt", "rt", stdin), freopen("out.txt", "wt", stdout);
+#endif
+    int _ = 1;
+    while (_--) solve();
+    return 0;
+}

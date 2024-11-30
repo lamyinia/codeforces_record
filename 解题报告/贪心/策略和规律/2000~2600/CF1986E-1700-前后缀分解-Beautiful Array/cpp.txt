@@ -1,0 +1,83 @@
+#include <bits/stdc++.h>
+using namespace std;
+void fmax(int &x, int y){
+    if (y > x) x = y;
+}
+void fmin(int &x, int y){
+    if (y < x) x = y;
+}
+ 
+void solve(){
+    const long long inf = 1e18;
+ 
+    int n, k;
+    cin >> n >> k;
+    vector <int> nums(n);
+    for (auto &x : nums) cin >> x;
+ 
+    auto call_even = [&](vector <int>&A)->long long{
+        long long ans = 0;
+        int n = A.size();
+        for (int i = 1; i < n; i += 2){
+            ans += (A[i] - A[i-1]) / k;
+        }
+        return ans;
+    };
+    auto call_odd = [&](vector <int>&A)->long long{
+        int n = A.size();
+        long long ans = inf;
+        vector <long long> Pr(n+1), Sf(n+2);
+        // 枚举 1, 3, 5（下标从0开始） 算 2, 4, 6（下标从1开始）
+        for (int i = 1; i < n-1; i += 2){
+            Pr[i+1] += (A[i]-A[i-1]) / k;
+            if (i+3 <= n) Pr[i+3] += Pr[i+1];
+        }
+        for (int i = n-2; i > 0; i -= 2){
+            Sf[i+1] += (A[i+1]-A[i]) / k;
+            if (i-1 >= 0) Sf[i-1] += Sf[i+1];
+        }
+        for (int i = 1; i <= n; i += 2){
+            ans = min(ans, (Pr[i-1]+Sf[i+1]));
+        }
+        return ans;
+    };
+ 
+    map <int, vector<int>> mps;
+    for (auto &x : nums){
+        mps[x%k].push_back(x);
+    }
+ 
+    int c = 0;
+    for (auto &it : mps){
+        auto &vec = it.second;
+        sort(vec.begin(), vec.end());
+        if (vec.size()%2) c += 1;
+    }
+ 
+    if (c > 1){
+        cout << -1 << "\n";
+    } else {
+        long long res = 0;
+        for (auto &it : mps){
+            auto &vec = it.second;
+            if (vec.size()%2 == 0){
+                res += call_even(vec);
+            } else {
+                res += call_odd(vec);
+            }
+        }
+        cout << res << "\n";
+    }
+}
+ 
+int main(){
+#ifdef ONLINE_JUDGE
+    ios::sync_with_stdio(0), cin.tie(0), cout.tie(0);
+#else
+    freopen("in.txt", "rt", stdin), freopen("out.txt", "wt", stdout);
+#endif
+    int _ = 1;
+    cin >> _;
+    while (_--) solve();
+    return 0;
+}

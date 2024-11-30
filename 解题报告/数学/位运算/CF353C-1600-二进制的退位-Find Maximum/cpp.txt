@@ -1,0 +1,59 @@
+#include <bits/stdc++.h>
+using namespace std;
+const long double Pi = acos(-1.0);
+template <class T> void fmax(T &a, T b){
+    if (b > a) a = b;
+}
+template <class T> void fmin(T &a, T b){
+    if (b < a) a = b;
+}
+
+void solve(){
+    int n;
+    cin >> n;
+    vector <int> A(n), Pr(n+1);
+    for (auto &x : A) cin >> x;
+    string s;
+    cin >> s;
+    int res = 0;
+    for (int i = 0; i < n; ++ i){
+        Pr[i+1] = Pr[i] + A[i];
+        if (s[i] == '1') res += A[i];
+    }
+
+    for (int i = n-1, cur = 0; i >= 0; -- i){
+        if (s[i] == '1'){
+            fmax(res, cur+Pr[i]);
+            cur += A[i];
+        }
+    }
+
+    cout << res << "\n";
+}
+
+int main(){
+#ifdef ONLINE_JUDGE
+    ios::sync_with_stdio(0), cin.tie(0), cout.tie(0);
+#else
+    freopen("in.txt", "rt", stdin), freopen("out.txt", "wt", stdout);
+#endif
+    int _ = 1;
+    while (_--) solve();
+    return 0;
+}
+
+/*
+	考虑每个二进制为1的位，上一次进位的二进制数字，这个位之后一定全是1，也就是全选.
+
+	从最高位到最低位依次枚举 二进制为1的位，用后缀和算出上一次进位的二进制数字.
+	对于第一次枚举的，它的组合可以分成两个集合，一个选它的，一个不选它的，
+	如果不选它，我一定可以选后面全是1已经是最优解，如果选它，我们则考虑第二次枚举的二进制为1的位，
+	一定不可能是为0的位，因为我们已经选了前面的1，因此不能让这些0变成1，
+	对于第二次枚举的，也一定可以分成两个集合，由此对集合不断划分，最终一定可以包含全部集合.
+	最优解也一定在枚举的这些集合中.
+	
+*/
+
+
+
+

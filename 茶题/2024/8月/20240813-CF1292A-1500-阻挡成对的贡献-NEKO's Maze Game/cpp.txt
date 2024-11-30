@@ -1,0 +1,47 @@
+
+#include <bits/stdc++.h>
+using namespace std;
+const long double Pi = acos(-1.0);
+template <class T> void fmax(T &a, T b){
+    if (b > a) a = b;
+}
+template <class T> void fmin(T &a, T b){
+    if (b < a) a = b;
+}
+
+void solve(){
+    int n, q;
+    cin >> n >> q;
+    vector <vector<int>> g(2, vector<int>(n+1));
+
+    int c = 0;
+    auto conver = [&](int x, int y)->void{
+        int d = g[x][y]==1 ? -1 : 1;
+        for (int i = y-1; i <= y+1; ++ i){
+            if (i < 1 || i > n) continue;
+            if (g[!x][i]==1) c += d;
+        }
+        g[x][y] = !g[x][y];
+        assert(c >= 0);
+    };
+    while (q--){
+        int x, y;
+        cin >> x >> y;
+        x -= 1;
+        conver(x, y);
+
+        if (c) cout << "No\n";
+        else cout << "Yes\n";
+    }
+}
+
+int main(){
+#ifdef ONLINE_JUDGE
+    ios::sync_with_stdio(0), cin.tie(0), cout.tie(0);
+#else
+    freopen("in.txt", "rt", stdin), freopen("out.txt", "wt", stdout);
+#endif
+    int _ = 1;
+    while (_--) solve();
+    return 0;
+}

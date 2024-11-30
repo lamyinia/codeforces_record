@@ -1,0 +1,340 @@
+void solve(){
+    int n, k;
+    cin >> n >> k;
+    vector <int> A(n);
+    for (auto &x : A) cin >> x, x -= 1;
+    vector<vector<int>> g(n), f(n, vector<int>(20)), D(n);
+    vector <int> dep(n), hevy(n, -1), sz(n, 1), ans(n);
+    vector <int> L(n), R(n);
+    for (int i = 0, u,v; i < n-1; ++ i){
+        cin >> u >> v;
+        -- u, -- v;
+        g[u].push_back(v);
+        g[v].push_back(u);
+    }
+
+    int tot = -1;
+    auto process = [&](auto &&self, int x, int presor)->void{
+        L[x] = ++ tot;
+        for (auto &y : g[x]){
+            if (y == presor) continue;
+            dep[y] = dep[x]+1;
+            f[y][0] = x;
+            for (int i = 1; i <= int(log2(dep[y])); ++ i){
+                f[y][i] = f[f[y][i-1]][i-1];
+            }
+
+            self(self, y, x);
+            sz[x] += sz[y];
+            if (hevy[x]==-1 || sz[hevy[x]] < sz[y]) hevy[x] = y;
+        }
+        R[x] = tot;
+    };
+    process(process, 0, -1);
+    assert(tot == n-1);
+
+    auto findkth = [&](int u)->int{
+        int d = k+1;
+        for (int i = int(log2(dep[u])); i >= 0; -- i){
+            if ((d>>i) & 1){
+                u = f[u][i];
+                d -= 1<<i;
+            }
+        }
+        return u;
+    };
+
+    int all = 0, sonj;
+    vector <int> cnt(n);
+
+    auto call = [&](auto &&self, int x, int presor, int opt, int limi)->void{
+        if (dep[x] > limi) return;
+        if (opt==1){
+            if (cnt[A[x]] == 0) all += 1;
+            cnt[A[x]] += 1;
+        } else {
+            cnt[A[x]] -= 1;
+            if (cnt[A[x]] == 0) all -= 1;
+        }
+
+        for (auto &y : g[x]){
+            if (y == presor || y == sonj) continue;
+            self(self, y, x, opt, limi);
+        }
+    };
+    // cout << hevy[0] << "\n";
+    auto dfs = [&](auto &&self, int x, int presor, bool keep)->void{
+        for (auto &y : g[x]){
+            if (y == presor || y == hevy[x]) continue;
+            self(self, y, x, 0);
+        }
+        if (hevy[x] != -1) self(self, hevy[x], x, 1);
+        sonj = hevy[x];
+        call(call, x, presor, 1, dep[x]+k);  // 统计轻儿子和自己的贡献
+        for (auto &j : D[x]){  // 重儿子 距离超过 k 的不要
+            int l_order = L[hevy[x]], r_order = R[hevy[x]];
+            int id = L[j];
+            if (id >= l_order && id <= r_order){
+                cnt[A[j]] -= 1;
+                if (cnt[A[j]] == 0) all -= 1;
+            }
+        }
+        ans[x] = all;
+
+        sonj = -1;
+        if (!keep) call(call, x, presor, -1, dep[x]+k);
+        if(dep[x] >= k+1){
+            int j = findkth(x);
+            D[j].push_back(x);
+        }
+    };
+    dfs(dfs, 0, -1, 0);
+
+    int m;
+    cin >> m;
+    while (m--){
+        int x;
+        cin >> x;
+        x -= 1;
+        cout << ans[x] << "\n";
+    }    
+}
+
+static int f[N] = {};初始化多少次
+I:宠物对战：
+void solve(){
+    using ary2 = array<int,2>;
+    const int N = 5e5+10, inf = 1e9;
+    static int trie1[N][26], trie2[N][26], End1[N], End2[N];
+
+    int na, nb;
+    int tot1 = 0, tot2 = 0;
+
+    auto insert1 = [&](string s)->void{
+        int cur = 0;
+        for (auto &ch : s){
+            int c = ch-'a';
+            if (!trie1[cur][c]) trie1[cur][c] = ++ tot1;
+            cur = trie1[cur][c];
+        }
+        End1[cur] += 1;
+    };
+    cin >> na;
+    for (int i = 0; i < na; ++ i){
+        string s;
+        cin >> s;
+        insert1(s);
+    }
+
+    auto insert2 = [&](string s)->void{
+        int cur = 0;
+        for (auto &ch : s){
+            int c = ch - 'a';
+            if (!trie2[cur][c]) trie2[cur][c] = ++ tot2;
+            cur = trie2[cur][c];
+        }
+        End2[cur] += 1;
+    };
+    cin >> nb;
+    for (int i = 0; i < nb; ++ i){
+        string s;
+        cin >> s;
+        insert2(s);
+    }
+
+    string s;
+    cin >> s;
+    int n = s.size();
+    s = " " + s;
+    vector <ary2> f(n+1, {inf,inf});  // f[i][j] 拼接第到i个字符，最后一次拼接是字符集 j 的最小拼接次数
+    f[0][0] = f[0][1] = 0;
+    for (int i = 0; i <= n; ++ i){
+
+        if (f[i][1] != inf){  // 转移 A 类字符
+            for (int j = i+1, cur = 0; j <= n; ++ j){
+                int c = s[j] - 'a';
+                if (!trie1[cur][c]) break;
+                cur = trie1[cur][c];
+                if (End1[cur]){
+                    f[j][0] = min(f[j][0], f[i][1]+1);
+                }
+            }
+        }
+
+        if (f[i][0] != inf){  // 转移 B 类字符
+            for (int j = i+1, cur = 0; j <= n; ++ j){
+                int c = s[j] - 'a';
+                if (!trie2[cur][c]) break;
+                cur = trie2[cur][c];
+                if (End2[cur]){
+                    f[j][1] = min(f[j][1], f[i][0]+1);
+                }
+            }
+        }
+    }
+
+    int ans = min(f[n][0], f[n][1]);
+    if (ans != inf) cout << ans << "\n";
+    else cout << -1 << "\n";
+}
+
+G:排队打卡：
+void solve(){
+    using ary2 = array<int,2>;
+    long long wake, m;
+    cin >> wake >> m;
+
+    int n, k;
+    cin >> n >> k;
+    vector <ary2> pson(n);
+    for (auto &it : pson) cin >> it[0] >> it[1];
+    sort(pson.begin(), pson.end(), [&](ary2 &u, ary2 &v){
+        return u[0] < v[0];
+    });
+
+    int j = 0;
+    long long all = 0;  // all 维护当前有多少人
+
+    while (j < n && pson[j][0] < wake){  // 模拟醒来前的排队
+        all += pson[j][1];
+        j += 1;
+        if (j < n && pson[j][0] < wake){
+            long long d = pson[j][0] - pson[j-1][0];
+            all -= d*k;
+            if (all < 0) all = 0;
+        }
+        if (j < n && pson[j][0] > wake){
+            long long d = wake - pson[j-1][0];
+            all -= d*k;
+            if (all < 0) all = 0;
+        }
+    }
+
+    assert(j != n);
+    if (all != m){
+        cout << "Wrong Record\n";
+        return;
+    }
+
+    long long ans1 = 0, ans2 = 9e18;
+    all -= 1ll * (pson[j][0] - wake) * k;  // 先把 wake ~ pson[j][0] 的放行给补上
+    if (all < 0) all = 0;
+
+    while (j < n){
+        all += pson[j][1];
+        if ((all+1+k-1) / k <= ans2){
+            ans1 = pson[j][0];
+            ans2 = (all+k)/k;
+        }
+        j += 1;
+        if (j < n){
+            long long d = pson[j][0] - pson[j-1][0];
+            all -= d*k;
+            if (all < 0) all = 0;
+        }
+    }
+
+    cout << ans1 << " " << ans2 << "\n";
+}
+
+A:减肥计划:
+void solve(){
+    int n, k;
+    cin >> n >> k;
+    vector <int> nums(n);
+    int Ma = 0;
+    for (auto &x : nums){
+        cin >> x;
+        if (x > Ma) Ma = x;
+    }
+
+    for (int i = 0; i < n; ++ i){
+        if (nums[i] == Ma){
+            cout << i+1 << "\n";
+            return;
+        }
+        int j = i+1;
+        while (j < n && nums[j] <= nums[i]) j += 1;
+        int jg = i != 0;
+        if (j-i-1+jg >= k){
+            cout << i+1 << "\n";
+            return;
+        }
+        i = j-1;
+    }
+
+    assert(0);
+}
+
+E:睡觉
+void solve(){
+    int x, t, k, n, d;
+    cin >> x >> t >> k >> n >> d;
+    vector <int> ds(2*n), A(2*n);
+
+    int cur = 0;
+    for (int i = 0; i < n; ++ i){
+        int x;
+        cin >> x;
+        if (x <= d) ds[i] = -1;
+        else ds[i] = 1;
+        ds[i+n] = ds[i];
+        cur += ds[i];
+    }
+    if (cur < 0){
+        cout << "YES\n";
+        return;
+    }
+    int all = cur;
+
+    cur = x;
+    for (int i = 0; i < 2*n; ++ i){
+        cur += ds[i];
+        A[i] = cur;
+    }
+    int i = 0, Max = 0;
+    while (i < 2*n){
+        if (A[i] <= k){
+            int c = 1;
+            while (i+1 < 2*n && A[i+1] <= k){
+                c += 1, i += 1;
+            }
+            if (c >= t){
+                cout << "YES\n";
+                return;
+            }
+            if (c > Max) Max = c;
+        }
+        i += 1;
+    }
+
+    if (Max==2*n){
+        assert(all == 0);
+        cout << "YES\n";
+        return;
+    }
+
+    cout << "NO\n";
+}
+
+C:测量器
+void solve(){
+    using ld = long double;
+    const ld Pi = acos(-1.0);
+    int n;
+    ld R, theta;
+    cin >> n >> R >> theta;
+
+    if (2*Pi-theta < theta) theta = 2*Pi-theta;
+
+    vector <ld> rs(n);
+    for (auto &x : rs) cin >> x;
+
+    ld res = theta * R;
+    for (int i = 0; i < n; ++ i){
+        ld y = theta * rs[i] + 2*(R-rs[i]);
+        if (y < res) res = y;
+    }
+
+    cout << fixed << setprecision(15) << res << "\n";
+}

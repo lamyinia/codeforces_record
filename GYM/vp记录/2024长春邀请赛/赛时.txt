@@ -1,0 +1,158 @@
+D:Parallel Lines
+void solve(){
+    using ary2 = array<long long,2>;
+    using frac = Rat<long long>;
+
+    int n, k;
+    cin >> n >> k;
+    vector <ary2> point(n);
+    for (auto &it : point) cin >> it[0] >> it[1];
+
+    mt19937 mt(chrono::system_clock::now().time_since_epoch().count());
+    uniform_int_distribution <int> rands(1, n);
+    // 特判垂直x轴的情况
+    {
+        map <int, vector<int>> mps;
+        for (int i = 0; i < n; ++ i){
+            mps[point[i][0]].push_back(i);
+        }
+        int cnt = 0;
+        bool jg = 1;
+        for (auto &it : mps){
+            auto &vec = it.second;
+            if (vec.size() <= 1){    // 保证不能有不在直线的点
+                jg = 0;
+                break;
+            }
+            cnt += 1;
+        }
+        if (jg && cnt == k){
+            cnt = 0;
+            for (auto &it : mps){
+                auto &vec = it.second;
+                cout << vec.size();
+                for (int i = 0; i < vec.size(); ++ i){
+                    cout << " " << vec[i]+1;
+                }
+                cout << "\n";
+                cnt += 1;
+            }
+            return;
+        }
+    }
+
+
+    while (true){
+        map <frac, vector<int>> mps;
+        int i = rands(mt), j = rands(mt);
+        if (i == j) continue;
+        i -= 1, j -= 1;
+        if (point[i][0] == point[j][0]) continue;
+        int dx = point[i][0]-point[j][0], dy = point[i][1]-point[j][1];
+
+        frac K(dy, dx);
+        for (int i = 0; i < n; ++ i){
+            int x = point[i][0], y = point[i][1];
+            frac cur = K*frac(x,1) - frac(y,1);
+            mps[cur].push_back(i);
+        }
+
+        int cnt = 0;
+        bool jg = 1;
+        for (auto &it : mps){
+            auto &vec = it.second;
+            if (vec.size() <= 1){
+                jg = 0;
+                break;
+            }
+            cnt += 1;
+        }
+        if (jg && cnt == k){
+            cnt = 0;
+            for (auto &it : mps){
+                auto &vec = it.second;
+                cout << vec.size();
+                for (int i = 0; i < vec.size(); ++ i){
+                    cout << " " << vec[i]+1;
+                }
+                cout << "\n";
+                cnt += 1;
+            }
+            return;
+        }
+    }
+}
+G:Platform Game
+void solve(){
+    using ary3 = array<int,3>;
+    int n;
+    cin >> n;
+    int sx, sy;
+    vector <ary3> segs(n);
+    for (auto &it : segs) cin >> it[0] >> it[1] >> it[2];
+    sort(segs.begin(), segs.end(), [&](ary3&u, ary3&v){
+        return u[2] > v[2];
+    });
+
+    cin >> sx >> sy;
+    int j = 0;
+    while (j < n){
+        int l = segs[j][0], r = segs[j][1], y = segs[j][2];
+        if (y > sy || r <= sx || l >= sx){
+            j += 1;
+        } else {
+            sx = r;
+            sy = y;
+            j += 1;
+        }
+    }
+
+    cout << sx << "\n";
+}
+L:Recharge
+void solve(){
+    long long k, x, y;
+    cin >> k >> x >> y;
+    long long res = 0;
+    if (k%2 == 0){
+        res += (x+2*y) / k;
+    } else {
+        long long j = 0;
+        if (k > 1) j = min(x, y/(k/2));
+        
+        res += j;
+        x -= j, y -= (k/2)*j;
+        
+        if (k > 1) j = min(x/(k-2), y);
+        res += j;
+        x -= (k-2)*j, y -= j;
+
+        res += x/k;
+        x %= k;
+        
+        if (x%2 == 1 && x+2*y >= k){
+            res += 1;
+            y -= (k-x)/2;
+            x = 0;
+        }
+        res += (x+2*y) / (k+1);
+
+    }
+    cout << res << "\n";
+}
+I:The Easiest 问题
+void solve(){
+    string line;
+    getline(cin, line);
+    stringstream ss(line);
+    string s;
+    int res = 0;
+    while (ss >> s){
+        for (auto &ch : s){
+            if (islower(ch)){
+                res += 1;
+            }
+        }
+    }
+    cout << res << "\n";
+}

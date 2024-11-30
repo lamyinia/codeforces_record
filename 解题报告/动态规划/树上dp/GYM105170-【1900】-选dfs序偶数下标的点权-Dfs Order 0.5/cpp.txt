@@ -1,0 +1,84 @@
+#include <bits/stdc++.h>
+using namespace std;
+template <class T> void fmax(T &a, const T &b){
+    if (b > a) a = b;
+}
+template <class T> void fmin(T &a, T b){
+    if (b < a) a = b;
+}
+
+void solve(){
+    int n;
+    cin >> n;
+    vector <int> A(n);
+    for (auto &x : A) cin >> x;
+    vector<vector<int>> g(n);
+    vector <int> sz(n, 1);
+    for (int i = 0,u,v; i < n-1; ++ i){
+        cin >> u >> v;
+        u -= 1, v -= 1;
+        g[u].push_back(v);
+        g[v].push_back(u);
+    }
+    vector<vector<long long>> f(n, vector<long long>(2));
+    // f[u][0/1] 表示以从 u 开始搜索 的dfs序的 偶/奇 下标和的最大值
+    auto dfs = [&](auto &&self, int u, int presor)->void{
+        f[u][1] = A[u];
+        vector <int> S1, S2;
+        for (auto &v : g[u]){
+            if (v == presor) continue;
+            self(self, v, u);
+            sz[u] += sz[v];
+            if (sz[v]%2) S1.push_back(v);
+            else S2.push_back(v);
+        }
+        if (S1.empty()){
+            for (int i = 0; i < 2; ++ i){
+                for (auto &v : S2){
+                    f[u][i] += f[v][i^1];
+                }
+            }
+        } else {
+            for (int i = 0; i < 2; ++ i){
+                for (auto &v : S2){
+                    f[u][i] += max(f[v][0], f[v][1]);
+                }
+            }
+            sort(S1.begin(), S1.end(), [&](int &u, int &v){
+                return f[u][0]-f[u][1] > f[v][0]-f[v][1];
+            });
+            int m = S1.size();
+            // 讨论奇数 子树的选择组合
+            for (int i = 0; i < 2; ++ i){
+                if (m%2 == 0){
+                    for (int j = 0; j < m; ++ j){
+                        int v = S1[j];
+                        if (j < m/2) f[u][i] += f[v][0];
+                        else f[u][i] += f[v][1];
+                    }
+                } else {
+                    for (int j = 0; j < m; ++ j){  // 如果有奇数个奇子树，i 状态要多选一个 i^1 状态的
+                        int v = S1[j];
+                        if (j < m/2+i) f[u][i] += f[v][0];
+                        else f[u][i] += f[v][1];
+                    }
+                }
+            }
+        }
+    };
+    dfs(dfs, 0, -1);
+
+    cout << f[0][0] << "\n";
+}
+
+int main(){
+#ifdef ONLINE_JUDGE
+    ios::sync_with_stdio(0), cin.tie(0), cout.tie(0);
+#else
+    freopen("in.txt", "rt", stdin), freopen("out.txt", "wt", stdout);
+#endif
+    int _ = 1;
+    cin >> _;
+    while (_--) solve();
+    return 0;
+}

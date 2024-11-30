@@ -1,0 +1,70 @@
+#include <bits/stdc++.h>
+using namespace std;
+using ll = long long;
+const long double Pi = acos(-1.0);
+template <class T> void fmax(T &a, T b){
+    if (b > a) a = b;
+}
+template <class T> void fmin(T &a, T b){
+    if (b < a) a = b;
+}
+
+void solve(){
+    int n;
+    cin >> n;
+    vector <vector<int>> g(n+1);
+    vector <int> ws(n+1);
+    for (int i = 1, p,w; i <= n; ++ i){
+        cin >> p >> w;
+        ws[i] = w;
+        g[p].push_back(i);
+    }
+    multiset <int> st;
+    for (int i = 1; i <= n; ++ i){
+        if (g[i].size()){
+            st.insert(ws[i]);
+        }
+    }
+
+    bool jg = 1;
+    auto dfs = [&](auto &&self, int u)->long long{
+        if (!jg) return 0;
+        if (!g[u].size()) return ws[u];
+
+        long long all = 0;
+        for (auto &y : g[u]){
+            all += self(self, y);
+            if (!jg) return 0;
+        }
+        auto it = st.lower_bound(all);
+        if (it != st.end()){
+            st.erase(it);
+        } else {
+            jg = 0;
+            return 0;
+        }
+        return all;
+    };
+
+    long long all = 0;
+    for (auto &u : g[0]){
+        all += dfs(dfs, u);
+    }
+
+    if (!jg || all > 2200){
+        cout << "NO\n";
+    } else {
+        cout << "YES\n";
+    }
+}
+
+int main(){
+#ifdef ONLINE_JUDGE
+    ios::sync_with_stdio(0), cin.tie(0), cout.tie(0);
+#else
+    freopen("in.txt", "rt", stdin), freopen("out.txt", "wt", stdout);
+#endif
+    int _ = 1;
+    while (_--) solve();
+    return 0;
+}

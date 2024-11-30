@@ -1,0 +1,70 @@
+/*
+给定长度为n(1 <= n <= 100,000) 的字符串s，现在要求选取一些字符使得每个长度为m 的字符串区间均有一个被选中的字符，且选中的这些字符重排列后得到的字符串字典序最小
+
+*/
+#include <bits/stdc++.h>
+using namespace std;
+using Pii = pair<int,int>;
+using ll = long long;
+const int N = 5050, mod = 1e9+7, inf = 1e9;
+int vis[100050];
+vector <int> Pos[26];
+int sz[26];
+
+void solve(){
+    int m;
+    string s;
+    cin >> m >> s;
+    int n = s.size();
+    s = " " + s;
+    set <int> seek = {n+1};
+    for (int i = n; i >= 1; -- i){
+        Pos[s[i]-'a'].push_back(i);
+        ++ sz[s[i]-'a'];
+        if (i <= n-m+1) seek.insert(i);
+        else vis[i] = 1;
+    }
+    /*
+        按字典序考虑每个字母，当字典序大的被选时，字典序小的一定都被选
+        我们可以枚举最大的是哪个字符
+	当枚举一个字符时，看所有位置是否满足 中间没有长度为m的区间未被选择：
+			选择字典序小于等于当前枚举的这个字典序 p
+			for p in range(26):
+				flg = True
+				cur = -1
+				for idx in range(n):
+					if s[idx] <= p: cur = idx
+					elif  idx-cur >= m: flg = False
+	
+    */
+    string res;
+    int all = n-m+1;
+    int p;
+    for (int i = 0; i < 26 && all; ++ i){
+        vector <int> tmps;
+        for (auto &cur : Pos[i]){
+            for (set<int>::iterator it = seek.lower_bound(cur-m+1); *it<=cur && all; it = seek.erase(it)){
+                -- all;
+                tmps.push_back(*it);
+            }
+        }
+        if (all == 0){
+            p = i;
+            break;
+        } else {
+            for (auto &x : tmps) vis[x] = 1;
+            while (sz[i]--) res += char(i+'a');
+        }
+    }
+    for (int i = 1, lst = -1, j = 1; i <= n-m+1; ++ i){
+        if (lst == -1 && !vis[i]) lst = i;
+        if (s[i] == char(p+'a')) j = i;
+        if (lst != -1 && (i-lst+1 == m || i == n-m+1)){
+            res += char(p+'a');
+            lst = -1;
+            if (i == n-m+1) break;
+            i = j;
+        }
+    }
+    cout << res << "\n";
+}

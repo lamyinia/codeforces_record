@@ -1,0 +1,58 @@
+#include <bits/stdc++.h>
+using namespace std;
+const long double Pi = acos(-1.0);
+template <class T> void fmax(T &a, T b){
+    if (b > a) a = b;
+}
+template <class T> void fmin(T &a, T b){
+    if (b < a) a = b;
+}
+/*
+    你要打败 k 个敌人，求最小的攻击次数
+ */
+void solve(){
+    const int inf = 1e9;
+    int n, atk, k;
+    cin >> n >> atk >> k;
+    vector <int> hps(n), loc(n);
+    for (auto &x : hps) cin >> x;
+    for (auto &x : loc) cin >> x;
+
+    auto chk = [&](int mid)->bool{
+        map <int,int> diff;
+        for (int i = 0; i < n; ++ i){
+            int d = atk - (hps[i]+mid-1) / mid;
+            if (d < 0) continue;
+            int l = max(0, loc[i]-d), r = min(inf, loc[i]+d);
+            diff[l] += 1, diff[r+1] -= 1;
+        }
+        int lst = 0, cur = 0;
+        for (auto &it : diff){
+            cur += lst;
+            if (cur >= k) return true;
+            lst = it.second;
+        }
+        return false;
+    };
+
+    if (!chk(inf)){
+        cout << -1 << "\n";
+        return;
+    }
+
+    int l = 1, r = inf;
+    while (l < r){
+        int mid = (l+r) >> 1;
+        if (chk(mid)) r = mid;
+        else l = mid+1;
+    }
+
+    cout << l << "\n";
+}
+
+int main(){
+    int _ = 1;
+    cin >> _;
+    while (_--) solve();
+    return 0;
+}

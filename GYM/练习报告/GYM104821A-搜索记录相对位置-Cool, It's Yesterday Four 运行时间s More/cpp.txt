@@ -1,0 +1,92 @@
+#include <bits/stdc++.h>
+using namespace std;
+const long double Pi = acos(-1.0);
+template <class T> void fmax(T &a, T b){
+    if (b > a) a = b;
+}
+template <class T> void fmin(T &a, T b){
+    if (b < a) a = b;
+}
+
+void solve(){
+    using ary2 = array<int,2>;
+
+    int n, m;
+    cin >> n >> m;
+    vector<string> s(n);
+    for (auto &chs : s) cin >> chs;
+    vector<vector<int>> vis(n, vector<int>(m));
+
+    const int ds[] = {-1,0,1,0,-1};
+    auto chk = [&](int x, int y)->bool{
+        return x >= 0 && x < n && y >= 0 && y < m && s[x][y] == '.';
+    };
+    auto find = [&](auto &&self, int x, int y, vector<ary2>&cur)->void{
+        cur.push_back({x,y});
+        vis[x][y] = 1;
+        for (int i = 0; i < 4; ++ i){
+            int ix = x+ds[i], iy = y+ds[i+1];
+            if (!chk(ix,iy) || vis[ix][iy]) continue;
+            self(self, ix, iy, cur);
+        }
+    };
+
+    vector<vector<ary2>> chuk;
+    for (int i = 0; i < n; ++ i){
+        for (int j = 0; j < m; ++ j){
+            if (vis[i][j] || s[i][j] == 'O') continue;
+            vector<ary2> cur;
+            find(find, i, j, cur);
+            chuk.push_back(cur);
+        }
+    }
+
+    int len = chuk.size();
+    int res = 0;
+    for (int k = 0; k < len; ++ k){
+        vector <ary2> loc;
+        auto &g = chuk[k];
+
+        for (auto &it : g){
+            loc.push_back({it[0]-g[0][0], it[1]-g[0][1]});
+        }
+
+        bool jg1 = 1;
+        for (int i = 0; i < len; ++ i){
+            if (i == k) continue;
+            for (auto &j1 : chuk[i]){  // 验证chuk[k]是否满足条件
+                bool jg2 = 1;
+                for (auto &j2 : loc){
+                    int x = j1[0]+j2[0], y = j1[1]+j2[1];
+                    if (!chk(x,y)){
+                        jg2 = 0;
+                        break;
+                    }
+                }
+
+                if (jg2){
+                    jg1 = 0;
+                    break;
+                }
+            }
+            if (!jg1) break;
+        }
+
+        if (jg1) res += g.size();
+    }
+
+    cout << res << "\n";
+}
+
+
+int main(){
+#ifdef ONLINE_JUDGE
+    ios::sync_with_stdio(0), cin.tie(0), cout.tie(0);
+#else
+    freopen("in.txt", "rt", stdin), freopen("out.txt", "wt", stdout);
+#endif
+    int _ = 1;
+    cin >> _;
+    while (_--) solve();
+    return 0;
+}

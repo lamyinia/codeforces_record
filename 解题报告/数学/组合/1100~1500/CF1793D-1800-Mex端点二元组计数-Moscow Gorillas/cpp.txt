@@ -1,0 +1,66 @@
+#include <bits/stdc++.h>
+using namespace std;
+const long double Pi = acos(-1.0);
+template <class T> void fmax(T &a, T b){
+    if (b > a) a = b;
+}
+template <class T> void fmin(T &a, T b){
+    if (b < a) a = b;
+}
+
+void solve(){
+    int n;
+    cin >> n;
+    vector <int> p(n), q(n), ps(n), qs(n);
+    for (int i = 0; i < n; ++ i){
+        cin >> p[i];
+        p[i] -= 1;
+        ps[p[i]] = i;
+    }
+    for (int i = 0; i < n; ++ i){
+        cin >> q[i];
+        q[i] -= 1;
+        qs[q[i]] = i;
+    }
+
+    auto call = [&](int x)->long long{
+        return 1ll*x*(x+1) / 2;
+    };
+
+    long long res = 0;
+    int L = min(ps[0], qs[0]);
+    int R = max(ps[0], qs[0]);
+    res += call(L) + call(R-L-1) + call(n-R-1);
+
+    for (int i = 1; i < n; ++ i){   // 想要 MEX 值 为 i，至少要选择 [L, R]
+        int l = min(ps[i],qs[i]);
+        int r = max(ps[i],qs[i]);
+        if (l < L && r > R){
+            res += 1ll * (L-l) * (r-R);
+        }
+        if (l > R){
+            res += 1ll * (L+1) * (l-R);
+        }
+        if (r < L){
+            res += 1ll * (L-r) * (n-R);
+        }
+
+        fmin(L, l);
+        fmax(R, r);
+    }
+    res += 1;
+
+    cout << res << "\n";
+}
+
+
+int main(){
+#ifdef ONLINE_JUDGE
+    ios::sync_with_stdio(0), cin.tie(0), cout.tie(0);
+#else
+    freopen("in.txt", "rt", stdin), freopen("out.txt", "wt", stdout);
+#endif
+    int _ = 1;
+    while (_--) solve();
+    return 0;
+}

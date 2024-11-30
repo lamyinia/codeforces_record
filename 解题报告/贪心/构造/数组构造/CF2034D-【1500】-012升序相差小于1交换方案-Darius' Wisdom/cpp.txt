@@ -1,0 +1,98 @@
+#include <bits/stdc++.h>
+using namespace std;
+template <class T> void fmax(T &a, const T &b){
+    if (b > a) a = b;
+}
+template <class T> void fmin(T &a, T b){
+    if (b < a) a = b;
+}
+
+void solve(){
+    using ary2 = array<int,2>;
+
+    int n;
+    cin >> n;
+    vector <int> A(n), loc0, loc1, loc2;
+    for (int i = 0; i < n; ++ i){
+        cin >> A[i];
+        if (A[i] == 0) loc0.push_back(i);
+        else if (A[i] == 1) loc1.push_back(i);
+        else loc2.push_back(i);
+    }
+
+    int n0 = loc0.size(), n1 = loc1.size(), n2 = loc2.size();
+    if (!n1) return;
+    vector <ary2> ans;
+    int i0 = n0-1;
+
+    auto swaps = [&](int i, int j)->void{
+        swap(A[i], A[j]);
+        ans.push_back({i, j});
+    };
+
+    for (int i = 0; i < n0; ++ i){  // 先让前面 0 的位置 是 1 的和 靠后的0 交换, 这样0的位置只有 0 和 2
+        if (A[i] == 1){
+            swaps(i, loc0[i0]);
+            i0 -= 1;
+        }
+    }
+
+    vector <int> loc;
+    for (int i = 0; i < n; ++ i){
+        if (A[i] == 1){
+            loc.push_back(i);
+            assert(i >= n0);
+        }
+    }
+
+    int i1 = n1-1;  // 让前面 0 的位置 是 2 的 先和靠右的 1 交换， 再换成 0
+    for (int i = 0; i < n0; ++ i){
+        if (A[i] == 2){
+            swaps(i, loc[i1]);
+            swaps(i, loc0[i0]);
+            loc[i1] = loc0[i0];
+            i0 -= 1;
+            if (i1 > 0) i1 -= 1;
+        }
+    }
+    int r = n0+n1;
+
+
+    loc.clear();
+    for (int i = 0; i < n; ++ i){
+        if (A[i] == 1){
+            loc.push_back(i);
+        }
+    }
+    i1 = n1-1;
+
+    for (int i = n0; i < r; ++ i){ //再让 1 的位置 是 2 的 和靠右的 1 交换
+        if (A[i] == 2){
+            swaps(i, loc[i1]);
+            if (i1 > 0) i1 -= 1;
+        }
+    }
+
+
+    for (int i = 1; i < n; ++ i){
+        assert(A[i] >= A[i-1]);
+    }
+
+    cout << ans.size() << "\n";
+    assert(ans.size() <= n);
+    for (auto &it : ans){
+        cout << it[0]+1 << " " << it[1]+1 << "\n";
+    }
+}
+
+int main(){
+#ifdef ONLINE_JUDGE
+    ios::sync_with_stdio(0), cin.tie(0), cout.tie(0);
+#else
+    freopen("in.txt", "rt", stdin), freopen("out.txt", "wt", stdout);
+#endif
+    int _ = 1;
+    cin >> _;
+    while (_--) solve();
+    return 0;
+}

@@ -1,0 +1,43 @@
+#include <bits/stdc++.h>
+using namespace std;
+using ll = long long;
+const int N = 1000500, inf = 1e9;
+
+/*
+给你长度为n的字符串s，问至少修改多少个字母，才能使得
+它是无限循环串：RGBRGBRGB····· 的一个长度为k的子串？
+f[i][0/1/2] 表示字符串前i个字符 和 分别和周期字符串 "RGBRGB···"，"GBRGBR···"，“BRGBRG···” 匹配的最大长度
+对于长度等于k的区间的左端点，我们把区间外面的截取掉
+它一定只能变成这三个字符串的其中一个，枚举所有情况的最小值
+时间复杂度： O(n)
+空间复杂度： O(n)
+*/
+void solve(){
+    int n, k;
+    string s;
+    cin >> n >> k >> s;
+    s = " " + s;
+    vector<vector<int>> f(n+1, vector<int>(3));
+    string dstr("RGB");
+    for (int i = 1; i <= n; ++ i)
+        for (int j = 0; j < 3; ++ j)
+            if (s[i] == dstr[(i+j)%3]) f[i][j] = f[i-1][j] + 1;
+            else f[i][j] = f[i-1][j];
+    int res = inf;
+    for (int i = 1; i <= n-k+1; ++ i)
+        for (int j = 0; j < 3; ++ j)
+            res = min(res, k - (f[i+k-1][j]-f[i-1][j]));
+    cout << res << "\n";
+}
+
+int main(){
+#ifdef ONLINE_JUDGE
+    ios::sync_with_stdio(false), cin.tie(0), cout.tie(0);
+#else
+    freopen("in.txt", "rt", stdin), freopen("out.txt", "wt", stdout);
+#endif
+    int _ = 1;
+    cin >> _;
+    while (_--) solve();
+    return 0;
+}

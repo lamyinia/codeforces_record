@@ -1,0 +1,92 @@
+#include <bits/stdc++.h>
+using namespace std;
+template <class T> void fmax(T &a, T b){
+    if (b > a) a = b;
+}
+template <class T> void fmin(T &a, T b){
+    if (b < a) a = b;
+}
+/*
+    n 个屋子，m条边，每条边都有一个延时.
+    有 p 个屋子需要连网，你可以选择 k 个屋子，在这些屋子装上网.
+    需要网的 屋子的代价 是 有网的屋子屋子路径 延迟 的最大值
+    对每个 k = 1, 2, ···, n，求代价的最小值
+*/
+struct Edge {
+    int u, v, w;
+    bool operator < (const Edge &oth){
+        return w < oth.w;
+    }
+};
+
+void solve(){
+    const long long inf = 1e18;
+
+    int n, m1, m2;
+    cin >> n >> m1 >> m2;
+    vector <Edge> edges;
+    vector <int> sz(n+1), p(n+1);
+    iota(p.begin(), p.end(), 0);
+    auto find = [&](int x)->int{
+        int rt = x;
+        while (p[rt] != rt) rt = p[rt];
+        while (p[x] != rt){
+            int &y = p[x];
+            x = y;
+            y = rt;
+        }
+        return rt;
+    };
+    for (int i = 0, x; i < m2; ++ i){
+        cin >> x;
+        sz[x] = 1;
+    }
+    for (int i = 0,u,v,w; i < m1; ++ i){
+        cin >> u >> v >> w;
+        edges.push_back({u, v, w});
+    }
+    sort(edges.begin(), edges.end());
+
+    vector<vector<long long>> f(n+1, vector<long long>(n+1));
+    for (auto &it : edges){
+        int u = it.u, v = it.v, w = it.w;
+        u = find(u), v = find(v);
+        if (u == v) continue;
+        vector <long long> res(sz[u]+sz[v]+1, inf);
+        for (int i = 1; i <= sz[u]; ++ i){
+            fmin(res[i], f[u][i] + 1ll*sz[v]*w);
+        }
+        for (int i = 1; i <= sz[v]; ++ i){
+            fmin(res[i], f[v][i] + 1ll*sz[u]*w);
+        }
+        for (int i = 1; i <= sz[u]; ++ i){
+            for (int j = 1; j <= sz[v]; ++ j){
+                fmin(res[i+j], f[u][i] + f[v][j]);
+            }
+        }
+        for (int i = 1; i <= sz[u]+sz[v]; ++ i){
+            f[u][i] = res[i];
+        }
+        p[v] = u;
+        sz[u] += sz[v];
+    }
+
+    int rt = find(1);
+    for (int i = 1; i <= n; ++ i){
+        if (i > 1) cout << " ";
+        cout << f[rt][i];
+    }
+    cout << "\n";
+}
+
+int main(){
+#ifdef ONLINE_JUDGE
+    ios::sync_with_stdio(0), cin.tie(0), cout.tie(0);
+#else
+    freopen("in.txt", "rt", stdin), freopen("out.txt", "wt", stdout);
+#endif
+    int _ = 1;
+    cin >> _;
+    while (_--) solve();
+    return 0;
+}

@@ -1,0 +1,88 @@
+#include <bits/stdc++.h>
+using namespace std;
+template <class T> void fmax(T &a, const T &b){
+    if (b > a) a = b;
+}
+template <class T> void fmin(T &a, T b){
+    if (b < a) a = b;
+}
+
+void solve(){
+    string s;
+    cin >> s;
+    const int N = 26;
+    static int f1[N][N][N], f2[N][N];
+
+    auto select = [&](string s)->void{
+        if (s.size() == 2){
+            int u = s[0]-'a', v = s[1]-'a';
+            f2[u][v] = 1;
+        } else {
+            int u = s[0]-'a', v = s[1]-'a', o = s[2]-'a';
+            f1[u][v][o] = 1;
+        }
+    };
+
+    int n = s.size();
+    vector<vector<int>> f(n+4, vector<int>(2));
+    // f[i][0/1] 表示 在 i 这个位置 断2/3 个是否合法
+    // root 选择至少5个, 初始化
+    if (n-2 > 4) f[n-2][0] = 1;
+    if (n-3 > 4) f[n-3][1] = 1;
+    for (int i = n-2; i > 6; -- i){
+        if (f[i][0]){
+            if (i-3 > 4) f[i-3][1] = 1;
+            if (i-2 > 4 && s.substr(i-2, 2) != s.substr(i, 2)){
+                f[i-2][0] = 1;
+            }
+        }
+        if (f[i][1]){
+            if (i-2 > 4) f[i-2][0] = 1;
+            if (i-3 > 4 && s.substr(i-3, 3) != s.substr(i, 3)){
+                f[i-3][1] = 1;
+            }
+        }   
+    }
+
+    for (int i = 0; i < n; ++ i){
+        if (f[i][0]) select(s.substr(i, 2));
+        if (f[i][1]) select(s.substr(i, 3));
+    }
+
+    vector <string> ans;
+    for (int i = 0; i < N; ++ i){
+        for (int j = 0; j < N; ++ j){
+            if (f2[i][j]){
+                string s;
+                s += char(i+'a');
+                s += char(j+'a');
+                ans.push_back(s);
+            }
+            for (int k = 0; k < N; ++ k){
+                if (f1[i][j][k]){
+                    string s;
+                    s += char(i+'a');
+                    s += char(j+'a');
+                    s += char(k+'a');
+                    ans.push_back(s);
+                }
+            }
+        }
+    }
+
+    cout << ans.size() << "\n";
+    for (auto &chs : ans){
+        cout << chs << "\n";
+    }
+}
+
+int main(){
+#ifdef ONLINE_JUDGE
+    ios::sync_with_stdio(0), cin.tie(0), cout.tie(0);
+#else
+    freopen("in.txt", "rt", stdin), freopen("out.txt", "wt", stdout);
+#endif
+    int _ = 1;
+    while (_--) solve();
+    return 0;
+}
