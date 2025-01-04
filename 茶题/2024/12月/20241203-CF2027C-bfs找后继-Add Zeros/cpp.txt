@@ -1,0 +1,48 @@
+#include <bits/stdc++.h>
+using namespace std;
+const int mod = 1e9+7;
+
+void solve(){
+    int n;
+    cin >> n;
+    vector <long long> nums(n+1);
+    map <long long, vector<int>> mps;
+
+    for (int i = 1; i <= n; ++ i){
+        cin >> nums[i];
+        nums[i] += i;
+        mps[nums[i]].push_back(i);
+    }
+
+    set <long long> st;
+    queue <long long> Q;
+    Q.push(n);
+
+    long long res = 0;
+    while (!Q.empty()){
+        long long u = Q.front();  // u 是当前数组的长度
+        Q.pop();
+        if (st.count(u)) continue;
+        st.insert(u);
+
+        res = max(res, u);
+
+        for (auto &i : mps[u+1]){
+            Q.push(u + i-1);
+        }
+    } 
+
+    cout << res << "\n";
+}
+
+int main(){
+#ifdef ONLINE_JUDGE
+    ios::sync_with_stdio(0), cin.tie(0), cout.tie(0);
+#else
+    freopen("in.txt", "rt", stdin), freopen("out.txt", "wt", stdout);
+#endif
+    int _ = 1;
+    cin >> _;
+    while (_--) solve();
+    return 0;
+}

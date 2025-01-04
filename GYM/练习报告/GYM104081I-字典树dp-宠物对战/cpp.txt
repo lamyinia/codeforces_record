@@ -1,0 +1,95 @@
+#include <bits/stdc++.h>
+using namespace std;
+template <class T> void fmax(T &a, T b){  // 模板类无法处理 long double 问题
+    if (b > a) a = b;
+}
+template <class T> void fmin(T &a, T b){
+    if (b < a) a = b;
+}
+
+void solve(){
+    using ary2 = array<int,2>;
+    const int N = 5e5+10, inf = 1e9;
+    static int trie1[N][26], trie2[N][26], End1[N], End2[N];
+
+    int na, nb;
+    int tot1 = 0, tot2 = 0;
+
+    auto insert1 = [&](string s)->void{
+        int cur = 0;
+        for (auto &ch : s){
+            int c = ch-'a';
+            if (!trie1[cur][c]) trie1[cur][c] = ++ tot1;
+            cur = trie1[cur][c];
+        }
+        End1[cur] += 1;
+    };
+    cin >> na;
+    for (int i = 0; i < na; ++ i){
+        string s;
+        cin >> s;
+        insert1(s);
+    }
+
+    auto insert2 = [&](string s)->void{
+        int cur = 0;
+        for (auto &ch : s){
+            int c = ch - 'a';
+            if (!trie2[cur][c]) trie2[cur][c] = ++ tot2;
+            cur = trie2[cur][c];
+        }
+        End2[cur] += 1;
+    };
+    cin >> nb;
+    for (int i = 0; i < nb; ++ i){
+        string s;
+        cin >> s;
+        insert2(s);
+    }
+
+    string s;
+    cin >> s;
+    int n = s.size();
+    s = " " + s;
+    vector <ary2> f(n+1, {inf,inf});  // f[i][j] 拼接第到i个字符，最后一次拼接是字符集 j 的最小拼接次数
+    f[0][0] = f[0][1] = 0;
+    for (int i = 0; i <= n; ++ i){
+
+        if (f[i][1] != inf){  // 转移 A 类字符
+            for (int j = i+1, cur = 0; j <= n; ++ j){
+                int c = s[j] - 'a';
+                if (!trie1[cur][c]) break;
+                cur = trie1[cur][c];
+                if (End1[cur]){
+                    f[j][0] = min(f[j][0], f[i][1]+1);
+                }
+            }
+        }
+
+        if (f[i][0] != inf){  // 转移 B 类字符
+            for (int j = i+1, cur = 0; j <= n; ++ j){
+                int c = s[j] - 'a';
+                if (!trie2[cur][c]) break;
+                cur = trie2[cur][c];
+                if (End2[cur]){
+                    f[j][1] = min(f[j][1], f[i][0]+1);
+                }
+            }
+        }
+    }
+
+    int ans = min(f[n][0], f[n][1]);
+    if (ans != inf) cout << ans << "\n";
+    else cout << -1 << "\n";
+}
+
+int main(){
+#ifdef ONLINE_JUDGE
+    ios::sync_with_stdio(0), cin.tie(0), cout.tie(0);
+#else
+    freopen("in.txt", "rt", stdin), freopen("out.txt", "wt", stdout);
+#endif
+    int _ = 1;
+    while (_--) solve();
+    return 0;
+}

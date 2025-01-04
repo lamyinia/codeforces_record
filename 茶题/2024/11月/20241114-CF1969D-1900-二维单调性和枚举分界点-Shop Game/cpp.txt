@@ -1,0 +1,73 @@
+#include <bits/stdc++.h>
+using namespace std;
+template <class T> void fmax(T &a, const T &b){
+    if (b > a) a = b;
+}
+template <class T> void fmin(T &a, T b){
+    if (b < a) a = b;
+}
+
+void solve(){
+    int n, k;
+    cin >> n >> k;
+    vector <int> A(n), B(n);
+    for (auto &x : A) cin >> x;
+    for (auto &x : B) cin >> x;
+    vector <int> need;
+    for (int i = 0; i < n; ++ i){
+        if (A[i] <= B[i]){
+            need.push_back(i);
+        }
+    }
+    if (need.size() <= k){
+        cout << 0 << "\n";
+        return;
+    }
+
+    sort(need.begin(), need.end(), [&](int &u, int &v){
+        return B[u] == B[v] ? A[u] < A[v] : B[u] < B[v];
+    });
+    int length = need.size();
+    
+    priority_queue <int> pq;
+    long long ans = 0;
+    for (int i = length-1; i >= length-k; -- i){
+        pq.push(A[need[i]]);
+        ans -= A[need[i]];
+    }
+    for (int i = length-k-1; i >= 0; -- i){
+        int cura = A[need[i]], curb = B[need[i]];
+        ans += curb - cura;
+    }
+    long long res = max(ans, 0ll);
+
+    for (int i = length-k-1; i >= 0; -- i){
+        int cura = A[need[i]], curb = B[need[i]];
+        if (pq.size()){
+            ans += pq.top() - curb;
+            pq.pop();
+            pq.push(cura);
+        }
+        fmax(res, ans);
+    }
+
+    cout << max(res, 0ll) << "\n";
+}
+
+int main(){
+#ifdef ONLINE_JUDGE
+    ios::sync_with_stdio(0), cin.tie(0), cout.tie(0);
+#else
+    freopen("in.txt", "rt", stdin), freopen("out.txt", "wt", stdout);
+#endif
+    int _ = 1;
+    cin >> _;
+    while (_--) solve();
+    return 0;
+}
+/*
+1
+4 1
+1 1 9 8
+4 6 9 10
+*/

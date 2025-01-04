@@ -1,0 +1,51 @@
+const int inf = 2e9;
+struct Edge {
+    int to, capi, cost, rev;
+};
+struct Graph {
+    vector<vector<Edge>> g;
+    vector <int> lst, pre, f, dist, vis;
+    int S, T;
+    Graph(){}
+    Graph(int n): g(n+1), lst(n+1), pre(n+1), f(n+1), dist(n+1), vis(n+1) {}
+    void set(int s, int t){
+        S = s, T = t;
+    }
+    void add(int a, int b, int c, int d){
+        int ra = g[a].size(), rb = g[b].size();
+        g[a].push_back({b,c,d, rb});
+        g[b].push_back({a,0,-d, ra});
+    }
+    bool spfa(){
+        fill(dist.begin(), dist.end(), inf), fill(f.begin(), f.end(), 0);
+        queue <int> Q;
+        Q.push(S), dist[S] = 0, f[S] = inf;
+        while (!Q.empty()){
+            auto u = Q.front();
+            Q.pop();
+            vis[u] = 0;
+            for (int i = 0; i < g[u].size(); ++ i){
+                auto &j = g[u][i];
+                if (dist[j.to] > dist[u]+j.cost && j.capi){
+                    dist[j.to] = dist[u]+j.cost;
+                    pre[j.to] = u, lst[j.to] = i, f[j.to] = min(f[u], j.capi);
+                    if (!vis[j.to]) Q.push(j.to), vis[j.to] = 1;
+                }
+            }
+        }
+        return f[T] > 0;
+    }
+    array<long long,2> EK(){
+        long long ans1 = 0, ans2 = 0;
+        while (spfa()){
+            int flow = f[T];
+            ans1 += flow, ans2 += 1ll*flow*dist[T];
+            for (int u = T; u != S; u = pre[u]){
+                auto &j = g[pre[u]][lst[u]];
+                j.capi -= flow, g[j.to][j.rev].capi += flow;
+                assert(j.to == u);
+            }
+        }
+        return {ans1, ans2};
+    }
+};

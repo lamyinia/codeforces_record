@@ -1,0 +1,79 @@
+#include <bits/stdc++.h>
+using namespace std;
+using i64 = long long;
+template <class T> void fmax(T &a, const T &b){
+    if (b > a) a = b;
+}
+template <class T> void fmin(T &a, const T &b){
+    if (b < a) a = b;
+}
+
+void solve(){
+    using ary2 = array<int,2>;
+    const int inf = 1e9;
+
+    string t;
+    cin >> t;
+    int n = t.size();
+    t = " " + t;
+    int m;
+    cin >> m;
+    vector <string> s(m);
+    for (auto &chs : s) cin >> chs;
+
+    auto march = [&](int loc, string cur)->bool{  // 匹配后缀
+        int len = cur.size();
+        if (loc-len+1 < 1) return false;
+        return t.substr(loc-len+1, len) == cur;
+    };
+
+    vector <ary2> pre(n+1);
+    vector <int> f(n+1, inf);
+    f[0] = 0;
+    for (int i = 1; i <= n; ++ i){  // 枚举所有结束位置，倒退前面可能的字符串
+        for (int j = 0; j < m; ++ j){
+            if (march(i, s[j])){
+                int len = s[j].size();
+                int u = -1;
+                for (int k = i-len; k < i; ++ k){  // min{f[i-len~i-1]}
+                    if (u==-1 || f[k] < f[u]){
+                        u = k;
+                    }
+                }
+                if (u != -1 && f[i] > f[u]+1){
+                    f[i] = f[u]+1;
+                    pre[i] = {u, j};
+                }
+            }
+        }
+    }
+    if (f[n] == inf){
+        cout << -1 << "\n";
+        return;
+    }
+
+    vector <ary2> ans;
+    int i = n;
+    while (i > 0){
+        int j = pre[i][1];  // 选下标是j的字符串
+        ans.push_back({j+1, i-(int)s[j].size()+1});
+        i = pre[i][0];
+    }
+    reverse(ans.begin(), ans.end());
+    cout << ans.size() << "\n";
+    for (auto &it : ans){
+        cout << it[0] << " " << it[1] << "\n";
+    }
+}
+
+int main(){
+#ifdef ONLINE_JUDGE
+    ios::sync_with_stdio(0), cin.tie(nullptr), cout.tie(nullptr);
+#else
+    freopen("in.txt", "rt", stdin), freopen("out.txt", "wt", stdout);
+#endif
+    int _ = 1;
+    cin >> _;
+    while (_--) solve();
+    return 0;
+}

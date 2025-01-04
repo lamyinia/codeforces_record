@@ -1,0 +1,92 @@
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+template <class T> void fmax(T &a, const T &b){
+    if (b > a) a = b;
+}
+template <class T> void fmin(T &a, T b){
+    if (b < a) a = b;
+}
+struct fenwick{
+        vector <int> info;
+        int n;
+        fenwick(){}
+        fenwick(int n): info(n+1, -1), n(n) {}
+        void update(int i, int v){
+            i = n-i+1;
+            while (i <= n){
+                fmax(info[i], v);
+                i += i&-i;
+            }
+        }
+        int query(int i){
+            int res = -1;
+            i = n-i+1;
+            while (i){
+                fmax(res, info[i]);
+                i -= i&-i;
+            }
+            return res;
+        }
+};
+
+void solve(){
+    using ary3 = array<int,3>;
+    using Yint = fenwick;
+    const int inf = 1e9+1;
+
+    int n;
+    cin >> n;
+    vector <ary3> segs;
+    map <int,int> mps;
+    for (int i = 0,l,r; i < n; ++ i){
+        cin >> l >> r;
+        segs.push_back({l,r,i});
+        mps[r] = 1;
+    }
+    int tot = 0;
+    for (auto &it : mps){
+        it.second = ++ tot;
+    }
+    Yint Y(tot);
+
+    sort(segs.begin(), segs.end(), [&](auto &u, auto &v){
+        return u[0] == v[0] ? u[1] > v[1] : u[0] < v[0];
+    });
+    vector <int> ans(n);
+    set <int> st;
+
+    for (int i = 0; i < n; ++ i){
+        auto &[l, r, id] = segs[i];
+
+        int L = -1, R = inf;
+        if (i < n-1 && segs[i+1][0] == l && segs[i+1][1] == r){
+            st.insert(r);
+            Y.update(mps[r], l);
+        }
+        auto it = st.lower_bound(r);
+        if (it != st.end()) R = *it;
+        L = Y.query(mps[r]);
+
+        if (R != inf && L != -1){
+            ans[id] += l-L + R-r;
+        }
+
+        st.insert(r);
+        Y.update(mps[r], l);
+    }
+
+    for (auto &x : ans){
+        cout << x << "\n";
+    }
+}
+
+int main(){
+    ios::sync_with_stdio(0), cin.tie(0), cout.tie(0);
+    int _ = 1;
+    cin >> _;
+    while (_--) solve();
+    return 0;
+}
+```

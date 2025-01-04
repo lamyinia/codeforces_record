@@ -1,0 +1,55 @@
+#include <bits/stdc++.h>
+using namespace std;
+template <class T> void fmax(T &a, const T &b){
+    if (b > a) a = b;
+}
+template <class T> void fmin(T &a, T b){
+    if (b < a) a = b;
+}
+
+void solve(){
+    const int N = 1050;
+    vector <int> prms, vis(N+1);
+    for (int i = 2; i <= N; ++ i){
+        if (!vis[i]) prms.push_back(i);
+        for (auto &y : prms){
+            if (y*i > N) break;
+            vis[y*i] = 1;
+            if (i%y == 0) break;
+        }
+    }
+
+    int n;
+    cin >> n;
+    for (int i = 2; i <= n; ++ i){
+        if (!vis[i]) continue;
+        int ct = 0;
+        for (auto &x : prms){
+            if (x > i) break;
+            if (i%x == 0){
+                ct += 1;
+            }
+        }
+        if (ct == 1) vis[i] = 0;
+    }
+
+    vector <int> ans;
+    for (int i = 2; i <= n; ++ i){
+        if (!vis[i]){
+            ans.push_back(i);
+        }
+    }
+    cout << ans.size() << "\n";
+    for (int i = 0; i < ans.size(); ++ i){
+        if (i) cout << " ";
+        cout << ans[i];
+    }
+    cout << "\n";
+}
+
+int main(){
+    ios::sync_with_stdio(0), cin.tie(0), cout.tie(0);
+    int _ = 1;
+    while (_--) solve();
+    return 0;
+}

@@ -1,0 +1,60 @@
+#include <bits/stdc++.h>
+using namespace std;
+template <class T> void fmax(T &a, const T &b){
+    if (b > a) a = b;
+}
+template <class T> void fmin(T &a, T b){
+    if (b < a) a = b;
+}
+
+void solve(){
+    int n;
+    cin >> n;
+    vector<vector<int>> g(n);
+    vector <int> deg(n);
+    for (int i = 0,u,v; i < n-1; ++ i){
+        cin >> u >> v;
+        u -= 1, v -= 1;
+        g[u].push_back(v);
+        g[v].push_back(u);
+    }
+    for (int i = 0; i < n; ++ i){
+        deg[i] = int(g[i].size());
+    }
+
+    int res = -n;
+    auto dfs = [&](auto &&self, int u, int presor)->int{
+        if (u != 0 && g[u].size() == 1){
+            return 1;
+        }
+        int mx1 = 0, mx2 = 0;
+        for (auto &v : g[u]){
+            if (v == presor) continue;
+            int got = self(self, v, u);
+            if (got > mx1){
+                mx2 = mx1;
+                mx1 = got;
+            } else {
+                fmax(mx2, got);
+            }
+        }
+        res = max(res, mx1+deg[u]-1);
+        res = max(res, mx1+mx2+deg[u]-2);
+        return mx1 + deg[u]-2;
+    };
+    dfs(dfs, 0, -1);
+
+    cout << res << "\n";
+}
+
+int main(){
+#ifdef ONLINE_JUDGE
+    ios::sync_with_stdio(0), cin.tie(0), cout.tie(0);
+#else
+    freopen("in.txt", "rt", stdin), freopen("out.txt", "wt", stdout);
+#endif
+    int _ = 1;
+    cin >> _;
+    while (_--) solve();
+    return 0;
+}

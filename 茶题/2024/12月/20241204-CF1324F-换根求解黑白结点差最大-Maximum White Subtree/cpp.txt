@@ -1,0 +1,58 @@
+#include <bits/stdc++.h>
+using namespace std;
+template <class T> void fmax(T &a, const T &b){
+    if (b > a) a = b;
+}
+template <class T> void fmin(T &a, T b){
+    if (b < a) a = b;
+}
+
+void solve(){
+    int n;
+    cin >> n;
+    vector <int> A(n), f(n), ans(n);
+    vector<vector<int>> g(n);
+    for (auto &x : A) cin >> x;
+    for (int i = 0,u,v; i < n-1; ++ i){
+        cin >> u >> v;
+        u -= 1, v -= 1;
+        g[u].push_back(v);
+        g[v].push_back(u);
+    }
+
+    auto dfs = [&](auto &&self, int u, int presor)->void{
+        f[u] = A[u] == 1 ? 1 : -1;
+        for (auto &v : g[u]){
+            if (v == presor) continue;
+            self(self, v, u);
+            f[u] += max(f[v], 0);
+        }
+    };
+    dfs(dfs, 0, -1);
+
+    auto dfs_root = [&](auto &&self, int u, int presor, int last)->void{
+        ans[u] = last + f[u];
+        for (auto &v : g[u]){
+            if (v == presor) continue;
+            self(self, v, u, max(last+f[u]-max(0,f[v]), 0));
+        }
+    };
+    dfs_root(dfs_root, 0, -1, 0);
+    
+    for (int i = 0; i < n; ++ i){
+        if (i) cout << " ";
+        cout << ans[i];
+    }
+    cout << "\n";
+}
+
+int main(){
+#ifdef ONLINE_JUDGE
+    ios::sync_with_stdio(0), cin.tie(0), cout.tie(0);
+#else
+    freopen("in.txt", "rt", stdin), freopen("out.txt", "wt", stdout);
+#endif
+    int _ = 1;
+    while (_--) solve();
+    return 0;
+}

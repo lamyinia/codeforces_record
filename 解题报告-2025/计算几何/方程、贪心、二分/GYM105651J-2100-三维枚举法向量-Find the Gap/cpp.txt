@@ -1,0 +1,129 @@
+#include <bits/stdc++.h>
+using namespace std;
+using i64 = long long;
+using f64 = long double;
+const f64 eps = 1e-12;
+const i64 inf_i64 = 1e18;
+template <class T> void fmax(T &a, const T &b){
+    if (b > a) a = b;
+}
+template <class T> void fmin(T &a, const T &b){
+    if (b < a) a = b;
+}
+int jgs(f64 x){
+    return (x < -eps ? -1 : x >= eps);
+}
+template <class T> struct dot3d {
+    T x, y, z;
+    dot3d() {}
+    dot3d(T x, T y, T z) : x(x), y(y), z(z){}
+    dot3d operator + (dot3d oth){ 
+        return dot3d(x+oth.x, y+oth.y, z+oth.z); 
+    }
+    dot3d operator - (dot3d oth){ 
+        return dot3d(x-oth.x, y-oth.y, z-oth.z); 
+    }
+    dot3d operator * (f64 k){
+        return dot3d(x*k, y*k, z*k);
+    }
+    dot3d operator / (f64 k){
+        return dot3d(x/k, y/k, z/k); 
+    }
+    bool operator == (dot3d B){ 
+        return jgs(x-B.x) == 0 && jgs(y-B.y) == 0 && jgs(z-B.z) == 0; 
+    }
+    dot3d operator & (dot3d oth){
+		return dot3d(y*oth.z-oth.y*z, z*oth.x-oth.z*x, x*oth.y-oth.x*y);
+    }
+    T operator * (dot3d oth){
+        return x*oth.x + y*oth.y + z*oth.z;
+    }
+    f64 length(){
+        return sqrtl(x*x+y*y+z*z);
+    }
+};
+using int3d = dot3d<f64>;
+using vec3d = int3d;
+
+f64 Dis(int3d u, int3d v) { 
+    return sqrt((u.x-v.x)*(u.x-v.x) + (u.y-v.y)*(u.y-v.y) + (u.z-v.z)*(u.z-v.z));
+}
+int3d projection(int3d u, vec3d unit){
+    return unit * (u * unit);
+}
+
+void solve(){
+    auto print = [&](int3d u)->void{
+        cout << u.x << " " << u.y << " " << u.z << "\n";
+    };
+
+    int n;
+    cin >> n;
+    vector <int3d> dots(n);
+    for (auto &j : dots){
+        cin >> j.x >> j.y >> j.z;
+    }
+    vector <vec3d> vecs;
+
+    auto bigTo = [&](int3d u, int3d v)->bool{
+        if (jgs(u.x-v.x) != 0) return jgs(u.x-v.x) == 1;
+        if (jgs(u.y-v.y) != 0) return jgs(u.y-v.y) == 1;
+        return jgs(u.z-v.z) == 1;
+    };
+
+    for (int i = 0; i < n; ++ i){
+        for (int j = i+1; j < n; ++ j){
+            if (dots[i] == dots[j]) continue;
+            vecs.push_back({dots[j]-dots[i]});
+        }
+    }
+
+    int siz = vecs.size();
+
+    f64 res = inf_i64;
+    for (int i = 0; i < siz; ++ i){
+        auto &l1 = vecs[i];
+        for (int j = i+1; j < siz; ++ j){
+            auto &l2 = vecs[j];
+            if (jgs(l1*l2/l1.length()/l2.length()-1) == 0) continue;
+            vec3d vec = l1 & l2;
+            vec = vec / vec.length();
+            
+            int3d ans_p1 = {-inf_i64, -inf_i64, -inf_i64};
+            int3d ans_p2 = {inf_i64, inf_i64, inf_i64};
+
+            for (int r = 0; r < n; ++ r){
+                auto p = projection(dots[r], vec);
+                if (bigTo(p, ans_p1)) ans_p1 = p;
+                if (bigTo(ans_p2, p)) ans_p2 = p;
+            }
+
+            f64 d = int3d(ans_p1 - ans_p2).length();
+            if (d-res < eps){
+                res = d;
+            }
+        }
+    }
+
+    if (jgs(res-inf_i64) == 0){
+        cout << 0 << "\n";
+    } else {
+        cout << fixed << setprecision(15);
+        cout << res << "\n";
+    }
+}
+/*
+    调试路程：
+        projection 写错
+        bigTo 写错
+*/
+int main(){
+#ifdef ONLINE_JUDGE
+    ios::sync_with_stdio(0), cin.tie(nullptr), cout.tie(nullptr);
+#else
+    freopen("in.txt", "rt", stdin), freopen("out.txt", "wt", stdout);
+#endif
+    int _ = 1;
+    while (_--) solve();
+    return 0;
+}

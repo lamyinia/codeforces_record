@@ -1,0 +1,97 @@
+/** Created by 5cm/s on 2024/12/09 11:50:32. **/
+#include <bits/stdc++.h>
+
+#ifdef MEGURINE
+#include "algo/debug.h"
+#else
+#define debug(...) 42
+#define endl '\n'
+#endif
+
+using namespace std;
+
+using f64 = long double;
+const f64 radio = 1 - (sqrt(f64(5)) - 1) / 2;
+
+template <typename _Calculator, typename _Compartor>
+f64 ternary_search(f64 lo, f64 hi, _Calculator calc, _Compartor comp, int searchCount = 200) {
+    using Res = std::invoke_result_t<decltype(calc), f64>;
+    bool lb = false, rb = false;
+    Res lv, rv;
+    while (searchCount--) {
+        f64 d = (hi - lo) * radio;
+        if (!lb)
+            lv = calc(lo + d);
+        if (!rb)
+            rv = calc(hi - d);
+        if (comp(lv, rv)) {
+            lb = false, rb = true;
+            rv = lv, hi -= d;
+        } else {
+            lb = true, rb = false;
+            lv = rv, lo += d;
+        }
+    }
+    return lo;
+}
+
+void elysia() {
+    f64 s;
+    vector<int> arr(3), id = {0, 1, 2};
+    cin >> s;
+    for (auto &x : arr)
+        cin >> x;
+    ranges::sort(id, [&](int i, int j) { return arr[i] < arr[j]; });
+
+    int a = arr[id[0]], b = arr[id[1]], c = arr[id[2]];
+
+    auto f = [&](f64 x, f64 y, f64 z) {
+        return a * log(x) + b * log(y) + c * log(z);
+    };
+
+    f64 x, y, z;
+    if (a == 0) {
+        x = 0;
+        if (b == 0) {
+            y = 0;
+        } else {
+            y = ternary_search(0, s, [&](f64 v) {
+                                   return f(1, v, s - v);
+                               }, [&](f64 v1, f64 v2) {
+                                   return v1 > v2;
+                               });
+        }
+        z = s - y;
+    } else {
+        x = ternary_search(0, s, [&](f64 vx) {
+                               f64 ty = ternary_search(0, s - vx, [&](f64 vy) {
+                                                           return f(vx, vy, s - vx - vy);
+                                                       }, [&](f64 v1, f64 v2) {
+                                                           return v1 > v2;
+                                                       });
+                               return f(vx, ty, s - vx - ty);
+                           }, [&](f64 v1, f64 v2) {
+                               return v1 > v2;
+                           });
+        y = ternary_search(0, s - x, [&](f64 vy) {
+                               return f(x, vy, s - x - vy);
+                           }, [&](f64 v1, f64 v2) {
+                               return v1 > v2;
+                           });
+        z = s - x - y;
+    }
+    vector<f64> ans(3);
+    ans[id[0]] = x, ans[id[1]] = y, ans[id[2]] = z;
+    cout << ans[0] << ' ' << ans[1] << ' ' << ans[2] << endl;
+}
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+    int T = 1;
+    // cin >> T;
+    cout << fixed << setprecision(21);
+    while (T--)
+        elysia();
+    return 0;
+}

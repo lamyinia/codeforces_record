@@ -1,0 +1,63 @@
+#include <bits/stdc++.h>
+using namespace std;
+using i64 = long long;
+template <class T> void fmax(T &a, const T &b){
+    if (b > a) a = b;
+}
+template <class T> void fmin(T &a, const T &b){
+    if (b < a) a = b;
+}
+
+void solve(){
+    using ary2 = array<int,2>;
+    const int inf = 1e9, N = 301;
+    static int f[2*N][N][N];
+
+    int n;
+    cin >> n;
+    vector<vector<int>> g(n+1,vector<int>(n+1, -inf));
+    for (int k = 0; k <= 2*n; ++ k){
+        for (int i = 0; i <= n; ++ i){
+            for (int j = 0; j <= n; ++ j){
+                f[k][i][j] = -inf;
+            }
+        }
+    }
+
+    for (int i = 1; i <= n; ++ i){
+        for (int j = 1; j <= n; ++ j){
+            cin >> g[i][j];
+        }
+    }
+
+    f[2][1][1] = g[1][1];
+    for (int k = 3; k <= 2*n; ++ k){
+        for (int i1 = max(1,k-n); i1 <= min(n, k-1); ++ i1){
+            for (int i2 = max(1,k-n); i2 <= min(n, k-1); ++ i2){
+                int j1 = k-i1, j2 = k-i2;
+                int &cur = f[k][i1][i2];
+                int x = g[i1][j1] + g[i2][j2];
+                if (i1 == i2) x -= g[i1][j1];
+
+                fmax(cur, f[k-1][i1][i2]);
+                fmax(cur, f[k-1][i1-1][i2]);
+                fmax(cur, f[k-1][i1][i2-1]);
+                fmax(cur, f[k-1][i1-1][i2-1]);
+                cur += x;
+            }
+        }
+    }
+
+    cout << f[2*n][n][n] << "\n";
+}
+
+int main(){
+#ifdef ONLINE_JUDGE
+    ios::sync_with_stdio(0), cin.tie(nullptr), cout.tie(nullptr);
+#else
+    freopen("in.txt", "rt", stdin), freopen("out.txt", "wt", stdout);
+#endif
+    int _ = 1;
+    while (_--) solve();
+    return 0;
+}

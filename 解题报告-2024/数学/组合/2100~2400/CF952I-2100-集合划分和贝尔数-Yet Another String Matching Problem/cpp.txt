@@ -1,0 +1,72 @@
+#include <bits/stdc++.h>
+using namespace std;
+template <class T> void fmax(T &a, const T &b){
+    if (b > a) a = b;
+}
+template <class T> void fmin(T &a, T b){
+    if (b < a) a = b;
+}
+
+void solve(){
+    auto ord = [&](char ch)->int{
+        return ch - 'a';
+    };
+
+    string s, t;
+    cin >> s >> t;
+    int n = s.size(), m = t.size();
+    s = " " + s;
+    t = " " + t;
+
+    vector <int> ans(n+1, 233), ne(m+1, -1), fa(10), ins(10);
+    auto call = [&](int cur)->void{
+        for (int i = 1,j; i <= m; ++ i){
+            j = ne[i-1];
+            while (j != -1 && fa[ord(t[j+1])] != fa[ord(t[i])]) j = ne[j];
+            ne[i] = j+1;
+        }
+        for (int i = 1, j = 0; i <= n; ++ i){
+            while (j != 0 && fa[ord(t[j+1])] != fa[ord(s[i])]) j = ne[j];
+            if (fa[ord(t[j+1])] == fa[ord(s[i])]) j += 1;
+            if (j == m){
+                fmin(ans[i], cur);
+                j = ne[j];
+            }
+        }
+    };
+    int move = 0;
+    auto dfs = [&](auto &&self, int dep)->void{
+        if (dep > ord('f')){
+            call(6 - move);
+            return;
+        }
+        fa[dep] = dep;
+        ins[++ move] = dep;
+        self(self, dep+1);
+
+        ins[move--] = 0;
+        for (int i = 1; i <= move; ++ i){
+            fa[dep] = ins[i];
+            self(self, dep+1);
+        }
+    };
+    dfs(dfs, 0);
+
+    for (int i = m; i <= n; ++ i){
+        if (i > m) cout << " ";
+        cout << ans[i];
+    }
+    cout << "\n";
+}
+
+
+int main(){
+#ifdef ONLINE_JUDGE
+    ios::sync_with_stdio(0), cin.tie(0), cout.tie(0);
+#else
+    freopen("in.txt", "rt", stdin), freopen("out.txt", "wt", stdout);
+#endif
+    int _ = 1;
+    while (_--) solve();
+    return 0;
+}

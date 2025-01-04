@@ -1,0 +1,45 @@
+#include <bits/stdc++.h>
+using namespace std;
+using ll = long long;
+const int mod = 998244353, inf = 1e9;
+
+void solve(){
+    int n, m;
+    cin >> n;
+    string s;
+    cin >> s;
+    s = " " + s;
+    vector <vector<int>> Pre(n+1, vector<int>(26)), ps(26, vector<int>(n+1, n+1));
+    for (int i = 0; i < 26; ++ i) ps[i][0] = 0;
+    // 记录 每个字母出现 的 第 i 次的位置 ps[字母][i]
+    for (int i = 1; i <= n; ++ i){
+        Pre[i] = Pre[i-1];
+        int &cur = Pre[i][s[i]-'a'];
+        cur += 1;
+        ps[s[i]-'a'][cur] = i;
+    }
+
+    cin >> m;
+
+    while (m--){
+        int cnt[26] = {};
+        string t;
+        cin >> t;
+        for (auto &ch : t) cnt[ch-'a'] += 1;
+        int res = 0;
+        for (int i = 0; i < 26; ++ i)
+            res = max(res, ps[i][cnt[i]]);
+        cout << res << "\n";
+    }
+}
+ 
+int main(){
+#ifdef ONLINE_JUDGE
+    ios::sync_with_stdio(0), cin.tie(0), cout.tie(0);
+#else
+    freopen("in.txt", "rt", stdin), freopen("out.txt", "wt", stdout);
+#endif
+    int _ = 1;
+    while (_--) solve();
+    return 0;
+}

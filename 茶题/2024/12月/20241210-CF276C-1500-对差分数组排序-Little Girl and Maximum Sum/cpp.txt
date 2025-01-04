@@ -1,0 +1,49 @@
+#include <bits/stdc++.h>
+using namespace std;
+template <class T> void fmax(T &a, const T &b){
+    if (b > a) a = b;
+}
+template <class T> void fmin(T &a, T b){
+    if (b < a) a = b;
+}
+
+void solve(){
+    int n, q;
+    cin >> n >> q;
+    vector <int> A(n), ds(n+1);
+    for (auto &x : A) cin >> x;
+    sort(A.begin(), A.end());
+    for (int i = 0,l,r; i < q; ++ i){
+        cin >> l >> r;
+        l -= 1, r -= 1;
+        ds[l] += 1, ds[r+1] -= 1;
+    }
+    for (int i = 1; i <= n; ++ i){
+        ds[i] += ds[i-1];
+    }
+
+    vector <int> idx(n);
+    iota(idx.begin(), idx.end(), 0);
+    sort(idx.begin(), idx.end(), [&](int &u, int &v){
+        return ds[u] < ds[v];
+    });
+
+    long long res = 0;
+    for (int i = 0; i < n; ++ i){
+        int id = idx[i];
+        res += 1ll * ds[id] * A[i];
+    }
+
+    cout << res << "\n";
+}
+
+int main(){
+#ifdef ONLINE_JUDGE
+    ios::sync_with_stdio(0), cin.tie(0), cout.tie(0);
+#else
+    freopen("in.txt", "rt", stdin), freopen("out.txt", "wt", stdout);
+#endif
+    int _ = 1;
+    while (_--) solve();
+    return 0;
+}

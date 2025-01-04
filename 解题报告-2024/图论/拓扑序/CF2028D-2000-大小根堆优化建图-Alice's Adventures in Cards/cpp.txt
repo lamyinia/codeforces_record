@@ -1,0 +1,92 @@
+#include <bits/stdc++.h>
+using namespace std;
+using i64 = long long;
+template <class T> void fmax(T &a, const T &b){
+    if (b > a) a = b;
+}
+template <class T> void fmin(T &a, const T &b){
+    if (b < a) a = b;
+}
+
+void solve(){
+    using ary2 = array<int,2>;
+
+    int n;
+    cin >> n;
+    vector <int> f(n);
+    vector <ary2> pre(n);
+
+    vector<vector<int>> p(3, vector<int>(n)), ws(3, vector<int>(n));
+    for (int r = 0; r < 3; ++ r){
+        for (int i = 0; i < n; ++ i){
+            cin >> p[r][i];
+            p[r][i] -= 1;
+            ws[r][p[r][i]] = i;
+        }
+    }
+
+    vector <priority_queue<int>> pqs(3);  // 最大堆维护alice的权重
+    priority_queue <int,vector<int>,greater<int>> pq;
+
+    f[0] = 1;
+    pq.push(0);
+    int js[] = {-1, -1, -1};  // 三个指针来优化进入最大堆的过程
+    while (!pq.empty()){
+        auto u = pq.top();
+        pq.pop();
+        for (int r = 0; r < 3; ++ r){
+            int &j = js[r];
+            while (j+1 < p[r][u]){
+                j += 1;
+                pqs[r].push(ws[r][j]);
+            }
+        }
+
+        bool jg = 0;
+        for (int r = 0; r < 3 && !jg; ++ r){
+            while (!jg && !pqs[r].empty() && pqs[r].top() > u){  // 进入队列的权重是递增的
+                int v = pqs[r].top();
+                pqs[r].pop();
+                if (!f[v]){
+                    f[v] = 1;
+                    pre[v] = {u, r};
+                    pq.push(v);
+                    if (v == n-1) jg = 1;
+                }
+            }
+        }
+        if (jg) break;
+    }
+
+    if (!f[n-1]){
+        cout << "NO\n";
+        return;
+    }
+
+    vector <ary2> ans;
+    int i = n-1;
+    while (i > 0){
+        ans.push_back({i+1, pre[i][1]});
+        i = pre[i][0];
+    }
+
+    reverse(ans.begin(), ans.end());
+    cout << "YES\n";
+    cout << ans.size() << "\n";
+    for (auto &it : ans){
+        cout << (it[1] == 0 ? 'q' : (it[1] == 1 ? 'k' : 'j')) << " ";
+        cout << it[0] << "\n";
+    }
+}
+
+int main(){
+#ifdef ONLINE_JUDGE
+    ios::sync_with_stdio(0), cin.tie(nullptr), cout.tie(nullptr);
+#else
+    freopen("in.txt", "rt", stdin), freopen("out.txt", "wt", stdout);
+#endif
+    int _ = 1;
+    cin >> _;
+    while (_--) solve();
+    return 0;
+}

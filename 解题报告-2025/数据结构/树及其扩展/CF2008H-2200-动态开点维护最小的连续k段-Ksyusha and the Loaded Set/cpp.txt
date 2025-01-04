@@ -1,0 +1,133 @@
+#include <bits/stdc++.h>
+using namespace std;
+using i64 = long long;
+using f64 = long double;
+template <class T> void fmax(T &a, const T &b){
+    if (b > a) a = b;
+}
+template <class T> void fmin(T &a, const T &b){
+    if (b < a) a = b;
+}
+struct Node {
+    i64 ma;
+    int l, r;
+};
+const int N = 1e5+11, limi = 1e7;
+vector <Node> info(N*20);
+struct Tree {
+    int tot = 0;
+    int open(){
+        ++ tot;
+        info[tot] = {-1, 0, 0};
+        return tot;
+    }
+    void pull(int u){
+        info[u].ma = max(info[info[u].l].ma, info[info[u].r].ma);
+    }
+    void set(int &u, int loc, i64 v, int pl, int pr){
+        if (!u) u = open();
+        if (pl == pr){
+            info[u].ma = v;
+            return;
+        }
+ 
+        int mid = (pl + pr) >> 1;
+        if (mid >= loc){
+            set(info[u].l, loc, v, pl, mid);
+        } else {
+            set(info[u].r, loc, v, mid+1, pr);
+        }
+        pull(u);
+    }
+    void set(int &u, int loc, i64 v){
+        set(u, loc, v, 0, limi);
+    }
+    int ask(int &u, int pl, int pr, int tar){
+        if (!u) return -1;
+        if (pl == pr){
+            return pl;
+        }
+        int mid = (pl + pr) >> 1, ans;
+        if (info[info[u].l].ma >= tar) ans = ask(info[u].l, pl, mid, tar);
+        else ans = ask(info[u].r, mid+1, pr, tar);
+        return ans;
+    }
+    int ask(int &u, int tar){
+        return ask(u, 0, limi, tar);
+    }
+};
+
+void solve(){
+    using Yint = Tree;
+    const int inf = 1e9;
+
+    int n, m, rt = 0;
+    cin >> n;
+    map <int, int> mps;
+    Yint Y;
+    mps[0] = inf, Y.set(rt, 0, inf);
+    auto insert = [&](int x)->void{
+        auto i1 = mps.lower_bound(x);
+        -- i1;
+        int y1 = i1->first;
+        i1->second = x-y1-1, Y.set(rt, y1, x-y1-1);
+
+        auto i2 = mps.upper_bound(x);
+        if (i2 != mps.end()){
+            int y2 = i2->first;
+            mps[x] = y2-x-1, Y.set(rt, x, y2-x-1);
+        } else {
+            mps[x] = inf, Y.set(rt, x, inf);
+        }
+    };
+    auto remove = [&](int x)->void{
+        Y.set(rt, x, -1), mps.erase(x);
+
+        auto i1 = mps.lower_bound(x);
+        -- i1;
+        auto i2 = mps.upper_bound(x);
+        int y1 = i1->first;
+        if (i2 != mps.end()){
+            int y2 = i2->first;
+            i1->second = y2-y1-1, Y.set(rt, y1, y2-y1-1);
+        } else {
+            i1->second = inf, Y.set(rt, y1, inf);
+        }
+    };
+
+    for (int i = 0, x; i < n; ++ i){
+        cin >> x;
+        insert(x);
+    }
+
+    cin >> m;
+    vector <int> ans;
+    for (int i = 0, x; i < m; ++ i){
+        char opt;
+        cin >> opt >> x;
+        if (opt == '+'){
+            insert(x);
+        } else if (opt == '-'){
+            remove(x);
+        } else {
+            ans.push_back(Y.ask(rt, x)+1);
+        }
+    }
+    for (int i = 0; i < ans.size(); ++ i){
+        if (i) cout << " ";
+        cout << ans[i];
+    }
+    cout << "\n";
+}
+
+int main(){
+#ifdef ONLINE_JUDGE
+    ios::sync_with_stdio(0), cin.tie(nullptr), cout.tie(nullptr);
+#else
+    freopen("in.txt", "rt", stdin), freopen("out.txt", "wt", stdout);
+#endif
+    int _ = 1;
+    cin >> _;
+    while (_--) solve();
+    return 0;
+}

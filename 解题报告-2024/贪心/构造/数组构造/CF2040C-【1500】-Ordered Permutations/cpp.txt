@@ -1,0 +1,77 @@
+#include <bits/stdc++.h>
+using namespace std;
+template <class T> void fmax(T &a, const T &b){
+    if (b > a) a = b;
+}
+template <class T> void fmin(T &a, T b){
+    if (b < a) a = b;
+}
+
+void solve(){
+    const long long inf = 1e15+1;
+
+    long long n, k;
+    cin >> n >> k;
+    long long cur = 1;
+    for (int i = 1; i <= n-1; ++ i){
+        cur *= 2;
+        if (cur >= k){
+            break;
+        }
+    }
+    if (cur < k){
+        cout << -1 << "\n";
+        return;
+    }
+
+    vector <long long> w(n+1);
+    cur = 1;
+    for (int i = n; i >= 1; -- i){
+        if (cur != inf && i < n-1){
+            cur *= 2;
+            if (cur > inf) cur = inf;
+        }
+        w[i] = cur;
+    }
+
+    set <int> st;
+    for (int i = 1; i <= n; ++ i){
+        st.insert(i);
+    }
+
+    int j = 0;
+    vector <int> ans;
+    while (j+1 < n){
+        while (j+1 < n && k > w[j+1]){  // 递增
+            j += 1;
+            k -= w[j];
+        }
+        j += 1;
+        ans.push_back(j);
+        st.erase(j);
+        if (k == 0) break;
+    }
+
+    for (auto it = st.rbegin(); it != st.rend(); ++ it){
+        ans.push_back(*it);
+    }
+
+    assert(ans.size() == n);
+    for (int i = 0; i < n; ++ i){
+        if (i) cout << " ";
+        cout << ans[i];
+    }
+    cout << "\n";
+}
+
+int main(){
+#ifdef ONLINE_JUDGE
+    ios::sync_with_stdio(0), cin.tie(0), cout.tie(0);
+#else
+    freopen("in.txt", "rt", stdin), freopen("out.txt", "wt", stdout);
+#endif
+    int _ = 1;
+    cin >> _;
+    while (_--) solve();
+    return 0;
+}
