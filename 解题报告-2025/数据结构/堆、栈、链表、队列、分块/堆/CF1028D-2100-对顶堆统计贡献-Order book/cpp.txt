@@ -1,0 +1,108 @@
+#include <bits/stdc++.h>
+using namespace std;
+using i64 = long long;
+using f64 = long double;
+using u64 = unsigned long long;
+const f64 eps = 1e-12;
+const i64 inf_i64 = 4e18;
+const int inf_int = 2e9;
+template <class T> void fmax(T &a, const T &b){
+    if (b > a) a = b;
+}
+template <class T> void fmin(T &a, const T &b){
+    if (b < a) a = b;
+}
+template <class T> T MAX(const T &a, const T &b){
+    return max(a, b);
+}
+template <class T> void print(vector <T> &A){
+    int n = A.size();
+    for (int i = 0; i < n; ++ i){
+        if (i) cout << " ";
+        cout << A[i];
+    }
+    cout << "\n";
+}
+int jgs(f64 x){
+    return x < -eps ? -1 : x > eps;
+}
+
+void solve(){
+    auto error = [&]()->void{
+        cout << 0 << "\n";
+    };
+    const int mod = 1e9+7;
+
+    int n;
+    cin >> n;
+    vector<array<int,2>> As(n);
+    vector <int> A;
+    for (int i = 0; i < n; ++ i){
+        string cur;
+        cin >> cur >> As[i][1];
+        if (cur == "ACCEPT"){
+            As[i][0] = 1;
+            A.push_back(i);
+        }
+    }
+    assert(As[0][0] == 0);
+
+    int j = 0;
+    auto move = [&]()->void{
+        ++ j;
+        while (As[j][0] == 1) ++ j;
+    };
+    priority_queue <int> pq1;  // 下面的大根堆
+    priority_queue <int,vector<int>,greater<int>> pq2;  // 上面的小根堆
+
+    i64 res = 1;
+    for (auto &id : A){
+        int x = As[id][1];
+
+        if (!pq1.empty()){
+            if (x < pq1.top()) return error();
+        }
+        if (!pq2.empty()){
+            if (x > pq2.top()) return error();
+        }
+        
+        bool jg = 0;
+        while (j < id){  // 划分成小于 x 的集合 和 大于 x 的 集合
+            int y = As[j][1];
+            if (y < x) pq1.push(y);
+            else if (y > x) pq2.push(y);
+            if (y == x) jg = 1;
+            move();
+        }
+
+        if (jg) res = res*2 % mod;  //如果 x 有选择划分到两个集合的机会的话统计贡献
+
+        if (!pq1.empty()){
+            if (pq1.top() == x) pq1.pop();
+        }
+        if (!pq2.empty()){
+            if (pq2.top() == x) pq2.pop();
+        }
+    }
+
+    int v = 1;
+    for (int i = A.size() ? A.back()+1 : 0; i < n; ++ i){
+        int x = As[i][1];
+        if (!pq1.empty() && x < pq1.top()) continue;
+        if (!pq2.empty() && x > pq2.top()) continue;
+        v += 1;
+    }
+
+    cout << v*res%mod << "\n";
+}
+
+int main(){
+#ifdef ONLINE_JUDGE
+    ios::sync_with_stdio(0), cin.tie(nullptr), cout.tie(nullptr);
+#else
+    freopen("in.txt", "rt", stdin), freopen("out.txt", "wt", stdout);
+#endif
+    int _ = 1;
+    while (_--) solve();
+    return 0;
+}

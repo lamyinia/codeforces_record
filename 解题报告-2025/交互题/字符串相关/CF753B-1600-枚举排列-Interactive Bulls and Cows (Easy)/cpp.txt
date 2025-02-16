@@ -1,0 +1,60 @@
+#include <bits/stdc++.h>
+using namespace std;
+using i64 = long long;
+using f64 = long double;
+const f64 eps = 1e-12;
+const i64 inf_i64 = 4e18;
+const int inf_int = 2e9;
+template <class T> void fmax(T &a, const T &b){
+    if (b > a) a = b;
+}
+template <class T> void fmin(T &a, const T &b){
+    if (b < a) a = b;
+}
+int jgs(f64 x){
+    return x < -eps ? -1 : x > eps;
+}
+void print(vector <int> &A){
+    int n = A.size();
+    for (int i = 0; i < n; ++ i){
+        if (i) cout << " ";
+        cout << A[i];
+    }
+    cout << "\n";
+}
+
+
+void solve(){
+    auto query = [&](string s)->pair<int,int>{
+        cout << s << "\n" << flush;
+        int x, y;
+        cin >> x >> y;
+        return {x, y};
+    };
+
+    vector <int> ans;
+    for (int i = 0, x, y; i < 10; ++ i){
+        string s(4, char(i+'0'));
+        tie(x, y) = query(s);
+        if (x == 1 && y == 0) ans.push_back(i);
+        if (ans.size() == 4) break;
+    }
+
+    assert(ans.size() == 4);
+    do {
+        string s;
+        int x, y;
+        for (auto &u : ans){
+            s += char(u+'0');
+        }
+        tie(x, y) = query(s);
+        if (x == 4 && y == 0) break;
+    } while (next_permutation(ans.begin(), ans.end()));
+}
+
+int main(){
+    ios::sync_with_stdio(0), cin.tie(nullptr), cout.tie(nullptr);
+    int _ = 1;
+    while (_--) solve();
+    return 0;
+}

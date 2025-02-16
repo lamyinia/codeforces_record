@@ -1,0 +1,101 @@
+/*
+
+#include  <map>
+#include  <set>
+#include <functional>
+#include  <cmath>
+#include  <queue>
+#include  <cstdio>
+#include  <vector>
+#include  <climits>
+#include  <cstring>
+#include  <cstdlib>
+#include  <iostream>
+#include  <algorithm>
+#include <bitset>
+#include <iomanip>
+
+*/
+#pragma GCC optimize(2)
+#pragma GCC optimize(3)
+
+#include <bits/stdc++.h>
+using namespace std;
+using i64 = long long;
+using f64 = long double;
+using u64 = unsigned long long;
+const f64 eps = 1e-12;
+const i64 inf_i64 = 4e18;
+const int inf_int = 2e9;
+template <class T> void fmax(T &a, const T &b){
+    if (b > a) a = b;
+}
+template <class T> void fmin(T &a, const T &b){
+    if (b < a) a = b;
+}
+template <class T> void print(vector <T> &A){
+    int n = A.size();
+    for (int i = 0; i < n; ++ i){
+        if (i) cout << " ";
+        cout << A[i];
+    }
+    cout << "\n";
+}
+int jgs(f64 x){
+    return x < -eps ? -1 : x > eps;
+}
+
+void solve(){
+    int n, m, k;
+    cin >> n >> m >> k;
+    int det = abs(n-m), jg = 0; // det 是下界
+    if (n > m){  // 交换处理
+        swap(n, m);
+        jg = 1;
+    }
+
+    if (k < det || k > m){  // m 是上界
+        cout << -1 << "\n";
+        return;
+    }
+
+    int c1 = n, c2 = n, c3 = m-n;
+    int dis = k-det;
+    c2 -= dis, c3 += dis;
+    string res;
+    while (c1 && c2){
+        res += "10";
+        c1 -= 1, c2 -= 1;
+    }
+    while (c3){
+        res += "1";
+        c3 -= 1;
+    }
+    while (c1){
+        res += "0";
+        c1 -= 1;
+    }
+    // cout << res << "\n";
+    if (jg){
+        for (auto &ch : res){
+            ch = ch=='0' ? '1' : '0';
+        }
+    }
+    assert(res.size() == n+m);
+    cout << res << "\n";
+}
+
+int main(){
+#ifdef ONLINE_JUDGE
+    ios::sync_with_stdio(0), cin.tie(nullptr), cout.tie(nullptr);
+#else
+    freopen("in.txt", "rt", stdin), freopen("out.txt", "wt", stdout);
+#endif
+    int _ = 1;
+    cin >> _;
+    while (_--) solve();
+    return 0;
+}
+/*
+
+*/

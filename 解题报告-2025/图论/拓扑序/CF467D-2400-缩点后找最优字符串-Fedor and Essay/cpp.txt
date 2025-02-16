@@ -1,0 +1,150 @@
+#include <bits/stdc++.h>
+using namespace std;
+using i64 = long long;
+using f64 = long double;
+const f64 eps = 1e-12;
+const i64 inf_i64 = 4e18;
+const int inf_int = 2e9;
+template <class T> void fmax(T &a, const T &b){
+    if (b > a) a = b;
+}
+template <class T> void fmin(T &a, const T &b){
+    if (b < a) a = b;
+}
+int jgs(f64 x){
+    return x < -eps ? -1 : x > eps;
+}
+void print(vector <int> &A){
+    int n = A.size();
+    for (int i = 0; i < n; ++ i){
+        if (i) cout << " ";
+        cout << A[i];
+    }
+    cout << "\n";
+}
+
+
+void solve(){
+    auto chge = [&](string &s)->void{
+        for (auto &ch : s){
+            if (isupper(ch)){
+                ch = char(ch-'A'+'a');
+            }
+        }
+    };
+    auto how_much = [&](string &s)->pair<int,int>{
+        int u1 = 0, u2 = s.size();
+        for (auto &ch : s){
+            u1 += ch == 'r';
+        }
+        return {u1,u2};
+    };
+    unordered_map <string, int> mps;
+    vector <string> whos(1);
+    int id_tot = 0;
+    auto who = [&](string s)->int{
+        if (mps.count(s)) return mps[s];
+        else {
+            whos.push_back(s);
+            mps[s] = ++ id_tot;
+            return id_tot;
+        }
+    };
+    
+    int n1, n2;
+    cin >> n1;
+    vector <string> easy(n1);
+    for (auto &chs : easy){
+        cin >> chs;
+        chge(chs);
+        int _ = who(chs);
+    }
+    cin >> n2;
+
+    vector<vector<int>> g1(n1+2*n2+1);
+    vector <int> dfn(n1+2*n2+1), low(n1+2*n2+1), stk(n1+2*n2+2), colr(n1+2*n2+1), ins(n1+2*n2+1);
+    vector <pair<int,int>> f(n1+2*n2+1, {inf_int,inf_int}), cost(n1+2*n2+1);
+    int scc = 0, snap = 0, top = 0;
+
+    for (int i = 0; i < n2; ++ i){
+        string s, t;
+        cin >> s >> t;
+        chge(s), chge(t);
+        int u = who(s), v = who(t);
+        g1[u].push_back(v);
+    }
+
+    auto tarjan = [&](auto &&self, int u)->void{
+        dfn[u] = low[u] = ++ snap;
+        stk[++ top] = u, ins[u] = 1;
+        for (auto &v : g1[u]){
+            if (!dfn[v]){
+                self(self, v);
+                fmin(low[u], low[v]);
+            } else if (ins[v]){
+                fmin(low[u], dfn[v]);
+            }
+        }
+        if (low[u] == dfn[u]){
+            ++ scc;
+            cost[scc] = how_much(whos[u]);
+            while (stk[top+1] != u){
+                int v = stk[top--];
+                colr[v] = scc;
+                ins[v] = 0;
+                auto val = how_much(whos[v]);
+                if (val < cost[scc]){
+                    cost[scc] = val;
+                }
+            }
+        }
+    };
+    for (int i = 1; i <= id_tot; ++ i){
+        if (!dfn[i]){
+            tarjan(tarjan, i);
+        }
+    }
+
+    vector<vector<int>> g2(scc+1);
+    for (int u = 1; u <= id_tot; ++ u){
+        for (auto &v : g1[u]){
+            int ui = colr[u], vi = colr[v];
+            if (ui != vi){
+                g2[ui].push_back(vi);
+            }
+        }
+    }
+
+    auto dfs_find = [&](auto &&self, int u)->pair<int,int>{
+        if (f[u].first != inf_int) return f[u];
+        f[u] = cost[u];
+        for (auto &v : g2[u]){
+            self(self, v);
+            if (f[v] < f[u]){
+                f[u] = f[v];
+            }
+        }
+        return f[u];
+    };
+
+    i64 ans1 = 0, ans2 = 0;
+    for (auto &chs : easy){
+        int u = colr[who(chs)];
+        int v1, v2;
+        tie(v1, v2) = dfs_find(dfs_find, u);
+        ans1 += v1, ans2 += v2;
+    }
+
+    cout << ans1 << " " << ans2 << "\n";
+}
+
+int main(){
+#ifdef ONLINE_JUDGE
+    ios::sync_with_stdio(0), cin.tie(nullptr), cout.tie(nullptr);
+#else
+    freopen("in.txt", "rt", stdin), freopen("out.txt", "wt", stdout);
+#endif
+    int _ = 1;
+    while (_--) solve();
+    return 0;
+}

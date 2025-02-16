@@ -1,0 +1,105 @@
+#include <bits/stdc++.h>
+using namespace std;
+using i64 = long long;
+using f64 = long double;
+using u64 = unsigned long long;
+const f64 eps = 1e-12;
+const i64 inf_i64 = 4e18;
+const int inf_int = 2e9;
+template <class T> void fmax(T &a, const T &b){
+    if (b > a) a = b;
+}
+template <class T> void fmin(T &a, const T &b){
+    if (b < a) a = b;
+}
+template <class T> void print(vector <T> &A){
+    int n = A.size();
+    for (int i = 0; i < n; ++ i){
+        if (i) cout << " ";
+        cout << A[i];
+    }
+    cout << "\n";
+}
+int jgs(f64 x){
+    return x < -eps ? -1 : x > eps;
+}
+
+void solve(){
+    int n;
+    cin >> n;
+    vector <int> A(n), vt1, vt2;
+    vector<array<int,2>> ans;
+    auto push = [&](int x, int y)->void{
+        ans.push_back({x+1,y+1});
+    };
+
+    int all = 0;
+    for (int i = 0; i < n; ++ i){
+        int &x = A[i];
+        cin >> x;
+        if (x == 1) vt1.push_back(i);
+        else {
+            vt2.push_back(i);
+            all += x;
+        }
+    }
+
+    int sm = vt2.size() > 1 ? all-2*(int)vt2.size()+2 : all;
+    if (vt1.size() > sm){
+        cout << "NO\n";
+        return;
+    }
+
+    sort(vt2.begin(), vt2.end(), [&](auto &u, auto &v){
+        return A[u] < A[v];
+    });
+    if (vt2.size() > 2){  // 保证两边度数尽可能大
+        swap(vt2[0], vt2[vt2.size()-2]);
+    }
+
+    for (int i = 1; i < vt2.size(); ++ i){
+        push(vt2[i-1], vt2[i]);
+    }
+    if (vt2.size() > 1){
+        for (int i = 0; i < vt2.size(); ++ i){
+            int x = vt2[i];
+            if (i == 0 || i == vt2.size()-1) A[x] -= 1;
+            else A[x] -= 2;
+        }
+    }
+
+    int dia = vt2.size();
+    if (vt1.size() && A[vt2[0]]){
+        push(vt2[0], vt1.back());
+        vt1.pop_back(), dia += 1, A[vt2[0]] -= 1;
+    }
+    // cout << A[1] << "\n";
+    if (vt1.size() && A[vt2.back()]){
+        push(vt2.back(), vt1.back());
+        vt1.pop_back(), dia += 1, A[vt2.back()] -= 1;
+    }
+    for (auto &id : vt2){
+        while (A[id] > 0 && !vt1.empty()){
+            push(id, vt1.back());
+            vt1.pop_back(), A[id] -= 1;
+        }
+        if (vt1.empty()) break;
+    }
+
+    cout << "YES" << " " << dia-1 << "\n";
+    cout << ans.size() << "\n";
+    for (auto &[u,v] : ans){
+        cout << u << " " << v << "\n";
+    }
+}
+
+int main(){
+#ifdef ONLINE_JUDGE
+    ios::sync_with_stdio(0), cin.tie(nullptr), cout.tie(nullptr);
+#else
+    freopen("in.txt", "rt", stdin), freopen("out.txt", "wt", stdout);
+#endif
+    int _ = 1;
+    while (_--) solve();
+    return 0;
+}

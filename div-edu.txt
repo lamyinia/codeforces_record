@@ -5,3 +5,22 @@ CF1902-edu159  	(cd) 共6题
 CF1895-edu157  	(c) 共7题
 CF1969-edu165  	(cd) 共6题
 CF1980-div3(950)	(abcd)共8题
+
+join:
+	Codeforces-Round-937-div4 - 20240528
+	Codeforces-Round-938-div3 - 20240408
+	Codeforces-Round-944-div4 - 20240510
+	Codeforces-Round-954-div3 - 20240623
+	Codeforces-Round-955-div2 - 20240625
+	edu-167				   - 20240627
+	Codeforces-Round-958-div2 - 20240715
+	Codeforces-Round-961-div2 - 20240723
+	Codeforces-Round-974-div3 - 20240921
+	Codeforces-Round-976-div2 - 20240929
+	Codeforces-Round-979-div2 - 20241019
+	edu-171				   - 20241028
+	Codeforces-Round-983-div2 - 20241101
+	Codeforces-Round-984-div3 - 20241102
+	Codeforces-Round-988-div3 - 20241117
+	CodeTON Round 9-div1+2  - 20241123
+	Codeforces-Round-989-div3 - 20241130

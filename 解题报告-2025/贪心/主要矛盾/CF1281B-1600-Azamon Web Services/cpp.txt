@@ -1,0 +1,28 @@
+题中的两个字符串并没有什么直接联系，只是第一个字符串操作后需要比第二个小。因此我们操作使得第一个字符串尽可能小。
+从大到小考虑 i，考虑对应的 j的选择，相当于取最靠后的后缀最小值，这件事可以 O(1)维护，而只需判断 s[i]和后缀最小值的大小即可查看 i是否可交换。进而使用最小的下标 i即可。
+
+void solve(){
+    string s, t;
+    cin >> s >> t;
+
+    int n = s.size();
+    int u = 0, v = 0, pos = n-1;
+    for (int i = n-2; i >= 0; -- i){
+        if (s[i] < s[pos]) pos = i;
+        else if (s[i] > s[pos]) u = i, v = pos;
+    }
+    swap(s[u], s[v]);
+    cout << (s < t ? s : "---") << "\n";
+}
+
+int main(){
+#ifdef ONLINE_JUDGE
+    ios::sync_with_stdio(0), cin.tie(nullptr), cout.tie(nullptr);
+#else
+    freopen("in.txt", "rt", stdin), freopen("out.txt", "wt", stdout);
+#endif
+    int _ = 1;
+    cin >> _;
+    while (_--) solve();
+    return 0;
+}

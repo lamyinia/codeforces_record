@@ -1,0 +1,19 @@
+
+
+    using ary4 = array<int,4>;
+    auto cmps = [&](ary4 &u, ary4 &v)->bool{
+        return u[2] != v[2] ? u[2] > v[2] : u[3] > v[3];
+    };
+    priority_queue <ary4, vector<ary4>, decltype(cmps)> pq(cmps);
+
+
+
+    auto cmps = [&](int u, int v)->bool{
+        return order[u] < order[v];
+    };
+    set <int, decltype(cmps)> st(cmps);
+
+cout << setw(3) << setfill('0')
+__builtin_clz 高位开始数
+__builtin_ctz 低位开始数
+64 - __builtin_clzll(x) 有多少位数
