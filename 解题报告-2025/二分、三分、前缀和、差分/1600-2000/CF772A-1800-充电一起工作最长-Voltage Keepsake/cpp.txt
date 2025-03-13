@@ -1,0 +1,71 @@
+#include <bits/stdc++.h>
+using namespace std;
+using i64 = long long;
+using f64 = long double;
+using u64 = unsigned long long;
+const f64 eps = 1e-12;
+const i64 inf_i64 = 4e18;
+const int inf_int = 1e9;
+template <class T> void fmax(T &a, const T &b){
+    if (b > a) a = b;
+}
+template <class T> void fmin(T &a, const T &b){
+    if (b < a) a = b;
+}
+template <class T> void print(vector <T> &A){
+    int n = A.size();
+    for (int i = 0; i < n; ++ i){
+        if (i) cout << " ";
+        cout << A[i];
+    }
+    cout << "\n";
+}
+int jgs(f64 x){
+    return x < -eps ? -1 : x > eps;
+}
+bool debug = 0;
+
+void solve(){
+    int n, _p;
+    cin >> n >> _p;
+    f64 p = _p;
+
+    i64 all_a = 0;
+    vector <array<int,2>> A(n);
+    for (auto &[u, v] : A){
+        cin >> u >> v;
+        all_a += u;
+    }
+
+    if (_p >= all_a){
+        cout << -1 << "\n";
+        return;
+    }
+
+    auto chk = [&](f64 mid)->bool{
+        f64 cur = 0;
+        for (auto &[u, v] : A){
+            cur += max(mid*u-v, (f64)0);
+        }
+        return cur <= p*mid;
+    };
+    f64 lo = 0, hi = 1e12;
+    for (int i = 0; i < 200; ++ i){
+        f64 mid = (lo+hi) / 2;
+        if (chk(mid)) lo = mid;
+        else hi = mid;
+    }
+
+    cout << fixed << setprecision(15) << lo << "\n";
+}
+
+int main(){
+#ifdef ONLINE_JUDGE
+    ios::sync_with_stdio(0), cin.tie(nullptr), cout.tie(nullptr);
+#else
+    freopen("in.txt", "rt", stdin), freopen("out.txt", "wt", stdout);
+#endif
+    int _ = 1;
+    while (_--) solve();
+    return 0;
+}

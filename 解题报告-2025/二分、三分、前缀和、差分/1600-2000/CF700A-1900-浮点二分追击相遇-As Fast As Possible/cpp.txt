@@ -1,0 +1,67 @@
+#include <bits/stdc++.h>
+using namespace std;
+using i64 = long long;
+using f64 = long double;
+using u64 = unsigned long long;
+const f64 eps = 1e-12;
+const i64 inf_i64 = 4e18;
+const int inf_int = 1e9;
+template <class T> void fmax(T &a, const T &b){
+    if (b > a) a = b;
+}
+template <class T> void fmin(T &a, const T &b){
+    if (b < a) a = b;
+}
+template <class T> void print(vector <T> &A){
+    int n = A.size();
+    for (int i = 0; i < n; ++ i){
+        if (i) cout << " ";
+        cout << A[i];
+    }
+    cout << "\n";
+}
+int jgs(f64 x){
+    return x < -eps ? -1 : x > eps;
+}
+bool debug = 0;
+
+void solve(){
+    i64 n, l, v1, v2, k;
+    cin >> n >> l >> v1 >> v2 >> k;
+    // cout << (n+k-1)/k << "\n";
+    // return;
+
+    auto chk = [&](f64 mid)->bool{
+        const f64 l1 = (mid*v1*v2-v1*l)/(v2-v1), l2 = l-l1;
+        const f64 t2 = l2/v2, L = v1*t2;
+        const f64 c = (n+k-1)/k;
+        f64 cur = 0;
+        for (int i = 0; i < c; ++ i){
+            if (i > 0) cur += v1*(l2-L)/(v1+v2);
+            if (cur > l1) return false;
+            cur += L;
+        }
+        return true;
+    };
+
+    f64 lo = 1.0*l/v2, hi = 1.0*l/v1;
+
+    for (int i = 0; i < 200; ++ i){
+        f64 mid = (lo+hi) / 2;
+        if (chk(mid)) hi = mid;
+        else lo = mid;
+    }
+
+    cout << fixed << setprecision(15) << lo << "\n";
+}
+
+int main(){
+#ifdef ONLINE_JUDGE
+    ios::sync_with_stdio(0), cin.tie(nullptr), cout.tie(nullptr);
+#else
+    freopen("in.txt", "rt", stdin), freopen("out.txt", "wt", stdout);
+#endif
+    int _ = 1;
+    while (_--) solve();
+    return 0;
+}

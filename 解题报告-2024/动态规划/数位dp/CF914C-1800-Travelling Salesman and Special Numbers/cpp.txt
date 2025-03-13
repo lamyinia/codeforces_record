@@ -19,10 +19,6 @@ void solve(){
         cout << 1 << "\n";
         return;
     }
-    // if (k == 1){
-    //     cout << s.size()-1 << "\n";
-    //     return;
-    // }
 
     vector <int> ops(1<<10);
     for (int i = 2; i < 1<<10; ++ i){

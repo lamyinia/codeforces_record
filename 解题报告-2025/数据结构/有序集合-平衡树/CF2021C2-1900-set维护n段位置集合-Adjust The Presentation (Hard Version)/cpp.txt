@@ -1,0 +1,142 @@
+#include <bits/stdc++.h>
+using namespace std;
+using i64 = long long;
+using f64 = long double;
+using u64 = unsigned long long;
+const f64 eps = 1e-12;
+const i64 inf_i64 = 4e18;
+const int inf_int = 1e9;
+template <class T> void fmax(T &a, const T &b){
+    if (b > a) a = b;
+}
+template <class T> void fmin(T &a, const T &b){
+    if (b < a) a = b;
+}
+template <class T> void print(vector <T> &A, int d = 0){
+    int n = A.size();
+    for (int i = 0; i < n; ++ i){
+        if (i) cout << " ";
+        cout << A[i]+d;
+    }
+    cout << "\n";
+}
+int jgs(f64 x){
+    return x < -eps ? -1 : x > eps;
+}
+
+void solve(){
+    int n, m, q;
+    cin >> n >> m >> q;
+    vector <int> A(n), p_a(n), can(n), B(m), p(m);
+    for (auto &x : A){
+        cin >> x;
+        x -= 1;
+    }
+    for (auto &x : B){
+        cin >> x;
+        x -= 1;
+    }
+    for (int i = 0; i < n; ++ i){
+        p_a[A[i]] = i;
+    }
+    for (int i = 0; i < m; ++ i){
+        p[i] = p_a[B[i]];
+    }
+
+    vector<set<int>> st(n);
+    int tot = 0, legal = 0;
+    auto is_legal = [&](int i)->bool{
+        if (st[i].empty()) return false;
+        else if (i == 0) return true;
+        else if (st[i-1].empty()) return false;
+        else return *st[i].begin() > *st[i-1].begin();
+    };
+
+    for (int i = 0; i < m; ++ i){
+        st[p[i]].insert(i);
+    }
+    for (int i = 0; i < n; ++ i){
+        if (!st[i].empty()){
+            ++ tot;
+            if (is_legal(i)){
+                legal += 1;
+                can[i] = 1;
+            }
+        }
+    }
+
+    auto repeal = [&](int i)->void{
+        int w = p[i];
+
+        assert(st[w].count(i));
+
+        st[w].erase(i);
+        if (st[w].empty()){
+            tot -= 1;
+            if (can[w]){
+                legal -= 1, can[w] = 0;
+            }
+            if (w+1 < n && can[w+1]){
+                legal -= 1, can[w+1] = 0;
+            }
+        } else {
+            if (w >= 0 && !can[w] && is_legal(w)){
+                can[w] = 1, legal += 1;
+            }
+            if (w+1 < n && can[w+1] && !is_legal(w+1)){
+                can[w+1] = 0, legal -= 1;
+            }
+        }
+    };
+    auto insert = [&](int i)->void{
+        int w = p[i];
+        bool jg = st[w].empty();
+        st[w].insert(i);
+        if (jg){
+            tot += 1;
+            // assert(!can[i]);
+            if (is_legal(w)){
+                can[w] = 1, legal += 1;
+            }
+            if (w+1 < n && is_legal(w+1)){
+                can[w+1] = 1, legal += 1;
+            }
+        } else {
+            if (w >= 0 && can[w] && !is_legal(w)){
+                can[w] = 0, legal -= 1;
+            }
+            if (w+1 < n && !can[w+1] && is_legal(w+1)){
+                can[w+1] = 1, legal += 1;
+            }
+        }
+    };
+
+    vector <int> ans = {tot == legal};
+    while (q--){
+        int s, t;
+        cin >> s >> t;
+        s -= 1, t -= 1;
+        repeal(s);
+        p[s] = p_a[t];
+        insert(s);
+        ans.push_back(tot == legal);
+    }
+    for (auto &x : ans){
+        if (x) cout << "YA\n";
+        else cout << "TIDAK\n";
+    }
+}
+
+int main(){
+#ifdef ONLINE_JUDGE
+    ios::sync_with_stdio(0), cin.tie(nullptr), cout.tie(nullptr);
+#else
+    freopen("in.txt", "rt", stdin), freopen("out.txt", "wt", stdout);
+#endif
+    int _ = 1;
+    cin >> _;
+    while (_--){
+        solve();
+    }
+    return 0;
+}

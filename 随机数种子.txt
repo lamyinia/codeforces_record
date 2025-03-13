@@ -1,0 +1,5 @@
+    auto rng = mt19937(random_device()());
+    auto rngl = mt19937_64(random_device()());
+
+    mt19937 mt(chrono::steady_clock::now().time_since_epoch().count());
+    uniform_int_distribution <int> rands(2, 100);

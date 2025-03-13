@@ -1,0 +1,111 @@
+#include <bits/stdc++.h>
+using namespace std;
+using i64 = long long;
+using f64 = long double;
+using u64 = unsigned long long;
+const f64 eps = 1e-12;
+const i64 inf_i64 = 4e18;
+const int inf_int = 1e9;
+template <class T> void fmax(T &a, const T &b){
+    if (b > a) a = b;
+}
+template <class T> void fmin(T &a, const T &b){
+    if (b < a) a = b;
+}
+template <class T> void print(vector <T> &A){
+    int n = A.size();
+    for (int i = 0; i < n; ++ i){
+        if (i) cout << " ";
+        cout << A[i];
+    }
+    cout << "\n";
+}
+int jgs(f64 x){
+    return x < -eps ? -1 : x > eps;
+}
+bool debug = 0;
+
+void solve(){
+    int n, m;
+    cin >> n >> m;
+    vector<vector<int>> g(n+1,vector<int>(m+1));
+    vector<vector<i64>> fR(n+2,vector<i64>(m+2)), fL(n+2,vector<i64>(m+2)); // 分别表示前 i 行，且最后一行以 j 作 右/左 端点可以选择的和的最大值
+    vector<vector<i64>> pr(n+2,vector<i64>(m+2)), sf(n+2,vector<i64>(m+2));
+    vector<vector<i64>> pr_sfmax(n+2,vector<i64>(m+2, -inf_i64)), sf_prmax(n+2,vector<i64>(m+2, -inf_i64));
+    vector <i64> gL(m+2, -inf_i64), gR(m+2, -inf_i64);
+
+    for (int i = 1; i <= n; ++ i){
+        for (int j = 1; j <= m; ++ j){
+            cin >> g[i][j];
+            pr[i][j] = g[i][j] + pr[i][j-1];
+        }
+        for (int j = m; j >= 1; -- j){
+            sf[i][j] = g[i][j] + sf[i][j+1];
+        }
+        for (int j = 1; j <= m; ++ j){  // 后缀和作前缀最大值
+            sf_prmax[i][j] = max(sf[i][j], sf_prmax[i][j-1]);
+        }
+        for (int j = m; j >= 1; -- j){  // 前缀和作后缀最大值
+            pr_sfmax[i][j] = max(pr[i][j], pr_sfmax[i][j+1]);
+        }
+    }
+
+    auto vR = [&](int i, int j)->i64{ // 以 j 为右端点选择的最大值
+        return sf_prmax[i][j] - sf[i][j+1];
+    };
+    auto vL = [&](int i, int j)->i64{ // 以 j 为左端点选择的最大值
+        return pr_sfmax[i][j] - pr[i][j-1];
+    };
+
+    for (int i = 1; i <= n; ++ i){
+        for (int j = 1; j <= m; ++ j){
+            gR[j] = max(gR[j-1], fR[i-1][j]-pr[i][j]+vR(i,j));
+        }
+        for (int j = m; j >= 1; -- j){
+            gL[j] = max(gL[j+1], fL[i-1][j]-sf[i][j]+vL(i,j));
+        }
+        for (int j = 1; j <= m; ++ j){  // 上一行的右端点 转移到 右端点
+            fR[i][j] = gR[j-1] + pr[i][j];
+        }
+        for (int j = m; j >= 1; -- j){  // 上一行的左端点 转移到 左端点
+            fL[i][j] = gL[j+1] + sf[i][j];
+        }
+
+        for (int j = m; j >= 1; -- j){  // 上一行的右端点 转移到 左端点 关于 i 的代价
+            gR[j] = max(gR[j+1], fR[i-1][j]+pr_sfmax[i][j+1]);
+        }
+        for (int j = 1; j <= m; ++ j){  // 上一行的左端点 转移到 右端点 关于 i 的代价
+            gL[j] = max(gL[j-1], fL[i-1][j]+sf_prmax[i][j-1]);
+        }
+        for (int j = 1; j <= m; ++ j){  
+            fmax(fL[i][j], gR[j]-pr[i][j-1]);
+            if (i == 1) fmax(fL[i][j], 1ll*g[i][j]); 
+        }
+        for (int j = m; j >= 1; -- j){
+            fmax(fR[i][j], gL[j]-sf[i][j+1]);
+            if (i == 1) fmax(fR[i][j], 1ll*g[i][j]); 
+        }
+        // 转移到 右端点，必须得是一段前缀
+        // 转移到 左端点，必须得是一段后缀
+    }
+    
+    i64 res = -inf_i64;
+    for (int j = 1; j <= m; ++ j){
+        fmax(res, fR[n][j]);
+        fmax(res, fL[n][j]);
+    }
+
+    cout << res << "\n";
+}
+
+int main(){
+#ifdef ONLINE_JUDGE
+    ios::sync_with_stdio(0), cin.tie(nullptr), cout.tie(nullptr);
+#else
+    freopen("in.txt", "rt", stdin), freopen("out.txt", "wt", stdout);
+#endif
+    int _ = 1;
+    cin >> _;
+    while (_--) solve();
+    return 0;
+}

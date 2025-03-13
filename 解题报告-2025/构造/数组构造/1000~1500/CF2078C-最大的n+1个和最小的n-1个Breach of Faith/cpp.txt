@@ -1,0 +1,21 @@
+void solve(){
+    int n;
+    cin >> n;
+    vector <i64> A(2*n), ans(2*n+1);
+    for (auto &x : A){
+        cin >> x;
+    }
+    sort(A.begin(), A.end());
+
+    i64 cur = 0;
+    for (int i = 0; i < n-1; ++ i){
+        ans[2*i+1] = A[i];
+        cur -= A[i];
+    }
+    for (int i = n-1; i < 2*n; ++ i){
+        ans[2*(i-(n-1))] = A[i];
+        cur += A[i];
+    }
+    ans[2*n-1] = cur;
+    print(ans);
+}

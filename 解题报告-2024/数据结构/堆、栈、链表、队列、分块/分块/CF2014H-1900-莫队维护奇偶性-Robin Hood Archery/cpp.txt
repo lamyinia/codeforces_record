@@ -25,6 +25,7 @@ void solve(){
     vector <int> p(q);
     iota(p.begin(), p.end(), 1);
 
+
     sort(p.begin(), p.end(), [&](int x, int y){
         return B[x].l/L !=  B[y].l/L ? B[x].l/L < B[y].l/L : B[x].r < B[y].r;
     });

@@ -1,0 +1,77 @@
+#include <bits/stdc++.h>
+using namespace std;
+using i64 = long long;
+using f64 = long double;
+using u64 = unsigned long long;
+const f64 eps = 1e-12;
+const i64 inf_i64 = 4e18;
+const int inf_int = 1e9;
+template <class T> void fmax(T &a, const T &b){
+    if (b > a) a = b;
+}
+template <class T> void fmin(T &a, const T &b){
+    if (b < a) a = b;
+}
+template <class T> void print(vector <T> &A, int d = 0){
+    int n = A.size();
+    for (int i = 0; i < n; ++ i){
+        if (i) cout << " ";
+        cout << A[i]+d;
+    }
+    cout << "\n";
+}
+int jgs(f64 x){
+    return x < -eps ? -1 : x > eps;
+}
+
+void solve(){
+    int n, q;
+    cin >> n >> q;
+    vector <int> pre(n+1);
+    for (int i = 0, x; i < n; ++ i){
+        cin >> x;
+        pre[x] += 1;
+    }
+    for (int i = 1; i <= n; ++ i){
+        pre[i] += pre[i-1];
+    }
+    
+    vector <int> chat(n+1), ans;
+    const int bound = (n+2)/2;
+    for (int i = 1; i <= n; ++ i){
+        int lo = 0, hi = i-1;
+        while (lo < hi){
+            int mid = (lo+hi) >> 1, cur = pre[mid];
+
+            for (int j = i; j <= n; j += i){
+                cur += pre[min(n, j+mid)] - pre[j-1];
+            }
+
+            if (cur >= bound) hi = mid;
+            else lo = mid+1;
+        }
+        chat[i] = lo;
+    }
+
+    while (q--){
+        int x;
+        cin >> x;
+        ans.push_back(chat[x]);
+    }
+
+    print(ans);
+}
+
+int main(){
+#ifdef ONLINE_JUDGE
+    ios::sync_with_stdio(0), cin.tie(nullptr), cout.tie(nullptr);
+#else
+    freopen("in.txt", "rt", stdin), freopen("out.txt", "wt", stdout);
+#endif
+    int _ = 1;
+    cin >> _;
+    while (_--){
+        solve();
+    }
+    return 0;
+}

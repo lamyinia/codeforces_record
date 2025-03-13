@@ -43,11 +43,6 @@ void solve(){
     bool jg = 0;
     auto dfs = [&](auto &&self, int col, int lst, vector<int> us)->void{
         if (jg) return;
-        // print();
-        // for (int i = 0; i < n; ++ i){
-        //     cout << us[i] << " ";
-        // }
-        // cout << "\n\n";
 
         for (int i = 0; i < n; ++ i){
             if (us[i] > A[i] || m-col < A[i]-us[i]){

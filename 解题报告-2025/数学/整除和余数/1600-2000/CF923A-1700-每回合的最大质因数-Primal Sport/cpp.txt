@@ -1,0 +1,67 @@
+#include <bits/stdc++.h>
+using namespace std;
+using i64 = long long;
+using f64 = long double;
+using u64 = unsigned long long;
+const f64 eps = 1e-12;
+const i64 inf_i64 = 4e18;
+const int inf_int = 1e9;
+template <class T> void fmax(T &a, const T &b){
+    if (b > a) a = b;
+}
+template <class T> void fmin(T &a, const T &b){
+    if (b < a) a = b;
+}
+template <class T> void print(vector <T> &A, int d = 0){
+    int n = A.size();
+    for (int i = 0; i < n; ++ i){
+        if (i) cout << " ";
+        cout << A[i]+d;
+    }
+    cout << "\n";
+}
+int jgs(f64 x){
+    return x < -eps ? -1 : x > eps;
+}
+
+void solve(){
+    auto find_big = [&](int x)->int{
+        int ma = -1;
+        for (int i = 2; i*i <= x; ++ i){
+            if (x%i == 0){
+                while (x%i == 0) x /= i;
+                ma = i;
+            }
+        }
+        if (x > 1) ma = x;
+        return ma;
+    };
+
+    int n;
+    cin >> n;
+    int m = find_big(n);
+
+    assert(m != n);
+
+    int res = n;
+    for (int i = n; i > n-m; -- i){
+        int l = find_big(i);
+        if (i == l) continue;
+        fmin(res, i-l+1);
+    }
+
+    cout << res << "\n";
+}
+
+int main(){
+#ifdef ONLINE_JUDGE
+    ios::sync_with_stdio(0), cin.tie(nullptr), cout.tie(nullptr);
+#else
+    freopen("in.txt", "rt", stdin), freopen("out.txt", "wt", stdout);
+#endif
+    int _ = 1;
+    while (_--){
+        solve();
+    }
+    return 0;
+}

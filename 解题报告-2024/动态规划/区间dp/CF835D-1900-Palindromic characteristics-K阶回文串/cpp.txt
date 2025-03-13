@@ -2,7 +2,11 @@
 using namespace std;
 using ll = long long;
 const int N = 5050, inf = 0x3f3f3f3f, P = 998244353;
+/*
+题意：
+	对于一个 k 阶 回文串 s，如果 k=1，那么 s 为 回文串，否则 s 的前半部分和后半部分是相等的 k-1 阶回文串.
 
+*/
 void solve(){
     string s;
     cin >> s;

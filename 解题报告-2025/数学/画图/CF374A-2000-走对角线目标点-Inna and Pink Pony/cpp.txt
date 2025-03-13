@@ -1,0 +1,59 @@
+#include <bits/stdc++.h>
+using namespace std;
+using i64 = long long;
+using f64 = long double;
+using u64 = unsigned long long;
+const f64 eps = 1e-12;
+const i64 inf_i64 = 4e18;
+const int inf_int = 1e9;
+template <class T> void fmax(T &a, const T &b){
+    if (b > a) a = b;
+}
+template <class T> void fmin(T &a, const T &b){
+    if (b < a) a = b;
+}
+template <class T> void print(vector <T> &A, int d = 0){
+    int n = A.size();
+    for (int i = 0; i < n; ++ i){
+        if (i) cout << " ";
+        cout << A[i]+d;
+    }
+    cout << "\n";
+}
+int jgs(f64 x){
+    return x < -eps ? -1 : x > eps;
+}
+
+void solve(){
+    int n, m, i, j, a, b;
+    cin >> n >> m >> i >> j >> a >> b;
+
+    auto find = [&](int x, int y)->int{
+        if (abs(x-i)%a || abs(y-j)%b) return inf_int;
+        int k1 = abs(x-i)/a, k2 = abs(y-j)/b;
+        if ((k1+k2)%2) return inf_int;
+        return max(k1, k2);
+    };
+    int ans = inf_int;
+    for (auto u : {1, n}){
+        for (auto v : {1, m}){
+            fmin(ans, find(u, v));
+        }
+    }
+    if ((i==1||i==n) && (j==1||j==m)) cout << 0 << "\n";
+    else if (a >= n || b >= m || ans == inf_int) cout << "Poor Inna and pony!";
+    else cout << ans << "\n";
+}
+
+int main(){
+#ifdef ONLINE_JUDGE
+    ios::sync_with_stdio(0), cin.tie(nullptr), cout.tie(nullptr);
+#else
+    freopen("in.txt", "rt", stdin), freopen("out.txt", "wt", stdout);
+#endif
+    int _ = 1;
+    while (_--){
+        solve();
+    }
+    return 0;
+}
