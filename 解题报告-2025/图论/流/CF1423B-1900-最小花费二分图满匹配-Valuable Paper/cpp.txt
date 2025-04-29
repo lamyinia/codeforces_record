@@ -1,0 +1,145 @@
+#include <bits/stdc++.h>
+using namespace std;
+using i64 = long long;
+using f64 = long double;
+using u64 = unsigned long long;
+const f64 eps = 1e-12;
+const i64 inf_i64 = 1e18;
+const int inf_int = 2e9;
+template <class T> void fmax(T &a, const T &b){
+    if (b > a) a = b;
+}
+template <class T> void fmin(T &a, const T &b){
+    if (b < a) a = b;
+}
+template <class T> void print(vector <T> &A, int d = 0){
+    int n = A.size();
+    for (int i = 0; i < n; ++ i){
+        if (i) cout << " ";
+        cout << A[i]+d;
+    }
+    cout << "\n";
+}
+int jgs(f64 x){
+    return x < -eps ? -1 : x > eps;
+}
+struct Edge {
+    int to, capa, id;
+};
+struct Graph {
+    vector<vector<Edge>> g;
+    vector <int> dep, curs;
+    int S, T;
+    Graph(int n): dep(n), curs(n), g(n){}
+    void set(int sr, int sk){
+        S = sr;
+        T = sk;
+    }
+    void add(int a, int b, int c){
+        int ra = g[a].size(), rb = g[b].size();
+        g[a].push_back({b, c, rb});
+        g[b].push_back({a, 0, ra});
+    }
+    bool bfs(){
+        fill(dep.begin(), dep.end(), -1);
+        queue <int> Q;
+        Q.push(S), dep[S] = 0;
+        while (!Q.empty()){
+            int u = Q.front();
+            Q.pop();
+            for (int i = 0; i < g[u].size(); ++ i){
+                int v = g[u][i].to;
+                if (dep[v] == -1 && g[u][i].capa){
+                    dep[v] = dep[u]+1;
+                    Q.push(v);
+                }
+            }
+        }
+        return dep[T] != -1;
+    }
+    int dfs(int u, int limit){
+        if (u == T) return limit;
+        for (int i = curs[u]; i < g[u].size(); ++ i){
+            curs[u] = i;
+            int v = g[u][i].to, &capa = g[u][i].capa, id = g[u][i].id;
+            if (dep[v] == dep[u]+1 && capa){
+                int flow = dfs(v, min(capa, limit));
+                if (flow){
+                    capa -= flow;
+                    g[v][id].capa += flow;
+                    return flow;
+                } else dep[v] = -1;
+            }
+        }
+        return 0;
+    }
+    int dinic(){
+        int r = 0, flow;
+        while (bfs()){
+            fill(curs.begin(), curs.end(), 0);
+            while (flow = dfs(S, 1e9)){
+                r += flow;
+            }
+        }
+        return r;
+    }
+};
+
+void solve(){
+    using gint = Graph;
+
+    int n, m, ma = 0;
+    cin >> n >> m;
+    vector<array<int,3>> edgs;
+    const int sr = 2*n, sk = 2*n+1;
+
+    for (int i = 0,u,v,d; i < m; ++ i){
+        cin >> u >> v >> d;
+        u -= 1, v -= 1;
+        v += n;
+        edgs.push_back({u, v, d});
+        fmax(ma, d);
+    }
+
+    auto chk = [&](int mid)->bool{
+        gint G(2*n+2);
+        G.set(sr, sk);
+        for (int i = 0; i < n; ++ i){
+            G.add(sr, i, 1);
+        }
+        for (int i = n; i < 2*n; ++ i){
+            G.add(i, sk, 1);
+        }
+        for (int i = 0; i < m; ++ i){
+            auto &[u, v, d] = edgs[i];
+            if (d > mid) continue;
+            G.add(u, v, 1);
+        }
+
+        return G.dinic() == n;
+    };
+
+    int lo = 1, hi = ma;
+    while (lo < hi){
+        int mid = (lo+hi) >> 1;
+        if (chk(mid)) hi = mid;
+        else lo = mid+1;
+    }
+
+    if (chk(lo)) cout << lo << "\n";
+    else cout << -1 << "\n";
+}
+
+
+int main(){
+#ifdef ONLINE_JUDGE
+    ios::sync_with_stdio(false), cin.tie(nullptr), cout.tie(nullptr);
+#else
+    freopen("in.txt", "rt", stdin), freopen("out.txt", "wt", stdout);
+#endif
+    int _ = 1;
+    while (_--){
+        solve();
+    }
+    return 0;
+}

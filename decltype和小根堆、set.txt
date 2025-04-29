@@ -6,6 +6,7 @@
     };
     priority_queue <ary4, vector<ary4>, decltype(cmps)> pq(cmps);
 
+    priority_queue <ary2,vector<ary2>,greater<>> pq;
 
 
     auto cmps = [&](int u, int v)->bool{

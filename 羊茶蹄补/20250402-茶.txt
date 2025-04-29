@@ -1,0 +1,134 @@
+#include <bits/stdc++.h>
+using namespace std;
+using i64 = long long;
+using f64 = long double;
+using u64 = unsigned long long;
+const f64 eps = 1e-12;
+const i64 inf_i64 = 1e18;
+const int inf_int = 1e9;
+template <class T> void fmax(T &a, const T &b){
+    if (b > a) a = b;
+}
+template <class T> void fmin(T &a, const T &b){
+    if (b < a) a = b;
+}
+template <class T> void print(vector <T> &A, int d = 0){
+    int n = A.size();
+    for (int i = 0; i < n; ++ i){
+        if (i) cout << " ";
+        cout << A[i]+d;
+    }
+    cout << "\n";
+}
+int jgs(f64 x){
+    return x < -eps ? -1 : x > eps;
+}
+template <class T> struct Tree {
+    int n;
+    vector <array<T,4>> info;  // 最大值、最大值个数、次大值、次大值个数
+    Tree(){}
+    Tree(int n, vector<int>&nums): n(n), info(4*n+1){
+        build(1, 1, n, nums);
+    }
+    array<T,4> merge(array<T,4> L, array<T,4> R){
+        if (L[2] > R[0]) return L;
+        if (R[2] > L[0]) return R;
+
+        array<T,4> ans;
+        if (L[0] == R[0]){
+            T v = L[0];
+            ans = {v,L[1]+R[1], max(L[2], R[2]), -1};
+            if (L[2] == R[2]){
+                ans[3] = L[3]+R[3];
+            } else {
+                if (L[2] < R[2]) swap(L, R);
+                ans[3] = L[3];
+            }
+        } else {
+            if (L[0] < R[0]) swap(L, R);
+            ans[0] = L[0], ans[1] = L[1];
+            if (L[2] > R[0]){
+                ans[2] = L[2], ans[3] = L[3];
+            } else if (L[2] == R[0]){
+                ans[2] = L[2], ans[3] = L[3]+R[1];
+            } else {
+                ans[2] = R[0], ans[3] = R[1];
+            }
+        }
+        return ans;
+    }
+    void pull(int u){
+        info[u] = merge(info[u*2], info[u*2+1]);
+    }
+    void build(int u, int pl, int pr, vector<int>&nums){
+        if (pl == pr){
+            info[u] = {nums[pl], 1, -1, 0};
+            return;
+        }
+        int mid = (pl+pr) >> 1;
+        build(u*2, pl, mid, nums), build(u*2+1, mid+1, pr, nums);
+        pull(u);
+    }
+    void modify(int u, int loc, T v, int pl, int pr){
+        if (pl == pr){
+            info[u] = {v, 1, -1, 0};
+            return;
+        }
+        int mid = (pl+pr) >> 1;
+        if (loc <= mid) modify(u*2, loc, v, pl, mid);
+        else modify(u*2+1, loc, v, mid+1, pr);
+        
+        pull(u);
+    }
+    array<T,4> query(int u, int l, int r, int pl, int pr){
+        if (pl >= l && pr <= r){
+            return info[u];
+        }
+        int mid = (pl+pr) >> 1;
+        array<T,4> L = {-1, 0, -1, 0}, R = {-1, 0, -1, 0};
+        if (l <= mid) L = query(u*2, l, r, pl, mid);
+        if (r > mid) R = query(u*2+1, l, r, mid+1, pr);
+        auto ans = merge(L, R);
+        return merge(L, R);
+    }
+    void modify(int loc, T v){
+        modify(1, loc, v, 1, n);
+    }
+    array<T,4> query(int l, int r){
+        return query(1, l, r, 1, n);
+    }
+};
+void solve(){
+    using Yint = Tree<int>;
+
+    int n, q;
+    cin >> n >> q;
+    vector <int> A(n+1);
+    for (int i = 1; i <= n; ++ i){
+        cin >> A[i];
+    }
+    Yint Y(n, A);
+    
+    for (int i = 0, type, u, v; i < q; ++ i){
+        cin >> type >> u >> v;
+        if (type == 1){
+            Y.modify(u, v);
+        } else {
+            auto ans = Y.query(u, v);
+            cout << ans[3] << "\n";
+        }
+    }
+}
+
+int main(){
+#ifdef ONLINE_JUDGE
+    ios::sync_with_stdio(false), cin.tie(nullptr), cout.tie(nullptr);
+#else
+    freopen("in.txt", "rt", stdin), freopen("out.txt", "wt", stdout);
+#endif
+    int _ = 1;
+    while (_--){
+        solve();
+    }
+    return 0;
+}

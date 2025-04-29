@@ -1,0 +1,106 @@
+#include <bits/stdc++.h>
+using namespace std;
+using i64 = long long;
+using f64 = long double;
+using u64 = unsigned long long;
+const f64 eps = 1e-12;
+const i64 inf_i64 = 4e18;
+const int inf_int = 1e9;
+template <class T> void fmax(T &a, const T &b){
+    if (b > a) a = b;
+}
+template <class T> void fmin(T &a, const T &b){
+    if (b < a) a = b;
+}
+template <class T> void print(vector <T> &A, int d = 0){
+    int n = A.size();
+    for (int i = 0; i < n; ++ i){
+        if (i) cout << " ";
+        cout << A[i]+d;
+    }
+    cout << "\n";
+}
+int jgs(f64 x){
+    return x < -eps ? -1 : x > eps;
+}
+
+void solve(){
+    using ary2 = array<int,2>;
+
+    int n, k, q;
+    cin >> n >> k >> q;
+    vector <int> A(n+1), f(n+2);
+    vector<vector<int>> qrys(n+1);
+    for (int i = 1; i <= n; ++ i){
+        cin >> A[i];
+        A[i] -= i;
+    }
+    vector <ary2> asks(q);
+    for (int i = 0; i < q; ++ i){
+        cin >> asks[i][0] >> asks[i][1];
+        qrys[asks[i][0]].push_back(i);
+    }
+
+    priority_queue <ary2,vector<ary2>,less<>> pq;
+    map <int,int> cnts;
+    for (int i = 1,j = 0; i <= n-k+1; ++ i){
+        while (j < i || j+1 <= n && j-i+1 < k){
+            j += 1;
+            cnts[A[j]] += 1;
+            pq.push({cnts[A[j]], A[j]});
+        }
+        while (pq.top()[0] != cnts[pq.top()[1]]) pq.pop();
+        f[i] = k - pq.top()[0];
+        cnts[A[i]] -= 1;
+        pq.push({cnts[A[i]], A[i]});
+    }
+
+    vector<array<i64,3>> stk = {{0ll, 0ll, (i64)n-k+2}};
+    auto find = [&](int r)->int{
+        int lo = 0, hi = stk.size()-1;
+        while (lo < hi){
+            int mid = (lo+hi) >> 1;
+            if (stk[mid][2] <= r) hi = mid;
+            else lo = mid+1;
+        }
+        return lo;
+    };
+    vector <i64> ans(q);
+
+    f[n-k+2] = -1;
+    for (int i = n-k+1; i >= 1; -- i){
+        i64 cur = stk.back()[0] + f[i], c = 1;
+        while (f[i] <= f[stk.back()[2]]){
+            auto [sm, cnt, l] = stk.back();
+            stk.pop_back();
+            cur -= cnt * f[l], cur += cnt * f[i];
+            c += cnt;
+        }
+        stk.push_back({cur, c, i});
+        for (auto &id : qrys[i]){
+            int r = asks[id][1]-k+1;
+            int j = find(r);
+            i64 res = stk.back()[0] - stk[j][0];
+            res += 1ll * f[stk[j][2]] * (r - stk[j][2] + 1);
+            ans[id] = res;
+        }
+    }
+
+    for (auto &x : ans){
+        cout << x << "\n";
+    }
+}
+
+int main(){
+#ifdef ONLINE_JUDGE
+    ios::sync_with_stdio(false), cin.tie(nullptr), cout.tie(nullptr);
+#else
+    freopen("in.txt", "rt", stdin), freopen("out.txt", "wt", stdout);
+#endif
+    int _ = 1;
+    cin >> _;
+    while (_--){
+        solve();
+    }
+    return 0;
+}

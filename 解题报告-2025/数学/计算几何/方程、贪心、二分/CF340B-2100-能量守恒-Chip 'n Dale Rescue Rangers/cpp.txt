@@ -1,0 +1,65 @@
+#include <bits/stdc++.h>
+using namespace std;
+using i64 = long long;
+using f64 = long double;
+using u64 = unsigned long long;
+const f64 eps = 1e-12;
+const i64 inf_i64 = 4e18;
+const int inf_int = 1e9;
+template <class T> void fmax(T &a, const T &b){
+    if (b > a) a = b;
+}
+template <class T> void fmin(T &a, const T &b){
+    if (b < a) a = b;
+}
+template <class T> void print(vector <T> &A, int d = 0){
+    int n = A.size();
+    for (int i = 0; i < n; ++ i){
+        if (i) cout << " ";
+        cout << A[i]+d;
+    }
+    cout << "\n";
+}
+int jgs(f64 x){
+    return x < -eps ? -1 : x > eps;
+}
+
+void solve(){
+    int x1, y1, x2, y2, vx, vy, wx, wy, vma;
+    f64 t;
+    cin >> x1 >> y1 >> x2 >> y2 >> vma >> t >> vx >> vy >> wx >> wy;
+
+    x2 -= x1, y2 -= y1;
+    f64 lo = 0, hi = 1e9;
+
+    for (int i = 0; i < 200; i ++) {
+        f64 mid = (lo+hi) / 2;
+        f64 x = x2, y = y2;
+        x -= min(mid, t) * vx;
+        y -= min(mid, t) * vy;
+        x -= (mid - min(mid, t)) * wx;
+        y -= (mid - min(mid, t)) * wy;
+
+        if (x*x+y*y <= vma*vma*mid*mid){
+            hi = mid;
+        } else {
+            lo = mid;
+        }
+    }
+
+    cout << fixed << setprecision(20) << (lo+hi) / 2;
+
+}
+
+int main(){
+#ifdef ONLINE_JUDGE
+    ios::sync_with_stdio(false), cin.tie(nullptr), cout.tie(nullptr);
+#else
+    freopen("in.txt", "rt", stdin), freopen("out.txt", "wt", stdout);
+#endif
+    int _ = 1;
+    while (_--){
+        solve();
+    }
+    return 0;
+}

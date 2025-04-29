@@ -9,6 +9,7 @@ struct Node {
     Node* insert(int lt, int rt, int pos);		// 由于要定义自环指针Null，所以要先定义，然后外面实现
     Node(Node*l=nullptr,Node*r=nullptr,long long a=0,long long b=0):l(l),r(r),Feq(a),Sum(b){
         pull();
+
     }
 };
 Node *Null = new Node();

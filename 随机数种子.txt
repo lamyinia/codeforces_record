@@ -1,5 +1,16 @@
+
     auto rng = mt19937(random_device()());
     auto rngl = mt19937_64(random_device()());
 
     mt19937 mt(chrono::steady_clock::now().time_since_epoch().count());
     uniform_int_distribution <int> rands(2, 100);
+
+
+    using u64 = unsigned long long;
+    const u64 mask = (1ll<<21) + 1331;
+    auto H = [&](u64 x)->u64{
+        x ^= x << 17;
+        x ^= x >> 13;
+        x ^= x >> 4;
+        return x;
+    };

@@ -1,0 +1,76 @@
+#include <bits/stdc++.h>
+using namespace std;
+using i64 = long long;
+using f64 = long double;
+using u64 = unsigned long long;
+const f64 eps = 1e-12;
+const i64 inf_i64 = 1e18;
+const int inf_int = 1e9;
+template <class T> void fmax(T &a, const T &b){
+    if (b > a) a = b;
+}
+template <class T> void fmin(T &a, const T &b){
+    if (b < a) a = b;
+}
+template <class T> void print(vector <T> &A, int d = 0){
+    int n = A.size();
+    for (int i = 0; i < n; ++ i){
+        if (i) cout << " ";
+        cout << A[i]+d;
+    }
+    cout << "\n";
+}
+int jgs(f64 x){
+    return x < -eps ? -1 : x > eps;
+}
+
+void solve(){
+    int n, mod;
+    cin >> n;
+    map <int,int> mps;
+    vector <int> A(n), B(n);
+    for (int i = 0; i < n; ++ i){
+        cin >> A[i];
+        mps[A[i]] += 1;
+    }
+    for (int i = 0; i < n; ++ i){
+        cin >> B[i];
+        mps[B[i]] += 1;
+    }
+    cin >> mod;
+
+    int to2 = 0;
+    for (int i = 0; i < n; ++ i){
+        if (A[i] == B[i]){
+            to2 += 1;
+        }
+    }
+
+    i64 res = 1;
+    for (auto &it : mps){
+        auto L = it.second;
+        for (i64 j = 1; j <= L; ++ j){
+            i64 u = j;
+            while (to2 > 0 && u%2 == 0){
+                u /= 2;
+                to2 -= 1;
+            }
+            res = res * u % mod;
+        }
+    }
+
+    cout << res << "\n";
+}
+
+int main(){
+#ifdef ONLINE_JUDGE
+    ios::sync_with_stdio(false), cin.tie(nullptr), cout.tie(nullptr);
+#else
+    freopen("in.txt", "rt", stdin), freopen("out.txt", "wt", stdout);
+#endif
+    int _ = 1;
+    while (_--){
+        solve();
+    }
+    return 0;
+}

@@ -38,6 +38,7 @@ void solve(){
         }
     }
 
+
     vector <int> ans;
     int i = 0;
     while (i < m-1){

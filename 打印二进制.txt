@@ -1,0 +1,8 @@
+
+    auto print2 = [&](int x)->void{
+        if (!x) return void(cout << 0 << "\n");
+        for (int i = 31-__builtin_clz(x); i >= 0; -- i){
+            cout << (x>>i&1);
+        }
+        cout << "\n";
+    };

@@ -62,7 +62,7 @@ void solve(){
             self(self, y, x, opt, limi);
         }
     };
-    // cout << hevy[0] << "\n";
+
     auto dfs = [&](auto &&self, int x, int presor, bool keep)->void{
         for (auto &y : g[x]){
             if (y == presor || y == hevy[x]) continue;
