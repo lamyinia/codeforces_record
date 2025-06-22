@@ -5,7 +5,7 @@ using f64 = long double;
 using u64 = unsigned long long;
 const f64 eps = 1e-12;
 const i64 inf_i64 = 1e18;
-const int inf_int = 1e9;
+const int inf_int = 2e9;
 template <class T> void fmax(T &a, const T &b){
     if (b > a) a = b;
 }
@@ -24,43 +24,31 @@ int jgs(f64 x){
     return x < -eps ? -1 : x > eps;
 }
 
-
 void solve(){
-    int n, k;
-    cin >> n >> k;
-    vector <i64> f(n+1), pr(n+1);
-    vector <int> A(n);
+    int n;
+    cin >> n;
+    vector <int> A(n), idx(n);
     for (auto &x : A){
         cin >> x;
     }
+    iota(idx.begin(), idx.end(), 0);
+    sort(idx.begin(), idx.end(), [&](auto &u, auto &v){
+        return A[u] != A[v] ? A[u] < A[v] : u < v;
+    });
 
-    for (int i = 0; i < n; ++ i){
-        pr[i+1] = pr[i] + A[i];
-    }
+    int res = -1, r = -1;
+    for (int id = 0; id <= n; ++ id){
+        if (id > r) res += 1;
 
-    vector <i64> Q(n+1);
-    auto W = [&](int i)->i64{
-        if (i == 0) return 0;
-        else return f[i-1] - pr[i];
-    };
-    int tp = -1, hp = 0;
-    // 恰好长度为 k 时缩队头，总能保证长度小于 k，当前解更优缩队尾，避免变队头时产生劣解
-    for (int i = 0; i < n; ++ i){
-        while (tp >= hp && W(i) >= W(Q[tp])){
-            tp -= 1;
-        }
-        Q[++ tp] = i;
-
-        f[i+1] = max(f[i], pr[i+1]+W(Q[hp]));
-
-        if (Q[tp]-Q[hp]+1 >= k){
-            hp += 1;
+        if (id < n){
+            int i = idx[id];
+            fmax(r, i);
         }
     }
-
     
-    cout << f[n] << "\n";
+    cout << res << "\n";
 }
+
 
 int main(){
 #ifdef ONLINE_JUDGE

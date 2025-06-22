@@ -24,42 +24,33 @@ int jgs(f64 x){
     return x < -eps ? -1 : x > eps;
 }
 
-
 void solve(){
-    static vector <int> cnts(200050);
-
-    int n;
-    cin >> n;
-    vector<vector<int>> As;
-    for (int i = 0, k; i < n; ++ i){
-        cin >> k;
-        vector <int> A(k);
-        for (auto &x : A){
-            cin >> x;
-            cnts[x] += 1;
-        }
-        As.push_back(A);
-    }
-
-    bool is_true = false;;
+    int n, m;
+    cin >> n >> m;
+    vector<queue<int>> Q(26);
+    string s, t;
+    cin >> s >> t;
     for (int i = 0; i < n; ++ i){
-        bool jug = 1;
-        for (auto &x : As[i]){
-            jug &= cnts[x] > 1;
+        Q[s[i]-'a'].push(i);
+    }
+
+    for (int i = 0; i < m; ++ i){
+        int chose = t[i]-'a';
+        if (Q[chose].empty()){
+            cout << "NO\n";
+            return;
         }
-        if (jug){
-            is_true = true;
-            break;
+        int id = Q[chose].front();
+        Q[chose].pop();
+        for (int i = 0; i < chose; ++ i){
+            while (!Q[i].empty() && Q[i].front() < id){
+                Q[i].pop();
+            }
         }
     }
 
-    cout << (is_true ? "Yes\n" : "No\n");
-    for (int i = 0; i < n; ++ i){
-        for (auto &x : As[i]){
-            cnts[x] -= 1;
-        }
-    }
-
+    cout << "YES\n";
+    return;
 }
 
 int main(){

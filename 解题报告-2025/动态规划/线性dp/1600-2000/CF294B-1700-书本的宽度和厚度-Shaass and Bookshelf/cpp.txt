@@ -25,38 +25,41 @@ int jgs(f64 x){
 }
 
 void solve(){
-    i64 n, k, C1, C2;
-    cin >> n >> k >> C1 >> C2;
+    const int N = 200;
+    int n;
+    cin >> n;
+    vector<vector<int>> f1(N+1,vector<int>(N+1)), f2(N+1,vector<int>(N+1));
 
-    i64 res = 0, x = n;
-    if (k > 1){
-        while (x > 1){
-            i64 nxt = x/k * k;
-            if (nxt > 0){
-                res += (x-nxt) * C1;
-            } else {
-                res += (x-1) * C1;
-                break;
-            }
-
-            x = nxt;
-
-            if (x > 1){
-                i64 y = x/k;
-                if ((x-y)*C1 >= C2){
-                    x /= k;
-                    res += C2;
-                } else {
-                    res += (x-1)*C1;
-                    break;
+    f1[0][0] = 1;
+    for (int i = 0,x,y; i < n; ++ i){
+        cin >> x >> y;
+        for (int i = 0; i <= N; ++ i){
+            for (int j = 0; j <= N; ++ j){
+                if (f1[i][j]){
+                    f2[i+x][j] = 1;
+                    if (j+y <= N){
+                        f2[i][j+y] = 1;
+                    }
                 }
             }
         }
-    } else {
-        res += (n-1) * C1;
+        for (int i = 0; i <= N; ++ i){
+            for (int j = 0; j <= N; ++ j){
+                f1[i][j] = f2[i][j];
+                f2[i][j] = 0;
+            }
+        }
     }
 
-    cout << res << "\n";
+    for (int i = 1; i <= N; ++ i){
+        for (int j = 0; j <= i; ++ j){
+            if (f1[i][j]){
+                cout << i << "\n";
+                return;
+            }
+        }
+    }
+
 }
 
 int main(){

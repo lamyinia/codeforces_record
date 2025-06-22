@@ -33,7 +33,6 @@ func solve(in io.Reader, _w io.Writer) {
 		l, r := 0, n-1
 		for i := 1; i <= n; i++ {
 			if k<<uint(1)>>(uint(n-i))&1 == 0 {
-				//Fprintln(out, i)
 				a[l] = i
 				l += 1
 			} else {

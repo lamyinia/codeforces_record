@@ -1,0 +1,59 @@
+void solve(){
+    using ary2 = array<i64,2>;
+
+    int n, m, q;
+    cin >> n >> m;
+    vector<vector<i64>> f(n, vector<i64>(n, inf_i64));
+    vector<vector<int>> g(n);
+    vector<array<int,2>> edges;
+
+    for (int i = 0,u,v,w; i < m; ++ i){
+        cin >> u >> v >> w;
+        u -= 1, v -= 1;
+        g[u].push_back(i);
+        g[v].push_back(i);
+        edges.push_back({u+v, w});
+    }
+
+    auto cover = [&](int i, int j)->int{
+        return i * n + j;
+    };
+    auto fix = [&](int i)->array<int,2>{
+        return {i/n, i%n};
+    };
+
+    priority_queue<ary2,vector<ary2>,greater<ary2>> pq;
+    f[0][0] = 0;
+    pq.push({0, cover(0, 0)});
+    while (!pq.empty()){
+        auto [odis, id] = pq.top();
+        pq.pop();
+        auto [u, i] = fix(id);
+        if (i == n-1 || odis > f[u][i]) continue;
+
+        for (auto &id : g[u]){
+            int v = edges[id][0]-u, w = edges[id][1];
+            if (f[v][i+1] > f[u][i]+w){
+                f[v][i+1] = f[u][i]+w;
+                pq.push({f[v][i+1], cover(v, i+1)});
+            }
+        }
+    }
+
+    cin >> q;
+    while (q--){
+        int t;
+        cin >> t;
+        t -= 1;
+
+        i64 res = inf_i64, sm = 0;
+        for (int i = 1,w; i <= n-1; ++ i){
+            cin >> w;
+            sm += w;
+            fmin(res, f[t][i] + sm);
+        }
+
+        assert(res != inf_i64);
+        cout << res << "\n";
+    }
+}

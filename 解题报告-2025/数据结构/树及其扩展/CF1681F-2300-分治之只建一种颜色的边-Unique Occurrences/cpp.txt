@@ -1,0 +1,130 @@
+#include <bits/stdc++.h>
+using namespace std;
+using i64 = long long;
+using f64 = long double;
+using u64 = unsigned long long;
+const f64 eps = 1e-12;
+const i64 inf_i64 = 1e18;
+const int inf_int = 1e9;
+template <class T> void fmax(T &a, const T &b){
+    if (b > a) a = b;
+}
+template <class T> void fmin(T &a, const T &b){
+    if (b < a) a = b;
+}
+template <class T> void print(vector <T> &A, int d = 0){
+    int n = A.size();
+    for (int i = 0; i < n; ++ i){
+        if (i) cout << " ";
+        cout << A[i]+d;
+    }
+    cout << "\n";
+}
+int jgs(f64 x){
+    return x < -eps ? -1 : x > eps;
+}
+struct dsu{
+    vector <int> p, sz;
+    vector<array<int,2>> stk;
+    dsu(int n): p(n), sz(n, 1){
+        iota(p.begin(), p.end(), 0);
+    }
+    int root(int i){
+        return p[i] == i ? i : root(p[i]);
+    }
+    void merge(int u, int v){
+        u = root(u), v = root(v);
+        if (u == v) return;;
+        if (sz[u] < sz[v]) swap(u, v);
+
+        sz[u] += sz[v];
+        p[v] = u;
+
+        stk.push_back({u, v});
+    }
+    bool same(int u, int v){
+        return root(u) == root(v);
+    }
+    int size(int u){
+        return sz[root(u)];
+    }
+    void repeal(){
+        if (stk.empty()) return;
+        auto [u, v] = stk.back();
+        stk.pop_back();
+        p[v] = v;
+        sz[u] -= sz[v];
+    }
+};
+void solve(){
+    int n;
+    cin >> n;
+
+    vector<vector<int>> store(4*n+1), ws(n);
+    auto insert = [&](auto &&self, int u, int l, int r, int id, int pl, int pr)->void{
+        if (l > r || pr < l || pl > r) return;
+        if (pl >= l && pr <= r){
+            store[u].push_back(id);
+            return;
+        }
+        int mid = pl+pr >> 1;
+        self(self, 2*u, l, r, id, pl, mid);
+        self(self, 2*u+1, l, r, id, mid+1, pr);
+    };
+    vector<array<int,2>> edges;
+    for (int i = 0, u, v, w; i < n-1; ++ i){
+        cin >> u >> v >> w;
+        u -= 1, v -= 1, w -= 1;
+        if (u > v) swap(u, v);
+        edges.push_back({u, v});
+        ws[w].push_back(i);
+        insert(insert, 1, 0, w-1, i, 0, n-1);
+        insert(insert, 1, w+1, n-1, i, 0, n-1);
+    }
+
+    i64 res = 0;
+    dsu Y(n);
+
+    auto conquer = [&](auto &&self, int u, int pl, int pr)->void{
+        int cnt = 0;
+        for (auto &id : store[u]){
+            auto &[u, v] = edges[id];
+            Y.merge(u, v);
+            cnt += 1;
+        }
+        if (pl == pr){
+            int j = pl;
+            for (auto &id : ws[j]){
+                auto &[u, v] = edges[id];
+                assert(!Y.size(u, v));
+                i64 v1 = Y.size(u), v2 = Y.size(v);
+                res += v1 * v2;
+            }
+        } else {
+            int mid = (pl+pr) >> 1;
+            self(self, u*2, pl, mid);
+            self(self, u*2+1, mid+1, pr);
+        }
+
+        while (cnt --){
+            Y.repeal();
+        }
+    };
+    
+    conquer(conquer, 1, 0, n-1);
+
+    cout << res << "\n";
+}
+
+int main(){
+#ifdef ONLINE_JUDGE
+    ios::sync_with_stdio(false), cin.tie(nullptr), cout.tie(nullptr);
+#else
+    freopen("in.txt", "rt", stdin), freopen("out.txt", "wt", stdout);
+#endif
+    int _ = 1;
+    while (_--){
+        solve();
+    }
+    return 0;
+}

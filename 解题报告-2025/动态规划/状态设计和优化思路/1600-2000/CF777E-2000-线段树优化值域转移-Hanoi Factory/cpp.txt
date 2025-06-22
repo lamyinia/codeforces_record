@@ -1,0 +1,83 @@
+const int limi = 1e9;
+template <class T> struct Tree {
+    struct Node {
+        T sm;
+        int l, r;
+    };
+    T st_limi, ed_limi;
+    int tot, root;
+    vector <Node> info;
+    Tree(T l = 0, T r = limi): st_limi(l), ed_limi(r){
+	    tot = 0;
+        root = 0;
+    }
+    int open(){
+        return ++ tot;
+    }
+    void pull(int u){
+        T &v = info[u].sm;
+        v = 0;
+        if (info[u].l && info[info[u].l].sm > v) v = info[info[u].l].sm;
+        if (info[u].r && info[info[u].r].sm > v) v = info[info[u].r].sm;
+    }
+    void set(int &u, int loc, T v, T pl, T pr){
+        if (!u) u = open();
+        if (pl == pr){
+            info[u].sm = max(info[u].sm, v);
+            return;
+        }
+
+        T mid = (pl + pr) >> 1;
+        if (mid >= loc){
+            set(info[u].l, loc, v, pl, mid);
+        } else {
+            set(info[u].r, loc, v, mid+1, pr);
+        }
+        pull(u);
+    }
+    T query(int &u, int l, int r, T pl, T pr){ 
+        if (!u || pr < l || pl > r) return 0;
+        if (pl >= l && pr <= r){
+            return info[u].sm;
+        }
+
+        T mid = (pl + pr) >> 1;
+        T res = 0;
+        res = query(info[u].l, l, r, pl, mid);
+        res = max(res, query(info[u].r, l, r, mid+1, pr));
+        return res;
+    }
+    void set(int loc, T v){
+        while (info.size()-tot <= 31) info.push_back({0, 0, 0});
+        set(root, loc, v, 0, limi);
+    }
+    T query(int l, int r){
+        return query(root, l, r, 0, limi);
+    }
+};
+using Yint = Tree<i64>;
+
+void solve(){
+    Yint Y;
+
+    int n;
+    cin >> n;
+    vector<array<int,3>> A(n);
+    for (auto &it : A){
+        cin >> it[0] >> it[1] >> it[2];
+    }
+    sort(A.begin(), A.end(), [&](auto &u, auto &v){
+        return u[1] != v[1] ? u[1] > v[1] : u[0] > v[0];
+    });
+
+    i64 res = 0;
+    for (auto &it : A){
+        i64 a = it[0], b = it[1], h = it[2];
+        i64 v = Y.query(1, b-1);
+        v += h;
+        Y.set(a, v);
+        fmax(res, v);
+    }
+
+    cout << res << "\n";
+}

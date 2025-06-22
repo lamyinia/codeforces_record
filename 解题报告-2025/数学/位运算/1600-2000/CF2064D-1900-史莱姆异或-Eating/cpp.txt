@@ -1,0 +1,134 @@
+有 n 个史莱姆排成一行，大小为 a[i]。
+在 a 的最右边添加一个大小为 x 的史莱姆。
+如果 x >= 左边相邻史莱姆的大小 v，那么 x 吃掉左边的史莱姆，同时 x 更新为 x XOR v。
+如果没有史莱姆，或者 x < 左边相邻史莱姆的大小，结束。
+输出被吃掉的史莱姆的个数。
+
+#include <bits/stdc++.h>
+using namespace std;
+using i64 = long long;
+using f64 = long double;
+using u64 = unsigned long long;
+const f64 eps = 1e-12;
+const i64 inf_i64 = 1e18;
+const int inf_int = 1e9;
+template <class T> void fmax(T &a, const T &b){
+    if (b > a) a = b;
+}
+template <class T> void fmin(T &a, const T &b){
+    if (b < a) a = b;
+}
+template <class T> void print(vector <T> &A, int d = 0){
+    int n = A.size();
+    for (int i = 0; i < n; ++ i){
+        if (i) cout << " ";
+        cout << A[i]+d;
+    }
+    cout << "\n";
+}
+int jgs(f64 x){
+    return x < -eps ? -1 : x > eps;
+}
+
+void solve(){
+    int n, q;
+    cin >> n >> q;
+    vector <int> A(n+1), sf(n+2);
+    vector<vector<int>> cnts(n+1, vector<int>(32)), last(n+1, vector<int>(32));
+    for (int i = 1; i <= n; ++ i){
+        cin >> A[i];
+        for (int j = 0; j < 31; ++ j){
+            int c = A[i] >> j & 1;
+            cnts[i][j] = cnts[i-1][j] + c;
+            last[i][j] = last[i-1][j];
+            if (c) last[i][j] = i;
+        }
+    }
+    for (int i = n; i >= 1; -- i){
+        sf[i] = sf[i+1] ^ A[i];
+    }
+
+    auto chk = [&](int l, int r, int hig)->bool{
+        for (int i = hig+1; i < 31; ++ i){
+            if (cnts[r][i]-cnts[l-1][i]){
+                return false;
+            }
+        }
+        return true;
+    };
+    auto find = [&](int l, int r, int hig)->int{  // 找到 [l,r] 从右到左存在第一个二进制位大于 hig 的
+        if (l == r) return l;
+
+        int lo = l, hi = r;
+
+        while (lo < hi){
+            int mid = (lo+hi) >> 1;
+            if (chk(mid, r, hig)) hi = mid;
+            else lo = mid+1;
+        }
+        
+        if (chk(lo, r, hig)) return lo-1;
+        else return lo;
+    };
+
+    auto call = [&](int x)->int{
+        int r = n+1;
+        // r 代表现在正要挑战哪一个史莱姆(还没吃掉)，那么答案就是 n-r
+        while (r > 0){
+            r -= 1;
+            // 特判 0 的情况
+            if ((sf[r+1]^x) == 0 || r == 0){
+                break;
+            }
+            int hig = 31 - __builtin_clz(sf[r+1]^x);
+
+            int l = last[r][hig];  // 左边最近的最高位
+            bool jg = 0;
+            for (int i = hig+1; i < 31; ++ i){
+                if (cnts[r][i] - cnts[max(l-1, 0)][i]){
+                    jg = 1;
+                    break;
+                }
+            }
+            if (jg){
+                r = find(max(l-1, 1), r, hig);
+                break;
+            }
+            if (l == 0){  // 不存在比它高的位
+                r = 0;
+                break;
+            }
+            
+            int y = x ^ sf[l+1];
+            r = l;
+            if (y < A[l]){
+                break;
+            }
+        }
+
+        return n-r;
+    };
+
+    vector <int> ans;
+    while (q--){
+        int x;
+        cin >> x;
+        ans.push_back(call(x));
+    }
+    print(ans);
+}
+
+
+int main(){
+#ifdef ONLINE_JUDGE
+    ios::sync_with_stdio(false), cin.tie(nullptr), cout.tie(nullptr);
+#else
+    freopen("in.txt", "rt", stdin), freopen("out.txt", "wt", stdout);
+#endif
+    int _ = 1;
+    cin >> _;
+    while (_--){
+        solve();
+    }
+    return 0;
+}

@@ -1,0 +1,92 @@
+void solve(){
+    int n, m;
+    cin >> n >> m;
+
+    vector <int> cnts(m), ones(m);
+    // 子区间存在至少一个，存在恰好一个个数
+
+    vector <int> info(4*n+1);
+    vector<vector<int>> store(4*n+1);
+    function<void(int)> pull;
+    function<void(int,int,int)> build;
+    function<void(int,int,int,int,int,int)> add;
+    function<void(int,int,int,int)> minus;
+
+    pull = [&](int u){
+        info[u] = info[u*2] + info[u*2+1];
+    };
+    build = [&](int u, int pl, int pr){
+        if (pl == pr){
+            info[u] = 1;
+            return;
+        }
+        int mid = pl+pr >> 1;
+        build(u*2, pl, mid), build(u*2+1, mid+1, pr);
+        pull(u);
+    };
+    add = [&](int u, int l, int r, int id, int pl, int pr){
+        if (pr < l || pl > r) return;
+
+        if (pl >= l && pr <= r){
+            store[u].push_back(id);
+            cnts[id] += 1;
+            ones[id] += pl == pr;
+            return;
+        }
+
+        int mid = pl+pr >> 1;
+        add(u*2, l, r, id, pl, mid);
+        add(u*2+1, l, r, id, mid+1, pr);
+    };
+
+    i64 res = 0;
+    minus = [&](int u, int loc, int pl, int pr){
+        if (pl == pr){
+            info[u] = 0;
+        } else {
+            int mid = pl+pr >> 1;
+            if (loc <= mid) minus(u*2, loc, pl, mid);
+            else minus(u*2+1, loc, mid+1, pr);
+            pull(u);
+        }
+
+        if (info[u] <= 1){
+
+            for (auto &id : store[u]){
+                if (info[u] == 1){
+                    ones[id] += 1;
+                } else {
+                    cnts[id] -= 1;
+                    ones[id] -= 1;
+                }
+
+                if (cnts[id] == 1 && ones[id] == 1){
+                    res += 1ll*(id+1)*(id+1);
+                }
+                if (cnts[id] == 0){
+                    res -= 1ll*(id+1)*(id+1);
+                }
+            }
+        }
+    };
+
+    const int rt = 1, lbound = 0, rbound = n-1;
+    build(rt, lbound, rbound);
+    for (int i = 0, l, r; i < m; ++ i){
+        cin >> l >> r;
+        if (l == r) res += 1ll * (i+1) * (i+1);
+        add(rt, l, r, i, lbound, rbound);
+    }
+
+    vector <i64> ans = {res};
+
+    for (int i = 0, pos; i < n; ++ i){
+        cin >> pos;
+        pos = (res + pos) % n;
+        minus(rt, pos, lbound, rbound);
+
+        ans.push_back(res);
+    }
+
+    print(ans);
+}
