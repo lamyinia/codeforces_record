@@ -32,8 +32,6 @@ void solve(){
         i64 lst = Pre[i], nxt = Pre[n]-Pre[i+1];
         i64 x = A[i];
         ans += (i*x - lst) + (nxt - (n-i-1)*x) + x;
-        // cout << nxt << " " << (n-i-1)*x << "\n";
-        // cout << lst << " " << i*x << "\n";
     }
 
     i64 d = __gcd(ans, 1ll*n);
